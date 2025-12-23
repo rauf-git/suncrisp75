@@ -55,21 +55,34 @@ const Index = () => {
       
       // Fetch portfolio projects (from projects table)
       const { data: portfolioProjects } = await projectService.getAll();
-      if (portfolioProjects && portfolioProjects.length > 0) {
-        const mappedPortfolio: Property[] = portfolioProjects.map(p => ({
-          id: p.id,
-          title: p.title,
-          type: p.category || 'Project',
-          location: p.location || '',
-          price: p.short_description || '',
-          image: p.image_url,
-          description: p.short_description || p.description || '',
-          detailedDescription: p.long_description || p.description || '',
-          features: [],
-          gallery: p.images || [],
+      const mappedPortfolio: Property[] = (portfolioProjects || []).map(p => ({
+        id: p.id,
+        title: p.title,
+        type: p.category || 'Project',
+        location: p.location || '',
+        price: p.short_description || '',
+        image: p.image_url,
+        description: p.short_description || p.description || '',
+        detailedDescription: p.long_description || p.description || '',
+        features: [],
+        gallery: p.images || [],
+      }));
+      setPortfolioData(mappedPortfolio);
+
+      // Derive Hospitality page data from portfolio category = Hospitality
+      const mappedHospitalityFromPortfolio: Experience[] = (portfolioProjects || [])
+        .filter(p => (p.category || '').toLowerCase().includes('hospitality'))
+        .map(h => ({
+          id: h.id,
+          title: h.title,
+          description: h.short_description || h.description || '',
+          image: h.image_url || '',
+          priceStart: h.description || 'Inquire for pricing',
+          detailedDescription: h.long_description || h.description || '',
+          gallery: h.images || [],
+          location: h.location || '',
         }));
-        setPortfolioData(mappedPortfolio);
-      }
+      setHospitalityData(mappedHospitalityFromPortfolio);
 
       // Fetch construction projects (from construction_projects table)
       const { data: constructionProjects, error: constructionError } = await constructionService.getAll();
@@ -92,20 +105,19 @@ const Index = () => {
       }
 
       // Fetch hospitality projects (from projects table with category "Hospitality")
-      const { data: hospitalityProjects } = await projectService.getByCategory('Hospitality');
-      if (hospitalityProjects && hospitalityProjects.length > 0) {
-        const mappedHospitality: Experience[] = hospitalityProjects.map(h => ({
-          id: h.id,
-          title: h.title,
-          description: h.short_description || h.description || '',
-          image: h.image_url || '',
-          priceStart: h.short_description || 'Inquire for pricing',
-          detailedDescription: h.long_description || h.description || '',
-          gallery: h.images || [],
-          location: h.location || '',
-        }));
-        setHospitalityData(mappedHospitality);
-      }
+      const { data: hospitalityProjects, error: hospitalityError } = await projectService.getByCategory('Hospitality');
+      console.log('[Index] Hospitality projects fetched:', hospitalityProjects?.length, 'Error:', hospitalityError);
+      const mappedHospitality: Experience[] = (hospitalityProjects || []).map(h => ({
+        id: h.id,
+        title: h.title,
+        description: h.short_description || h.description || '',
+        image: h.image_url || '',
+        priceStart: h.description || 'Inquire for pricing',
+        detailedDescription: h.long_description || h.description || '',
+        gallery: h.images || [],
+        location: h.location || '',
+      }));
+      setHospitalityData(mappedHospitality);
 
       // Fetch rentals (from rentals table)
       const { data: rentalItems, error: rentalError } = await rentalService.getAll();
