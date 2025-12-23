@@ -378,8 +378,8 @@ export default function AdminDashboard() {
                     onEdit={() => handleEditProject(project)}
                     onDelete={() => setDeleteTarget({ type: "project", item: project })}
                     onToggleFeatured={async () => {
-                      const currentFeatured = (project as Project & { is_featured?: boolean }).is_featured;
-                      await projectService.update(project.id, { is_featured: !currentFeatured } as Record<string, unknown>);
+                      const currentFeatured = project.is_featured;
+                      await projectService.update(project.id, { is_featured: !currentFeatured });
                       fetchProjects();
                       toast({ title: currentFeatured ? "Removed from featured" : "Added to featured" });
                     }}
@@ -609,7 +609,7 @@ function ProjectCard({ project, onView, onEdit, onDelete, onToggleFeatured }: { 
             {project.category}
           </span>
         )}
-        {(project as Project & { is_featured?: boolean }).is_featured && (
+        {project.is_featured && (
           <span className="absolute top-3 right-3 bg-amber-500 text-white text-xs px-2 py-1 rounded font-semibold">
             Featured
           </span>

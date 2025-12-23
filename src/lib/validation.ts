@@ -82,6 +82,10 @@ export const updateProjectSchema = z.object({
     .optional(),
   images: z.array(z.string().url().max(MAX_URL_LENGTH)).nullish(),
   display_order: z.number().int().min(0).max(9999).nullish(),
+  is_featured: z.boolean().nullish(),
+  visit_url: z.string().trim().url().max(MAX_URL_LENGTH).nullish(),
+  heading: z.string().trim().max(MAX_TITLE_LENGTH).nullish(),
+  content_heading: z.string().trim().max(MAX_TITLE_LENGTH).nullish(),
 });
 
 // Construction project validation schemas
@@ -140,6 +144,9 @@ export const updateConstructionSchema = z.object({
     .nullish(),
   images: z.array(z.string().url().max(MAX_URL_LENGTH)).nullish(),
   display_order: z.number().int().min(0).max(9999).nullish(),
+  visit_url: z.string().trim().url().max(MAX_URL_LENGTH).nullish(),
+  heading: z.string().trim().max(MAX_TITLE_LENGTH).nullish(),
+  content_heading: z.string().trim().max(MAX_TITLE_LENGTH).nullish(),
 });
 
 // Rental validation schemas
@@ -180,6 +187,9 @@ export const createRentalSchema = z.object({
   images: z.array(z.string().url().max(MAX_URL_LENGTH)).optional(),
   is_featured: z.boolean().optional(),
   display_order: z.number().int().min(0).max(9999).optional(),
+  visit_url: z.string().trim().url().max(MAX_URL_LENGTH).nullish(),
+  heading: z.string().trim().max(MAX_TITLE_LENGTH).nullish(),
+  content_heading: z.string().trim().max(MAX_TITLE_LENGTH).nullish(),
 });
 
 export const updateRentalSchema = createRentalSchema.partial();

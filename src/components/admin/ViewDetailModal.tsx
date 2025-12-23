@@ -322,79 +322,79 @@ export function ViewDetailModal({
             </div>
 
             {/* Visit Link Section */}
-            {(getValue("visit_url") || isEditing) && (
-              <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
-                <div className="flex items-center justify-between mb-3">
-                  <Label className="text-[10px] font-bold tracking-[0.2em] text-primary uppercase flex items-center gap-2">
-                    <ExternalLink className="w-4 h-4" />
-                    Visit Link
-                  </Label>
-                </div>
-                {isEditing ? (
-                  <Input 
-                    value={String(getValue("visit_url") || "")} 
-                    onChange={(e) => setEditedValues(prev => ({ ...prev, visit_url: e.target.value }))} 
-                    placeholder="https://example.com"
-                    className="bg-background/50 border-border/50 focus:border-primary/50" 
-                  />
-                ) : getValue("visit_url") ? (
-                  <a 
-                    href={String(getValue("visit_url"))}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-sm"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    Visit
-                  </a>
-                ) : null}
-              </div>
-            )}
-
-            {/* Heading Section */}
-            {(getValue("heading") || isEditing) && (
-              <div className="p-4 rounded-xl bg-accent/10 border border-accent/20">
-                <div className="flex items-center justify-between mb-3">
-                  <Label className="text-[10px] font-bold tracking-[0.2em] text-accent-foreground uppercase flex items-center gap-2">
-                    <Type className="w-4 h-4" />
-                    Custom Heading
-                  </Label>
-                </div>
-                {isEditing ? (
-                  <Input 
-                    value={String(getValue("heading") || "")} 
-                    onChange={(e) => setEditedValues(prev => ({ ...prev, heading: e.target.value }))} 
-                    placeholder="Enter a custom heading"
-                    className="bg-background/50 border-border/50 focus:border-primary/50" 
-                  />
-                ) : (
-                  <p className="text-foreground font-serif text-lg">
-                    {String(getValue("heading"))}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* Heading Field for descriptions */}
-            {(getValue("content_heading") || isEditing) && (
-              <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
-                <Label className="text-[10px] font-bold tracking-[0.2em] text-muted-foreground uppercase block mb-3">
-                  Section Heading
+            <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
+              <div className="flex items-center justify-between mb-3">
+                <Label className="text-[10px] font-bold tracking-[0.2em] text-primary uppercase flex items-center gap-2">
+                  <ExternalLink className="w-4 h-4" />
+                  Visit Link
                 </Label>
-                {isEditing ? (
-                  <Input 
-                    value={String(getValue("content_heading") || "")} 
-                    onChange={(e) => setEditedValues(prev => ({ ...prev, content_heading: e.target.value }))} 
-                    placeholder="Enter a heading for the description section"
-                    className="bg-background/50 border-border/50 focus:border-primary/50" 
-                  />
-                ) : getValue("content_heading") ? (
-                  <p className="text-foreground font-serif text-lg">
-                    {String(getValue("content_heading"))}
-                  </p>
-                ) : null}
               </div>
-            )}
+              {isEditing ? (
+                <Input 
+                  value={String(getValue("visit_url") || "")} 
+                  onChange={(e) => setEditedValues(prev => ({ ...prev, visit_url: e.target.value || null }))} 
+                  placeholder="https://example.com"
+                  className="bg-background/50 border-border/50 focus:border-primary/50" 
+                />
+              ) : getValue("visit_url") ? (
+                <a 
+                  href={String(getValue("visit_url"))}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-sm"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Visit
+                </a>
+              ) : (
+                <span className="text-sm text-muted-foreground">No link set</span>
+              )}
+            </div>
+
+            {/* Custom Heading Section */}
+            <div className="p-4 rounded-xl bg-accent/10 border border-accent/20">
+              <div className="flex items-center justify-between mb-3">
+                <Label className="text-[10px] font-bold tracking-[0.2em] text-accent-foreground uppercase flex items-center gap-2">
+                  <Type className="w-4 h-4" />
+                  Custom Heading
+                </Label>
+              </div>
+              {isEditing ? (
+                <Input 
+                  value={String(getValue("heading") || "")} 
+                  onChange={(e) => setEditedValues(prev => ({ ...prev, heading: e.target.value || null }))} 
+                  placeholder="Enter a custom heading"
+                  className="bg-background/50 border-border/50 focus:border-primary/50" 
+                />
+              ) : getValue("heading") ? (
+                <p className="text-foreground font-serif text-lg">
+                  {String(getValue("heading"))}
+                </p>
+              ) : (
+                <span className="text-sm text-muted-foreground">No heading set</span>
+              )}
+            </div>
+
+            {/* Section Heading Field for descriptions */}
+            <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
+              <Label className="text-[10px] font-bold tracking-[0.2em] text-muted-foreground uppercase block mb-3">
+                Section Heading
+              </Label>
+              {isEditing ? (
+                <Input 
+                  value={String(getValue("content_heading") || "")} 
+                  onChange={(e) => setEditedValues(prev => ({ ...prev, content_heading: e.target.value || null }))} 
+                  placeholder="Enter a heading for the description section"
+                  className="bg-background/50 border-border/50 focus:border-primary/50" 
+                />
+              ) : getValue("content_heading") ? (
+                <p className="text-foreground font-serif text-lg">
+                  {String(getValue("content_heading"))}
+                </p>
+              ) : (
+                <span className="text-sm text-muted-foreground">No section heading set</span>
+              )}
+            </div>
 
             {/* Fields Grid with elegant styling */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

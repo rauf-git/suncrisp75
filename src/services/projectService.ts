@@ -20,6 +20,10 @@ export interface Project {
   image_url: string;
   images: string[];
   display_order: number;
+  is_featured: boolean;
+  visit_url: string | null;
+  heading: string | null;
+  content_heading: string | null;
   created_at: string;
   updated_at: string;
 }
