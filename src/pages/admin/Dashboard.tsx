@@ -525,6 +525,19 @@ export default function AdminDashboard() {
             }
             toast({ title: "Saved", description: "Changes saved successfully." });
           }}
+          onUploadImage={async (file: File) => {
+            if (viewTarget.type === "project") {
+              const { url } = await projectService.uploadImage(file);
+              return url;
+            } else if (viewTarget.type === "construction") {
+              const { url } = await constructionService.uploadImage(file);
+              return url;
+            } else if (viewTarget.type === "rental") {
+              const { url } = await rentalService.uploadImage(file);
+              return url;
+            }
+            return null;
+          }}
           fields={
             viewTarget.type === "project" ? [
               { key: "title", label: "Title", type: "text" },
