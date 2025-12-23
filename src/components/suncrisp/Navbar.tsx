@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Menu, X, Settings } from 'lucide-react';
 import { NAV_LINKS } from '@/constants';
 
 interface NavbarProps {
@@ -10,6 +11,7 @@ interface NavbarProps {
 const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,6 +57,13 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
                 {link.label}
               </button>
             ))}
+            <button
+              onClick={() => navigate('/admin')}
+              className="nav-link flex items-center gap-1"
+              title="Admin Panel"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -89,6 +98,13 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
                 {link.label}
               </button>
             ))}
+            <button
+              onClick={() => navigate('/admin')}
+              className="text-left py-2 nav-link flex items-center gap-2"
+            >
+              <Settings className="w-4 h-4" />
+              Admin
+            </button>
           </div>
         </div>
       </div>
