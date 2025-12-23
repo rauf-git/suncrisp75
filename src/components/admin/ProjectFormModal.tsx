@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -168,17 +168,19 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
     }
   };
 
-  // Update form when project changes
-  useState(() => {
-    if (project) {
+  // Update form when project changes or modal opens
+  useEffect(() => {
+    if (open && project) {
       setTitle(project.title);
       setDescription(project.description || "");
       setCategory(project.category || "");
       setImagePreview(project.image_url);
-    } else {
+      setImageFile(null);
+      setErrors({});
+    } else if (open && !project) {
       resetForm();
     }
-  });
+  }, [open, project]);
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
