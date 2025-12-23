@@ -602,7 +602,7 @@ export default function AdminDashboard() {
         <ViewDetailModal
           open={!!viewTarget}
           onOpenChange={(open) => !open && setViewTarget(null)}
-          item={viewTarget.item}
+          item={viewTarget.item as unknown as Record<string, unknown>}
           type={viewTarget.type}
           onSave={async (updates) => {
             if (viewTarget.type === "project") {
