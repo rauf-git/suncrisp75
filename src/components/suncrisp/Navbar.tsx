@@ -42,16 +42,16 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? 'bg-background/80 backdrop-blur-xl py-2 shadow-lg border-b border-border/50'
-            : 'bg-background/60 backdrop-blur-lg py-4 border-b border-border/20'
+            ? 'bg-background/85 backdrop-blur-xl py-1 shadow-md border-b border-border/40'
+            : 'bg-background/70 backdrop-blur-lg py-1.5 border-b border-border/20'
         }`}
         style={{
           WebkitBackdropFilter: 'blur(16px)',
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <div className="max-w-7xl mx-auto px-3 md:px-6">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <button
@@ -61,19 +61,19 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
               <img 
                 src={suncrespLogo} 
                 alt="SunCrisp Hospitality" 
-                className={`w-auto transition-all duration-300 ${isScrolled ? 'h-7 md:h-9' : 'h-8 md:h-10'}`}
+                className={`w-auto transition-all duration-300 ${isScrolled ? 'h-6 md:h-7' : 'h-7 md:h-8'}`}
               />
             </button>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-1.5">
               {NAV_LINKS.map((link) => (
                 <button
                   key={link.id}
                   onClick={() => handleNavClick(link.id)}
-                  className={`relative whitespace-nowrap px-3.5 py-2 rounded-lg transition-all duration-300 text-xs font-bold uppercase tracking-wider ${
+                  className={`relative whitespace-nowrap px-2.5 py-1.5 rounded-md transition-all duration-300 text-[10px] font-bold uppercase tracking-wider ${
                     currentPage === link.id 
-                      ? 'bg-primary text-primary-foreground shadow-md' 
+                      ? 'bg-primary text-primary-foreground shadow-sm' 
                       : 'text-foreground/90 hover:bg-primary/15 hover:text-primary'
                   }`}
                 >
@@ -81,14 +81,14 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
                 </button>
               ))}
               
-              <div className="flex items-center gap-1 pl-3 border-l border-border/50 flex-shrink-0">
+              <div className="flex items-center gap-0.5 pl-2 border-l border-border/50 flex-shrink-0">
                 <ThemeToggle />
                 <button
                   onClick={() => navigate('/admin')}
-                  className="p-2 rounded-full hover:bg-primary/15 transition-all duration-300 hover:scale-110 active:scale-95"
+                  className="p-1.5 rounded-full hover:bg-primary/15 transition-all duration-300 hover:scale-110 active:scale-95"
                   title="Admin Panel"
                 >
-                  <Settings className="w-4 h-4 text-foreground/90 hover:text-primary transition-colors" />
+                  <Settings className="w-3.5 h-3.5 text-foreground/90 hover:text-primary transition-colors" />
                 </button>
               </div>
             </div>
