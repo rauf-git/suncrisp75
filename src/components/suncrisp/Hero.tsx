@@ -1,4 +1,4 @@
-import { Key, Building, GlassWater, Plane, HardHat, ArrowRight } from 'lucide-react';
+import { Key, Building, GlassWater, Plane, HardHat } from 'lucide-react';
 import Reveal from './Reveal';
 
 interface HeroProps {
@@ -23,44 +23,35 @@ const Hero = ({ onNavigate }: HeroProps) => {
 
       <div className="relative z-10 w-full max-w-5xl mx-auto px-6 flex flex-col items-center text-center">
         <Reveal delay={200}>
-          <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl font-bold mb-8 leading-tight tracking-tight">
+          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight tracking-tight">
             <span className="text-primary">Sun</span>
             <span className="text-primary">Crisp</span>
           </h1>
         </Reveal>
 
         <Reveal>
-          <div className="inline-flex items-center gap-2 px-5 py-2 border border-primary/20 rounded-full bg-primary-light/50 mb-8 backdrop-blur-sm">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-xs uppercase tracking-widest text-primary font-bold">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-primary/20 rounded-full bg-primary-light/50 mb-6 backdrop-blur-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            <span className="text-[10px] uppercase tracking-widest text-primary font-bold">
               Constructions | Rentals | Hospitality
             </span>
           </div>
         </Reveal>
 
         <Reveal delay={400}>
-          <p className="font-sans text-muted-foreground text-lg md:text-xl tracking-wide max-w-2xl mx-auto mb-12 leading-relaxed">
+          <p className="font-sans text-muted-foreground text-base md:text-lg tracking-wide max-w-xl mx-auto mb-8 leading-relaxed">
             From groundbreaking construction to exquisite rentals and world-class experiences. 
             We build the future and curate the present.
           </p>
         </Reveal>
 
         <Reveal delay={600}>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center w-full sm:w-auto">
-            <button 
-              className="btn-primary rounded-xl flex items-center justify-center gap-2 group"
-              onClick={() => onNavigate && onNavigate('portfolio')}
-            >
-              View Portfolio
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-            </button>
-            <button 
-              className="px-10 py-4 bg-card border border-border text-foreground hover:border-primary hover:text-primary rounded-xl font-sans font-bold uppercase tracking-widest text-sm transition-all hover:shadow-lg"
-              onClick={() => onNavigate && onNavigate('contact')}
-            >
-              Contact Us
-            </button>
-          </div>
+          <button 
+            className="px-8 py-3 bg-card border border-border text-foreground hover:border-primary hover:text-primary rounded-xl font-sans font-bold uppercase tracking-widest text-sm transition-all hover:shadow-lg"
+            onClick={() => onNavigate && onNavigate('contact')}
+          >
+            Contact Us
+          </button>
         </Reveal>
       </div>
       

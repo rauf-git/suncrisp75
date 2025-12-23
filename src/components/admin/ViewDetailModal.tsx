@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Edit, Save, X, Calendar, Image as ImageIcon, Upload, Trash2, Plus, Star } from "lucide-react";
+import { Edit, Save, X, Calendar, Image as ImageIcon, Upload, Trash2, Plus, Star, ExternalLink, Type } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -24,7 +24,7 @@ interface ViewDetailModalProps {
   fields: Array<{
     key: string;
     label: string;
-    type: "text" | "textarea" | "number";
+    type: "text" | "textarea" | "number" | "url";
   }>;
 }
 
@@ -318,6 +318,60 @@ export function ViewDetailModal({
               )}
             </div>
 
+            {/* Visit Link Section */}
+            {(getValue("visit_url") || isEditing) && (
+              <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
+                <div className="flex items-center justify-between mb-3">
+                  <Label className="text-[10px] font-bold tracking-[0.2em] text-primary uppercase flex items-center gap-2">
+                    <ExternalLink className="w-4 h-4" />
+                    Visit Link
+                  </Label>
+                </div>
+                {isEditing ? (
+                  <Input 
+                    value={String(getValue("visit_url") || "")} 
+                    onChange={(e) => setEditedValues(prev => ({ ...prev, visit_url: e.target.value }))} 
+                    placeholder="https://example.com"
+                    className="bg-background/50 border-border/50 focus:border-primary/50" 
+                  />
+                ) : getValue("visit_url") ? (
+                  <a 
+                    href={String(getValue("visit_url"))}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-sm"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Visit
+                  </a>
+                ) : null}
+              </div>
+            )}
+
+            {/* Heading Section */}
+            {(getValue("heading") || isEditing) && (
+              <div className="p-4 rounded-xl bg-accent/10 border border-accent/20">
+                <div className="flex items-center justify-between mb-3">
+                  <Label className="text-[10px] font-bold tracking-[0.2em] text-accent-foreground uppercase flex items-center gap-2">
+                    <Type className="w-4 h-4" />
+                    Custom Heading
+                  </Label>
+                </div>
+                {isEditing ? (
+                  <Input 
+                    value={String(getValue("heading") || "")} 
+                    onChange={(e) => setEditedValues(prev => ({ ...prev, heading: e.target.value }))} 
+                    placeholder="Enter a custom heading"
+                    className="bg-background/50 border-border/50 focus:border-primary/50" 
+                  />
+                ) : (
+                  <p className="text-foreground font-serif text-lg">
+                    {String(getValue("heading"))}
+                  </p>
+                )}
+              </div>
+            )}
+
             {/* Fields Grid with elegant styling */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {fields.map((field) => {
@@ -345,6 +399,14 @@ export function ViewDetailModal({
                           onChange={(e) => setEditedValues(prev => ({ ...prev, [field.key]: Number(e.target.value) }))} 
                           className="bg-background/50 border-border/50 focus:border-primary/50" 
                         />
+                      ) : field.type === "url" ? (
+                        <Input 
+                          type="url" 
+                          value={String(value || "")} 
+                          onChange={(e) => setEditedValues(prev => ({ ...prev, [field.key]: e.target.value }))} 
+                          placeholder="https://"
+                          className="bg-background/50 border-border/50 focus:border-primary/50" 
+                        />
                       ) : (
                         <Input 
                           value={String(value || "")} 
@@ -353,9 +415,21 @@ export function ViewDetailModal({
                         />
                       )
                     ) : (
-                      <p className="text-foreground leading-relaxed whitespace-pre-wrap">
-                        {value ? String(value) : <span className="text-muted-foreground/50 italic text-sm">Not set</span>}
-                      </p>
+                      field.type === "url" && value ? (
+                        <a 
+                          href={String(value)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline flex items-center gap-1"
+                        >
+                          {String(value)}
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      ) : (
+                        <p className="text-foreground leading-relaxed whitespace-pre-wrap">
+                          {value ? String(value) : <span className="text-muted-foreground/50 italic text-sm">Not set</span>}
+                        </p>
+                      )
                     )}
                   </div>
                 );

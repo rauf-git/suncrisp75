@@ -377,6 +377,12 @@ export default function AdminDashboard() {
                     onView={() => setViewTarget({ type: "project", item: project })}
                     onEdit={() => handleEditProject(project)}
                     onDelete={() => setDeleteTarget({ type: "project", item: project })}
+                    onToggleFeatured={async () => {
+                      const currentFeatured = (project as Project & { is_featured?: boolean }).is_featured;
+                      await projectService.update(project.id, { is_featured: !currentFeatured } as Record<string, unknown>);
+                      fetchProjects();
+                      toast({ title: currentFeatured ? "Removed from featured" : "Added to featured" });
+                    }}
                   />
                 )}
               />
@@ -582,7 +588,7 @@ function EmptyState({ onAdd, type }: { onAdd: () => void; type: string }) {
   );
 }
 
-function ProjectCard({ project, onView, onEdit, onDelete }: { project: Project; onView: () => void; onEdit: () => void; onDelete: () => void }) {
+function ProjectCard({ project, onView, onEdit, onDelete, onToggleFeatured }: { project: Project; onView: () => void; onEdit: () => void; onDelete: () => void; onToggleFeatured?: () => void }) {
   return (
     <div className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated transition-all group">
       <div 
@@ -595,8 +601,13 @@ function ProjectCard({ project, onView, onEdit, onDelete }: { project: Project; 
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         {project.category && (
-          <span className="absolute top-3 right-3 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded">
+          <span className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded">
             {project.category}
+          </span>
+        )}
+        {(project as Project & { is_featured?: boolean }).is_featured && (
+          <span className="absolute top-3 right-3 bg-amber-500 text-white text-xs px-2 py-1 rounded font-semibold">
+            Featured
           </span>
         )}
         {project.location && (
@@ -610,15 +621,20 @@ function ProjectCard({ project, onView, onEdit, onDelete }: { project: Project; 
         <h3 className="font-serif text-lg font-semibold text-foreground mb-2 line-clamp-1">
           {project.title}
         </h3>
-        {project.description && (
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-            {project.description}
-          </p>
-        )}
         <p className="text-xs text-muted-foreground mb-4">
           Created {format(new Date(project.created_at), "MMM d, yyyy")}
         </p>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          {onToggleFeatured && (
+            <Button 
+              variant={(project as Project & { is_featured?: boolean }).is_featured ? "default" : "outline"} 
+              size="sm" 
+              onClick={onToggleFeatured}
+              className={(project as Project & { is_featured?: boolean }).is_featured ? "bg-amber-500 hover:bg-amber-600" : ""}
+            >
+              {(project as Project & { is_featured?: boolean }).is_featured ? "★ Featured" : "☆ Feature"}
+            </Button>
+          )}
           <Button variant="outline" size="sm" onClick={onView}>
             <Eye className="w-4 h-4 mr-1" />
             View

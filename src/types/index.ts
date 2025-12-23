@@ -13,6 +13,7 @@ export interface Property {
   detailedDescription?: string;
   gallery?: string[];
   features: string[];
+  is_featured?: boolean;
 }
 
 export interface Experience {
