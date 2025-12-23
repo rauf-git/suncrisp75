@@ -66,7 +66,7 @@ const Index = () => {
         detailedDescription: p.long_description || p.description || '',
         features: [],
         gallery: p.images || [],
-        is_featured: (p as typeof p & { is_featured?: boolean }).is_featured,
+        is_featured: p.is_featured,
       }));
       setPortfolioData(mappedPortfolio);
 

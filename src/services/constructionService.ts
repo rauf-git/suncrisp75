@@ -20,6 +20,9 @@ export interface ConstructionProject {
   thumbnail_url: string | null;
   images: string[];
   display_order: number;
+  visit_url: string | null;
+  heading: string | null;
+  content_heading: string | null;
   created_at: string;
   updated_at: string;
 }

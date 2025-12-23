@@ -39,6 +39,9 @@ export interface Rental {
   images: string[];
   is_featured: boolean;
   display_order: number;
+  visit_url: string | null;
+  heading: string | null;
+  content_heading: string | null;
   created_at: string;
   updated_at: string;
   rental_locations?: RentalLocation;

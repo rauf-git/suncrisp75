@@ -17,9 +17,11 @@ export type Database = {
       construction_projects: {
         Row: {
           address: string | null
+          content_heading: string | null
           created_at: string
           description: string | null
           display_order: number | null
+          heading: string | null
           id: string
           images: string[] | null
           latitude: number | null
@@ -28,12 +30,15 @@ export type Database = {
           thumbnail_url: string | null
           title: string
           updated_at: string
+          visit_url: string | null
         }
         Insert: {
           address?: string | null
+          content_heading?: string | null
           created_at?: string
           description?: string | null
           display_order?: number | null
+          heading?: string | null
           id?: string
           images?: string[] | null
           latitude?: number | null
@@ -42,12 +47,15 @@ export type Database = {
           thumbnail_url?: string | null
           title: string
           updated_at?: string
+          visit_url?: string | null
         }
         Update: {
           address?: string | null
+          content_heading?: string | null
           created_at?: string
           description?: string | null
           display_order?: number | null
+          heading?: string | null
           id?: string
           images?: string[] | null
           latitude?: number | null
@@ -56,14 +64,17 @@ export type Database = {
           thumbnail_url?: string | null
           title?: string
           updated_at?: string
+          visit_url?: string | null
         }
         Relationships: []
       }
       hospitality_projects: {
         Row: {
+          content_heading: string | null
           created_at: string
           description: string | null
           display_order: number | null
+          heading: string | null
           id: string
           images: string[] | null
           location: string | null
@@ -73,11 +84,14 @@ export type Database = {
           thumbnail_url: string | null
           title: string
           updated_at: string
+          visit_url: string | null
         }
         Insert: {
+          content_heading?: string | null
           created_at?: string
           description?: string | null
           display_order?: number | null
+          heading?: string | null
           id?: string
           images?: string[] | null
           location?: string | null
@@ -87,11 +101,14 @@ export type Database = {
           thumbnail_url?: string | null
           title: string
           updated_at?: string
+          visit_url?: string | null
         }
         Update: {
+          content_heading?: string | null
           created_at?: string
           description?: string | null
           display_order?: number | null
+          heading?: string | null
           id?: string
           images?: string[] | null
           location?: string | null
@@ -101,6 +118,7 @@ export type Database = {
           thumbnail_url?: string | null
           title?: string
           updated_at?: string
+          visit_url?: string | null
         }
         Relationships: []
       }
@@ -143,9 +161,11 @@ export type Database = {
       projects: {
         Row: {
           category: string | null
+          content_heading: string | null
           created_at: string
           description: string | null
           display_order: number | null
+          heading: string | null
           id: string
           image_url: string
           images: string[] | null
@@ -155,12 +175,15 @@ export type Database = {
           short_description: string | null
           title: string
           updated_at: string
+          visit_url: string | null
         }
         Insert: {
           category?: string | null
+          content_heading?: string | null
           created_at?: string
           description?: string | null
           display_order?: number | null
+          heading?: string | null
           id?: string
           image_url: string
           images?: string[] | null
@@ -170,12 +193,15 @@ export type Database = {
           short_description?: string | null
           title: string
           updated_at?: string
+          visit_url?: string | null
         }
         Update: {
           category?: string | null
+          content_heading?: string | null
           created_at?: string
           description?: string | null
           display_order?: number | null
+          heading?: string | null
           id?: string
           image_url?: string
           images?: string[] | null
@@ -185,6 +211,7 @@ export type Database = {
           short_description?: string | null
           title?: string
           updated_at?: string
+          visit_url?: string | null
         }
         Relationships: []
       }
@@ -225,8 +252,10 @@ export type Database = {
           area: string | null
           bathrooms: number | null
           bedrooms: number | null
+          content_heading: string | null
           created_at: string
           display_order: number | null
+          heading: string | null
           id: string
           images: string[] | null
           is_featured: boolean | null
@@ -237,6 +266,7 @@ export type Database = {
           thumbnail_url: string | null
           title: string
           updated_at: string
+          visit_url: string | null
         }
         Insert: {
           address?: string | null
@@ -244,8 +274,10 @@ export type Database = {
           area?: string | null
           bathrooms?: number | null
           bedrooms?: number | null
+          content_heading?: string | null
           created_at?: string
           display_order?: number | null
+          heading?: string | null
           id?: string
           images?: string[] | null
           is_featured?: boolean | null
@@ -256,6 +288,7 @@ export type Database = {
           thumbnail_url?: string | null
           title: string
           updated_at?: string
+          visit_url?: string | null
         }
         Update: {
           address?: string | null
@@ -263,8 +296,10 @@ export type Database = {
           area?: string | null
           bathrooms?: number | null
           bedrooms?: number | null
+          content_heading?: string | null
           created_at?: string
           display_order?: number | null
+          heading?: string | null
           id?: string
           images?: string[] | null
           is_featured?: boolean | null
@@ -275,6 +310,7 @@ export type Database = {
           thumbnail_url?: string | null
           title?: string
           updated_at?: string
+          visit_url?: string | null
         }
         Relationships: [
           {
