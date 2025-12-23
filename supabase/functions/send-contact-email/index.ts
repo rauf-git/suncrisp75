@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { SmtpClient } from "https://deno.land/x/smtp@v0.7.0/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,99 +13,105 @@ interface ContactEmailRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
+  console.log("Received request to send-contact-email function");
+  
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const resendApiKey = Deno.env.get("RESEND_API_KEY");
-    
-    if (!resendApiKey) {
-      console.error("RESEND_API_KEY is not configured");
-      return new Response(
-        JSON.stringify({ error: "Email service not configured. Please add RESEND_API_KEY." }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-
     const { name, email, message }: ContactEmailRequest = await req.json();
-
+    
     // Validate inputs
     if (!name || !email || !message) {
+      console.error("Missing required fields");
       return new Response(
         JSON.stringify({ error: "Name, email, and message are required" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    // Send email using Resend API directly
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${resendApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: "Suncrisp Contact <onboarding@resend.dev>",
-        to: ["mdrafi9457@gmail.com"],
-        subject: `New Contact Form Submission from ${name}`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #f97316;">New Contact Form Submission</h2>
-            <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <p><strong>Name:</strong> ${name}</p>
-              <p><strong>Email:</strong> ${email}</p>
-              <p><strong>Message:</strong></p>
-              <p style="white-space: pre-wrap;">${message}</p>
-            </div>
-            <p style="color: #6b7280; font-size: 12px;">
-              This email was sent from the Suncrisp Hospitality website contact form.
-            </p>
-          </div>
-        `,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Resend API error:", errorData);
-      throw new Error(errorData.message || "Failed to send email");
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      console.error("Invalid email format");
+      return new Response(
+        JSON.stringify({ error: "Invalid email format" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
     }
 
-    // Send confirmation email to user
-    await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${resendApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: "Suncrisp Hospitality <onboarding@resend.dev>",
-        to: [email],
-        subject: "Thank you for contacting Suncrisp Hospitality",
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #f97316;">Thank you for reaching out, ${name}!</h2>
-            <p>We have received your message and will get back to you as soon as possible.</p>
-            <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <p><strong>Your message:</strong></p>
-              <p style="white-space: pre-wrap; color: #6b7280;">${message}</p>
-            </div>
-            <p>Best regards,<br><strong>The Suncrisp Hospitality Team</strong></p>
-            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
-            <p style="color: #6b7280; font-size: 12px;">
-              Suncrisp Hospitality<br>
-              Door No.7-8-9, Ground Floor, Flat No.102<br>
-              Harbour Park Road, Siri Puram Area<br>
-              Visakhapatnam-530003
-            </p>
-          </div>
-        `,
-      }),
+    // Sanitize inputs to prevent injection
+    const sanitizedName = name.trim().slice(0, 100);
+    const sanitizedEmail = email.trim().slice(0, 255);
+    const sanitizedMessage = message.trim().slice(0, 5000);
+
+    const gmailUser = Deno.env.get("GMAIL_USER");
+    const gmailAppPassword = Deno.env.get("GMAIL_APP_PASSWORD");
+    const recipientEmail = "mdrafi9457@gmail.com";
+
+    if (!gmailUser || !gmailAppPassword) {
+      console.error("Gmail credentials not configured");
+      return new Response(
+        JSON.stringify({ error: "Email service not configured. Please add GMAIL_USER and GMAIL_APP_PASSWORD." }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    console.log(`Sending email from ${sanitizedEmail} to ${recipientEmail}`);
+
+    const client = new SmtpClient();
+
+    await client.connectTLS({
+      hostname: "smtp.gmail.com",
+      port: 465,
+      username: gmailUser,
+      password: gmailAppPassword,
     });
 
-    console.log("Emails sent successfully");
+    // Escape HTML in message for safety
+    const escapeHtml = (text: string) => {
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    };
+
+    await client.send({
+      from: gmailUser,
+      to: recipientEmail,
+      subject: `New Contact from ${sanitizedName}`,
+      content: `
+Name: ${sanitizedName}
+Email: ${sanitizedEmail}
+
+Message:
+${sanitizedMessage}
+
+---
+This email was sent from the SunCrisp website contact form.
+      `.trim(),
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #f97316; border-bottom: 2px solid #f59e0b; padding-bottom: 10px;">New Contact Message</h2>
+          <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <p><strong>Name:</strong> ${escapeHtml(sanitizedName)}</p>
+            <p><strong>Email:</strong> <a href="mailto:${escapeHtml(sanitizedEmail)}">${escapeHtml(sanitizedEmail)}</a></p>
+            <h3 style="color: #555; margin-top: 15px;">Message:</h3>
+            <p style="background: #fff; padding: 15px; border-radius: 5px; border-left: 3px solid #f97316;">${escapeHtml(sanitizedMessage).replace(/\n/g, '<br>')}</p>
+          </div>
+          <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+          <p style="color: #888; font-size: 12px;">This email was sent from the SunCrisp Hospitality website contact form.</p>
+        </div>
+      `,
+    });
+
+    await client.close();
+
+    console.log("Email sent successfully to", recipientEmail);
 
     return new Response(
       JSON.stringify({ success: true, message: "Email sent successfully" }),
@@ -112,7 +119,7 @@ const handler = async (req: Request): Promise<Response> => {
     );
   } catch (error: unknown) {
     console.error("Error in send-contact-email function:", error);
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorMessage = error instanceof Error ? error.message : "Failed to send email";
     return new Response(
       JSON.stringify({ error: errorMessage }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
