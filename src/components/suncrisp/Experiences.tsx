@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, forwardRef, type MutableRefObject } from 'react';
 import { Experience } from '@/types';
 import Reveal from './Reveal';
 import { ArrowRight, Star } from 'lucide-react';
@@ -8,10 +8,10 @@ interface ExperiencesProps {
   onItemClick?: (item: Experience) => void;
 }
 
-const Experiences = ({ items, onItemClick }: ExperiencesProps) => {
+const Experiences = forwardRef<HTMLElement, ExperiencesProps>(({ items, onItemClick }, forwardedRef) => {
   const [cursorContent, setCursorContent] = useState<string | null>(null);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -52,8 +52,12 @@ const Experiences = ({ items, onItemClick }: ExperiencesProps) => {
   }
 
   return (
-    <section 
-      ref={containerRef}
+    <section
+      ref={(node) => {
+        containerRef.current = node;
+        if (typeof forwardedRef === 'function') forwardedRef(node);
+        else if (forwardedRef) (forwardedRef as MutableRefObject<HTMLElement | null>).current = node;
+      }}
       className="relative section-padding bg-background overflow-hidden cursor-none"
     >
       {/* Custom Cursor Element */}
@@ -143,6 +147,8 @@ const Experiences = ({ items, onItemClick }: ExperiencesProps) => {
       </div>
     </section>
   );
-};
+});
+
+Experiences.displayName = "Experiences";
 
 export default Experiences;
