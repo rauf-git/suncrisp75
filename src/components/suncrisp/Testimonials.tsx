@@ -1,14 +1,51 @@
+import { useEffect, useState } from 'react';
 import { TESTIMONIALS, PRESS_LOGOS } from '@/constants';
 import { Quote } from 'lucide-react';
+import { pageBlockService } from '@/services/pageBlockService';
+
+interface Testimonial {
+  id: string;
+  text: string;
+  author: string;
+  role: string;
+}
 
 const Testimonials = () => {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(TESTIMONIALS);
+  const [trustedByTitle, setTrustedByTitle] = useState("Trusted By");
+  const [trustedByLogos, setTrustedByLogos] = useState<string[]>(PRESS_LOGOS);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const [testimonialsResult, trustedByResult] = await Promise.all([
+        pageBlockService.getByKey("home", "testimonials"),
+        pageBlockService.getByKey("home", "trusted_by"),
+      ]);
+
+      if (testimonialsResult.data) {
+        const items = (testimonialsResult.data.content as { items?: Testimonial[] }).items;
+        if (items && items.length > 0) {
+          setTestimonials(items);
+        }
+      }
+
+      if (trustedByResult.data) {
+        const content = trustedByResult.data.content as { title?: string; logos?: string[] };
+        if (content.title) setTrustedByTitle(content.title);
+        if (content.logos && content.logos.length > 0) setTrustedByLogos(content.logos);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <section className="py-20 bg-background border-y border-border overflow-hidden">
       
       {/* Testimonials Marquee */}
       <div className="mb-20">
         <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
-          {[...TESTIMONIALS, ...TESTIMONIALS].map((item, index) => (
+          {[...testimonials, ...testimonials].map((item, index) => (
             <div 
               key={`${item.id}-${index}`} 
               className="w-[400px] md:w-[600px] mx-6 p-8 md:p-10 bg-secondary border border-border rounded-2xl relative shadow-soft"
@@ -31,9 +68,9 @@ const Testimonials = () => {
 
       {/* Press Marquee (Reverse) */}
       <div>
-        <h3 className="text-center text-xs uppercase tracking-[0.3em] text-muted-foreground mb-8 font-bold">Trusted By</h3>
+        <h3 className="text-center text-xs uppercase tracking-[0.3em] text-muted-foreground mb-8 font-bold">{trustedByTitle}</h3>
         <div className="flex w-max animate-marquee-reverse hover:[animation-play-state:paused]">
-          {[...PRESS_LOGOS, ...PRESS_LOGOS, ...PRESS_LOGOS].map((logo, index) => (
+          {[...trustedByLogos, ...trustedByLogos, ...trustedByLogos].map((logo, index) => (
             <div 
               key={`press-${index}`} 
               className="mx-12 opacity-40 hover:opacity-100 transition-opacity duration-300"
