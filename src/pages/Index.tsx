@@ -15,7 +15,6 @@ import { Property, Service, Experience, AboutData, ContactData } from '@/types';
 import { projectService } from '@/services/projectService';
 import { rentalService } from '@/services/rentalService';
 import { constructionService } from '@/services/constructionService';
-import { hospitalityService } from '@/services/hospitalityService';
 
 const INITIAL_ABOUT: AboutData = {
   title: "Building Futures Through Excellence",
@@ -92,15 +91,15 @@ const Index = () => {
         setConstructionData(mappedConstruction);
       }
 
-      // Fetch hospitality projects (from hospitality_projects table)
-      const { data: hospitalityProjects } = await hospitalityService.getAll();
+      // Fetch hospitality projects (from projects table with category "Hospitality")
+      const { data: hospitalityProjects } = await projectService.getByCategory('Hospitality');
       if (hospitalityProjects && hospitalityProjects.length > 0) {
         const mappedHospitality: Experience[] = hospitalityProjects.map(h => ({
           id: h.id,
           title: h.title,
           description: h.short_description || h.description || '',
-          image: h.thumbnail_url || '',
-          priceStart: h.price_info || 'Inquire for pricing',
+          image: h.image_url || '',
+          priceStart: h.short_description || 'Inquire for pricing',
           detailedDescription: h.long_description || h.description || '',
           gallery: h.images || [],
           location: h.location || '',

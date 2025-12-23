@@ -4,11 +4,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { projectService, Project } from "@/services/projectService";
 import { constructionService, ConstructionProject } from "@/services/constructionService";
 import { rentalService, Rental, RentalLocation } from "@/services/rentalService";
-import { hospitalityService, HospitalityProject } from "@/services/hospitalityService";
 import { ProjectFormModal } from "@/components/admin/ProjectFormModal";
 import { ConstructionFormModal } from "@/components/admin/ConstructionFormModal";
 import { RentalFormModal } from "@/components/admin/RentalFormModal";
-import { HospitalityFormModal } from "@/components/admin/HospitalityFormModal";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
 import { DraggableList } from "@/components/admin/DraggableList";
 import { ViewDetailModal } from "@/components/admin/ViewDetailModal";
@@ -29,14 +27,13 @@ import {
   Key,
   FileText,
   MapPin,
-  Hotel,
   Eye
 } from "lucide-react";
 import { format } from "date-fns";
 
-type ContentType = "portfolio" | "construction" | "rentals" | "hospitality" | "pages";
-type DeleteTarget = { type: "project"; item: Project } | { type: "construction"; item: ConstructionProject } | { type: "rental"; item: Rental } | { type: "hospitality"; item: HospitalityProject };
-type ViewTarget = { type: "project"; item: Project } | { type: "construction"; item: ConstructionProject } | { type: "rental"; item: Rental } | { type: "hospitality"; item: HospitalityProject };
+type ContentType = "portfolio" | "construction" | "rentals" | "pages";
+type DeleteTarget = { type: "project"; item: Project } | { type: "construction"; item: ConstructionProject } | { type: "rental"; item: Rental };
+type ViewTarget = { type: "project"; item: Project } | { type: "construction"; item: ConstructionProject } | { type: "rental"; item: Rental };
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<ContentType>("portfolio");
@@ -60,11 +57,6 @@ export default function AdminDashboard() {
   const [isRentalFormOpen, setIsRentalFormOpen] = useState(false);
   const [editingRental, setEditingRental] = useState<Rental | null>(null);
   
-  // Hospitality state
-  const [hospitalityProjects, setHospitalityProjects] = useState<HospitalityProject[]>([]);
-  const [isLoadingHospitality, setIsLoadingHospitality] = useState(true);
-  const [isHospitalityFormOpen, setIsHospitalityFormOpen] = useState(false);
-  const [editingHospitality, setEditingHospitality] = useState<HospitalityProject | null>(null);
   
   // Delete state
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
@@ -122,22 +114,11 @@ export default function AdminDashboard() {
     setIsLoadingRentals(false);
   };
 
-  const fetchHospitality = async () => {
-    setIsLoadingHospitality(true);
-    const { data, error } = await hospitalityService.getAll();
-    if (error) {
-      toast({ title: "Error", description: "Failed to load hospitality projects", variant: "destructive" });
-    } else {
-      setHospitalityProjects(data || []);
-    }
-    setIsLoadingHospitality(false);
-  };
 
   useEffect(() => {
     fetchProjects();
     fetchConstructions();
     fetchRentals();
-    fetchHospitality();
   }, []);
 
   const handleSignOut = async () => {
@@ -178,16 +159,6 @@ export default function AdminDashboard() {
     setEditingRental(null);
   };
 
-  // Hospitality handlers
-  const handleEditHospitality = (hospitality: HospitalityProject) => {
-    setEditingHospitality(hospitality);
-    setIsHospitalityFormOpen(true);
-  };
-
-  const handleHospitalityFormClose = () => {
-    setIsHospitalityFormOpen(false);
-    setEditingHospitality(null);
-  };
 
   // Reorder handlers
   const handleReorderProjects = useCallback(async (reordered: Project[]) => {
@@ -242,21 +213,6 @@ export default function AdminDashboard() {
     }
   }, [toast]);
 
-  const handleReorderHospitality = useCallback(async (reordered: HospitalityProject[]) => {
-    setHospitalityProjects(reordered);
-    const updates = reordered.map((item, index) => ({
-      id: item.id,
-      display_order: index
-    }));
-    
-    try {
-      await hospitalityService.updateOrder(updates);
-      toast({ title: "Order saved", description: "Hospitality order has been updated." });
-    } catch {
-      toast({ title: "Error", description: "Failed to save order", variant: "destructive" });
-      fetchHospitality();
-    }
-  }, [toast]);
 
   // Delete handler
   const handleDelete = async () => {
@@ -287,14 +243,6 @@ export default function AdminDashboard() {
         if (error) throw error;
         toast({ title: "Rental deleted", description: "The rental property has been deleted successfully." });
         fetchRentals();
-      } else if (deleteTarget.type === "hospitality") {
-        if (deleteTarget.item.thumbnail_url) {
-          await hospitalityService.deleteImage(deleteTarget.item.thumbnail_url);
-        }
-        const { error } = await hospitalityService.delete(deleteTarget.item.id);
-        if (error) throw error;
-        toast({ title: "Hospitality deleted", description: "The hospitality project has been deleted successfully." });
-        fetchHospitality();
       }
     } catch {
       toast({ title: "Error", description: "Failed to delete item", variant: "destructive" });
@@ -314,23 +262,18 @@ export default function AdminDashboard() {
     } else if (activeTab === "rentals") {
       setEditingRental(null);
       setIsRentalFormOpen(true);
-    } else if (activeTab === "hospitality") {
-      setEditingHospitality(null);
-      setIsHospitalityFormOpen(true);
     }
   };
 
   const refreshData = () => {
     if (activeTab === "portfolio") fetchProjects();
     else if (activeTab === "construction") fetchConstructions();
-    else if (activeTab === "hospitality") fetchHospitality();
     else if (activeTab === "rentals") fetchRentals();
   };
 
   const isLoading = activeTab === "portfolio" ? isLoadingProjects : 
                     activeTab === "construction" ? isLoadingConstructions : 
-                    activeTab === "rentals" ? isLoadingRentals :
-                    activeTab === "hospitality" ? isLoadingHospitality : false;
+                    activeTab === "rentals" ? isLoadingRentals : false;
 
   return (
     <div className="min-h-screen bg-background">
@@ -362,7 +305,7 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ContentType)} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-8">
+          <TabsList className="grid w-full grid-cols-4 mb-8">
             <TabsTrigger value="portfolio" className="flex items-center gap-2">
               <Building2 className="w-4 h-4" />
               <span className="hidden sm:inline">Portfolio</span>
@@ -374,10 +317,6 @@ export default function AdminDashboard() {
             <TabsTrigger value="rentals" className="flex items-center gap-2">
               <Key className="w-4 h-4" />
               <span className="hidden sm:inline">Rentals</span>
-            </TabsTrigger>
-            <TabsTrigger value="hospitality" className="flex items-center gap-2">
-              <Hotel className="w-4 h-4" />
-              <span className="hidden sm:inline">Hospitality</span>
             </TabsTrigger>
             <TabsTrigger value="pages" className="flex items-center gap-2">
               <FileText className="w-4 h-4" />
@@ -393,7 +332,6 @@ export default function AdminDashboard() {
                 {activeTab === "portfolio" && `${projects.length} projects`}
                 {activeTab === "construction" && `${constructions.length} projects`}
                 {activeTab === "rentals" && `${rentals.length} rentals`}
-                {activeTab === "hospitality" && `${hospitalityProjects.length} projects`}
               </span>
               {activeTab !== "pages" && (
                 <span className="text-xs text-primary bg-primary/10 px-2 py-1 rounded">
@@ -409,7 +347,7 @@ export default function AdminDashboard() {
               {activeTab !== "pages" && (
                 <Button onClick={handleAddClick} className="bg-primary hover:bg-primary/90">
                   <Plus className="w-4 h-4 mr-2" />
-                  Add {activeTab === "portfolio" ? "Project" : activeTab === "construction" ? "Construction" : activeTab === "rentals" ? "Rental" : "Hospitality"}
+                  Add {activeTab === "portfolio" ? "Project" : activeTab === "construction" ? "Construction" : "Rental"}
                 </Button>
               )}
             </div>
@@ -493,35 +431,10 @@ export default function AdminDashboard() {
             )}
           </TabsContent>
 
-          {/* Hospitality Tab */}
-          <TabsContent value="hospitality">
-            {isLoadingHospitality ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-              </div>
-            ) : hospitalityProjects.length === 0 ? (
-              <EmptyState onAdd={handleAddClick} type="hospitality" />
-            ) : (
-              <DraggableList
-                items={hospitalityProjects}
-                onReorder={handleReorderHospitality}
-                keyExtractor={(h) => h.id}
-                droppableId="hospitality-list"
-                renderItem={(hospitality) => (
-                  <HospitalityCard
-                    hospitality={hospitality}
-                    onView={() => setViewTarget({ type: "hospitality", item: hospitality })}
-                    onEdit={() => handleEditHospitality(hospitality)}
-                    onDelete={() => setDeleteTarget({ type: "hospitality", item: hospitality })}
-                  />
-                )}
-              />
-            )}
-          </TabsContent>
 
           {/* Pages Tab - Only Home, About, Contact */}
           <TabsContent value="pages">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
                 { 
                   key: "home", 
@@ -532,11 +445,6 @@ export default function AdminDashboard() {
                   key: "about", 
                   title: "About Us", 
                   description: "Edit about us text content and images."
-                },
-                { 
-                  key: "contact", 
-                  title: "Contact", 
-                  description: "Edit address, phone, email, and map coordinates."
                 }
               ].map((page) => (
                 <div
@@ -583,12 +491,6 @@ export default function AdminDashboard() {
         onSuccess={fetchRentals}
       />
 
-      <HospitalityFormModal
-        open={isHospitalityFormOpen}
-        onOpenChange={handleHospitalityFormClose}
-        project={editingHospitality}
-        onSuccess={fetchHospitality}
-      />
 
       <DeleteConfirmDialog
         open={!!deleteTarget}
@@ -614,9 +516,6 @@ export default function AdminDashboard() {
             } else if (viewTarget.type === "rental") {
               await rentalService.update(viewTarget.item.id, updates);
               fetchRentals();
-            } else if (viewTarget.type === "hospitality") {
-              await hospitalityService.update(viewTarget.item.id, updates);
-              fetchHospitality();
             }
             toast({ title: "Saved", description: "Changes saved successfully." });
           }}
@@ -632,19 +531,13 @@ export default function AdminDashboard() {
               { key: "status", label: "Status", type: "text" },
               { key: "address", label: "Address", type: "text" },
               { key: "description", label: "Description", type: "textarea" },
-            ] : viewTarget.type === "rental" ? [
+            ] : [
               { key: "title", label: "Title", type: "text" },
               { key: "address", label: "Address", type: "text" },
               { key: "price", label: "Price", type: "text" },
               { key: "bedrooms", label: "Bedrooms", type: "number" },
               { key: "bathrooms", label: "Bathrooms", type: "number" },
               { key: "area", label: "Area", type: "text" },
-              { key: "short_description", label: "Short Description", type: "textarea" },
-              { key: "long_description", label: "Full Description", type: "textarea" },
-            ] : [
-              { key: "title", label: "Title", type: "text" },
-              { key: "location", label: "Location", type: "text" },
-              { key: "price_info", label: "Price Info", type: "text" },
               { key: "short_description", label: "Short Description", type: "textarea" },
               { key: "long_description", label: "Full Description", type: "textarea" },
             ]
@@ -830,68 +723,6 @@ function RentalCard({ rental, onView, onEdit, onDelete }: { rental: Rental; onVi
         {rental.short_description && (
           <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
             {rental.short_description}
-          </p>
-        )}
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={onView}>
-            <Eye className="w-4 h-4 mr-1" />
-            View
-          </Button>
-          <Button variant="outline" size="sm" className="flex-1" onClick={onEdit}>
-            <Edit className="w-4 h-4 mr-1" />
-            Edit
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
-            onClick={onDelete}
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function HospitalityCard({ hospitality, onView, onEdit, onDelete }: { hospitality: HospitalityProject; onView: () => void; onEdit: () => void; onDelete: () => void }) {
-  return (
-    <div className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated transition-all group">
-      <div 
-        className="aspect-video bg-muted relative overflow-hidden cursor-pointer"
-        onClick={onView}
-      >
-        {hospitality.thumbnail_url ? (
-          <img
-            src={hospitality.thumbnail_url}
-            alt={hospitality.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Hotel className="w-12 h-12 text-muted-foreground" />
-          </div>
-        )}
-        {hospitality.location && (
-          <span className="absolute top-3 right-3 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded flex items-center gap-1">
-            <MapPin className="w-3 h-3" />
-            {hospitality.location}
-          </span>
-        )}
-        {hospitality.price_info && (
-          <span className="absolute bottom-3 right-3 bg-background/90 text-foreground text-sm font-semibold px-2 py-1 rounded">
-            {hospitality.price_info}
-          </span>
-        )}
-      </div>
-      <div className="p-5">
-        <h3 className="font-serif text-lg font-semibold text-foreground mb-2 line-clamp-1">
-          {hospitality.title}
-        </h3>
-        {hospitality.short_description && (
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-            {hospitality.short_description}
           </p>
         )}
         <div className="flex gap-2">
