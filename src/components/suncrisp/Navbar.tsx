@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu, X, Settings } from 'lucide-react';
 import { NAV_LINKS } from '@/constants';
+import suncrespLogo from '@/assets/suncrisp-logo.png';
 
 interface NavbarProps {
   currentPage: string;
@@ -39,9 +40,13 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
           {/* Logo */}
           <button
             onClick={() => handleNavClick('home')}
-            className="font-serif text-xl md:text-2xl font-bold tracking-wider text-foreground hover:text-primary transition-colors"
+            className="hover:opacity-80 transition-opacity"
           >
-            SUNCRISP
+            <img 
+              src={suncrespLogo} 
+              alt="SunCrisp Hospitality" 
+              className="h-10 md:h-12 w-auto"
+            />
           </button>
 
           {/* Desktop Navigation */}
