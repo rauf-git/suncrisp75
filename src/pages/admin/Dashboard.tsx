@@ -5,6 +5,8 @@ import { projectService, Project } from "@/services/projectService";
 import { constructionService, ConstructionProject } from "@/services/constructionService";
 import { rentalService, Rental, RentalLocation } from "@/services/rentalService";
 import { ProjectFormModal } from "@/components/admin/ProjectFormModal";
+import { ConstructionFormModal } from "@/components/admin/ConstructionFormModal";
+import { RentalFormModal } from "@/components/admin/RentalFormModal";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -27,6 +29,7 @@ import {
 import { format } from "date-fns";
 
 type ContentType = "portfolio" | "construction" | "rentals" | "pages";
+type DeleteTarget = { type: "project"; item: Project } | { type: "construction"; item: ConstructionProject } | { type: "rental"; item: Rental };
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<ContentType>("portfolio");
@@ -34,19 +37,24 @@ export default function AdminDashboard() {
   // Portfolio state
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoadingProjects, setIsLoadingProjects] = useState(true);
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isProjectFormOpen, setIsProjectFormOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
-  const [deletingProject, setDeletingProject] = useState<Project | null>(null);
   
   // Construction state
   const [constructions, setConstructions] = useState<ConstructionProject[]>([]);
   const [isLoadingConstructions, setIsLoadingConstructions] = useState(true);
+  const [isConstructionFormOpen, setIsConstructionFormOpen] = useState(false);
+  const [editingConstruction, setEditingConstruction] = useState<ConstructionProject | null>(null);
   
   // Rentals state
   const [rentals, setRentals] = useState<Rental[]>([]);
   const [rentalLocations, setRentalLocations] = useState<RentalLocation[]>([]);
   const [isLoadingRentals, setIsLoadingRentals] = useState(true);
+  const [isRentalFormOpen, setIsRentalFormOpen] = useState(false);
+  const [editingRental, setEditingRental] = useState<Rental | null>(null);
   
+  // Delete state
+  const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   
   const { signOut, user } = useAuth();
@@ -109,32 +117,88 @@ export default function AdminDashboard() {
     navigate("/admin/login");
   };
 
+  // Project handlers
   const handleEditProject = (project: Project) => {
     setEditingProject(project);
-    setIsFormOpen(true);
+    setIsProjectFormOpen(true);
   };
 
-  const handleDeleteProject = async () => {
-    if (!deletingProject) return;
+  const handleProjectFormClose = () => {
+    setIsProjectFormOpen(false);
+    setEditingProject(null);
+  };
+
+  // Construction handlers
+  const handleEditConstruction = (construction: ConstructionProject) => {
+    setEditingConstruction(construction);
+    setIsConstructionFormOpen(true);
+  };
+
+  const handleConstructionFormClose = () => {
+    setIsConstructionFormOpen(false);
+    setEditingConstruction(null);
+  };
+
+  // Rental handlers
+  const handleEditRental = (rental: Rental) => {
+    setEditingRental(rental);
+    setIsRentalFormOpen(true);
+  };
+
+  const handleRentalFormClose = () => {
+    setIsRentalFormOpen(false);
+    setEditingRental(null);
+  };
+
+  // Delete handler
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     
     setIsDeleting(true);
-    await projectService.deleteImage(deletingProject.image_url);
-    const { error } = await projectService.delete(deletingProject.id);
     
-    if (error) {
-      toast({ title: "Error", description: "Failed to delete project", variant: "destructive" });
-    } else {
-      toast({ title: "Project deleted", description: "The project has been deleted successfully." });
-      fetchProjects();
+    try {
+      if (deleteTarget.type === "project") {
+        await projectService.deleteImage(deleteTarget.item.image_url);
+        const { error } = await projectService.delete(deleteTarget.item.id);
+        if (error) throw error;
+        toast({ title: "Project deleted", description: "The project has been deleted successfully." });
+        fetchProjects();
+      } else if (deleteTarget.type === "construction") {
+        if (deleteTarget.item.thumbnail_url) {
+          await constructionService.deleteImage(deleteTarget.item.thumbnail_url);
+        }
+        const { error } = await constructionService.delete(deleteTarget.item.id);
+        if (error) throw error;
+        toast({ title: "Construction deleted", description: "The construction project has been deleted successfully." });
+        fetchConstructions();
+      } else if (deleteTarget.type === "rental") {
+        if (deleteTarget.item.thumbnail_url) {
+          await rentalService.deleteImage(deleteTarget.item.thumbnail_url);
+        }
+        const { error } = await rentalService.delete(deleteTarget.item.id);
+        if (error) throw error;
+        toast({ title: "Rental deleted", description: "The rental property has been deleted successfully." });
+        fetchRentals();
+      }
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to delete item", variant: "destructive" });
     }
     
     setIsDeleting(false);
-    setDeletingProject(null);
+    setDeleteTarget(null);
   };
 
-  const handleFormClose = () => {
-    setIsFormOpen(false);
-    setEditingProject(null);
+  const handleAddClick = () => {
+    if (activeTab === "portfolio") {
+      setEditingProject(null);
+      setIsProjectFormOpen(true);
+    } else if (activeTab === "construction") {
+      setEditingConstruction(null);
+      setIsConstructionFormOpen(true);
+    } else if (activeTab === "rentals") {
+      setEditingRental(null);
+      setIsRentalFormOpen(true);
+    }
   };
 
   const refreshData = () => {
@@ -212,7 +276,7 @@ export default function AdminDashboard() {
                 Refresh
               </Button>
               {activeTab !== "pages" && (
-                <Button onClick={() => setIsFormOpen(true)} className="bg-primary hover:bg-primary-hover">
+                <Button onClick={handleAddClick} className="bg-primary hover:bg-primary/90">
                   <Plus className="w-4 h-4 mr-2" />
                   Add {activeTab === "portfolio" ? "Project" : activeTab === "construction" ? "Construction" : "Rental"}
                 </Button>
@@ -227,7 +291,7 @@ export default function AdminDashboard() {
                 <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
               </div>
             ) : projects.length === 0 ? (
-              <EmptyState onAdd={() => setIsFormOpen(true)} type="project" />
+              <EmptyState onAdd={handleAddClick} type="project" />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {projects.map((project) => (
@@ -235,7 +299,7 @@ export default function AdminDashboard() {
                     key={project.id}
                     project={project}
                     onEdit={() => handleEditProject(project)}
-                    onDelete={() => setDeletingProject(project)}
+                    onDelete={() => setDeleteTarget({ type: "project", item: project })}
                   />
                 ))}
               </div>
@@ -249,15 +313,15 @@ export default function AdminDashboard() {
                 <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
               </div>
             ) : constructions.length === 0 ? (
-              <EmptyState onAdd={() => setIsFormOpen(true)} type="construction" />
+              <EmptyState onAdd={handleAddClick} type="construction" />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {constructions.map((construction) => (
                   <ConstructionCard
                     key={construction.id}
                     construction={construction}
-                    onEdit={() => {/* TODO: implement */}}
-                    onDelete={() => {/* TODO: implement */}}
+                    onEdit={() => handleEditConstruction(construction)}
+                    onDelete={() => setDeleteTarget({ type: "construction", item: construction })}
                   />
                 ))}
               </div>
@@ -271,7 +335,7 @@ export default function AdminDashboard() {
                 <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
               </div>
             ) : rentals.length === 0 && rentalLocations.length === 0 ? (
-              <EmptyState onAdd={() => setIsFormOpen(true)} type="rental" />
+              <EmptyState onAdd={handleAddClick} type="rental" />
             ) : (
               <div className="space-y-8">
                 {/* Locations */}
@@ -290,7 +354,7 @@ export default function AdminDashboard() {
                       </div>
                     ))}
                     <button
-                      onClick={() => {/* TODO: add location */}}
+                      onClick={() => {/* TODO: add location modal */}}
                       className="border-2 border-dashed border-border rounded-lg p-4 flex items-center justify-center gap-2 text-muted-foreground hover:border-primary hover:text-primary transition-colors"
                     >
                       <Plus className="w-4 h-4" />
@@ -307,8 +371,8 @@ export default function AdminDashboard() {
                       <RentalCard
                         key={rental.id}
                         rental={rental}
-                        onEdit={() => {/* TODO: implement */}}
-                        onDelete={() => {/* TODO: implement */}}
+                        onEdit={() => handleEditRental(rental)}
+                        onDelete={() => setDeleteTarget({ type: "rental", item: rental })}
                       />
                     ))}
                   </div>
@@ -342,16 +406,31 @@ export default function AdminDashboard() {
 
       {/* Modals */}
       <ProjectFormModal
-        open={isFormOpen}
-        onOpenChange={handleFormClose}
+        open={isProjectFormOpen}
+        onOpenChange={handleProjectFormClose}
         project={editingProject}
         onSuccess={fetchProjects}
       />
 
+      <ConstructionFormModal
+        open={isConstructionFormOpen}
+        onOpenChange={handleConstructionFormClose}
+        construction={editingConstruction}
+        onSuccess={fetchConstructions}
+      />
+
+      <RentalFormModal
+        open={isRentalFormOpen}
+        onOpenChange={handleRentalFormClose}
+        rental={editingRental}
+        locations={rentalLocations}
+        onSuccess={fetchRentals}
+      />
+
       <DeleteConfirmDialog
-        open={!!deletingProject}
-        onOpenChange={(open) => !open && setDeletingProject(null)}
-        onConfirm={handleDeleteProject}
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        onConfirm={handleDelete}
         isLoading={isDeleting}
       />
     </div>
@@ -365,7 +444,7 @@ function EmptyState({ onAdd, type }: { onAdd: () => void; type: string }) {
       <ImageIcon className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
       <h3 className="font-serif text-lg text-foreground mb-2">No {type}s yet</h3>
       <p className="text-muted-foreground mb-6">Get started by creating your first {type}.</p>
-      <Button onClick={onAdd} className="bg-primary hover:bg-primary-hover">
+      <Button onClick={onAdd} className="bg-primary hover:bg-primary/90">
         <Plus className="w-4 h-4 mr-2" />
         Add {type}
       </Button>
