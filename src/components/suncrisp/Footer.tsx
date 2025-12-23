@@ -1,3 +1,4 @@
+import { Phone, Mail } from 'lucide-react';
 import { NAV_LINKS } from '@/constants';
 
 interface FooterProps {
@@ -8,82 +9,64 @@ const Footer = ({ onNavigate }: FooterProps) => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-foreground text-primary-foreground py-16 px-6 md:px-12">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid md:grid-cols-4 gap-12 mb-16">
-          {/* Brand */}
-          <div className="md:col-span-2">
-            <h3 className="font-serif text-2xl font-bold tracking-wider mb-4">SUNCRISP</h3>
-            <p className="text-primary-foreground/70 max-w-md mb-6 leading-relaxed">
-              Premier construction and hospitality company delivering exceptional properties 
-              and curated luxury experiences worldwide.
-            </p>
-            <div className="flex gap-4">
-              {['Twitter', 'LinkedIn', 'Instagram'].map((social) => (
-                <a
-                  key={social}
-                  href="#"
-                  className="w-10 h-10 border border-primary-foreground/30 rounded-lg flex items-center justify-center hover:border-primary hover:text-primary transition-colors"
-                >
-                  <span className="text-xs font-semibold">{social[0]}</span>
-                </a>
+    <footer className="bg-secondary pt-16 pb-8 border-t border-border font-sans">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+          {/* Column 1: Quick Links */}
+          <div>
+            <h3 className="font-serif text-foreground font-bold text-lg mb-6">Quick Links</h3>
+            <ul className="space-y-3">
+              {NAV_LINKS.slice(0, 5).map((link) => (
+                <li key={link.id}>
+                  <button 
+                    onClick={() => onNavigate?.(link.id)}
+                    className="text-muted-foreground hover:text-primary transition-colors duration-300 block w-fit text-sm font-medium"
+                  >
+                    {link.label}
+                  </button>
+                </li>
               ))}
+            </ul>
+          </div>
+
+          {/* Column 2: Contact Us */}
+          <div>
+            <h3 className="font-serif text-foreground font-bold text-lg mb-6">Contact Us</h3>
+            <div className="space-y-4">
+              <a 
+                href="tel:+919559665556" 
+                className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors duration-300 group w-fit"
+              >
+                <Phone className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium">+91 9559665556</span>
+              </a>
+              <a 
+                href="mailto:suncrisphospitality@gmail.com" 
+                className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors duration-300 group w-fit"
+              >
+                <Mail className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium">suncrisphospitality@gmail.com</span>
+              </a>
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Column 3: Company Address */}
           <div>
-            <h4 className="font-serif text-lg font-semibold mb-6">Quick Links</h4>
-            <ul className="space-y-3">
-              {NAV_LINKS.slice(0, 4).map((link) => (
-                <li key={link.id}>
-                  <button
-                    onClick={() => onNavigate?.(link.id)}
-                    className="text-primary-foreground/70 hover:text-primary transition-colors text-sm"
-                  >
-                    {link.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Company */}
-          <div>
-            <h4 className="font-serif text-lg font-semibold mb-6">Company</h4>
-            <ul className="space-y-3">
-              {NAV_LINKS.slice(4).map((link) => (
-                <li key={link.id}>
-                  <button
-                    onClick={() => onNavigate?.(link.id)}
-                    className="text-primary-foreground/70 hover:text-primary transition-colors text-sm"
-                  >
-                    {link.label}
-                  </button>
-                </li>
-              ))}
-              <li>
-                <a href="#" className="text-primary-foreground/70 hover:text-primary transition-colors text-sm">
-                  Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-primary-foreground/70 hover:text-primary transition-colors text-sm">
-                  Terms of Service
-                </a>
-              </li>
-            </ul>
+            <h3 className="font-serif text-foreground font-bold text-lg mb-6 uppercase tracking-wide">
+              SUNCRISP HOSPITALITY LLP
+            </h3>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              Door No.7-8-9, Ground Floor, Flat No.102,<br />
+              Located At Harbour Park Road,<br />
+              Siri Puram Area, Pandurangapuram,<br />
+              Visakhkapatnam-530003
+            </p>
           </div>
         </div>
 
-        {/* Bottom */}
-        <div className="pt-8 border-t border-primary-foreground/20 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-primary-foreground/50 text-sm">
-            © {currentYear} Suncrisp Hospitality. All rights reserved.
-          </p>
-          <p className="text-primary-foreground/50 text-sm">
-            Crafted with excellence in Dubai, UAE
-          </p>
+        {/* Footer Bottom Bar */}
+        <div className="border-t border-border pt-8 text-center text-sm text-muted-foreground">
+          © {currentYear} SUNCRISP HOSPITALITY LLP. All rights reserved.
         </div>
       </div>
     </footer>
