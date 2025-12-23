@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -206,12 +206,12 @@ export default function AdminLogin() {
 
           {/* Back to site */}
           <div className="text-center">
-            <a
-              href="/"
+            <Link
+              to="/"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               ← Back to website
-            </a>
+            </Link>
           </div>
         </div>
 
