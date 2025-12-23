@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Mail, Plus } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import Navbar from '@/components/suncrisp/Navbar';
 import Hero from '@/components/suncrisp/Hero';
 import Properties from '@/components/suncrisp/Properties';
@@ -31,6 +31,7 @@ const Index = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
   const [selectedItem, setSelectedItem] = useState<Property | null>(null);
+  const [selectedSection, setSelectedSection] = useState<string>('');
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
 
   // Data state
@@ -54,16 +55,19 @@ const Index = () => {
   const handleNavigation = (page: string) => {
     setCurrentPage(page);
     setSelectedItem(null);
+    setSelectedSection('');
   };
 
   const handleItemClick = (section: string, item: Property | Service | Experience) => {
     if ('features' in item) {
       setSelectedItem(item as Property);
+      setSelectedSection(section);
     }
   };
 
   const handleBack = () => {
     setSelectedItem(null);
+    setSelectedSection('');
   };
 
   const renderPage = () => {
@@ -72,6 +76,7 @@ const Index = () => {
       return (
         <PropertyDetail 
           item={selectedItem} 
+          section={selectedSection}
           onBack={handleBack}
         />
       );

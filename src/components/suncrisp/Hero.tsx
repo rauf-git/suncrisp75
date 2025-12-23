@@ -1,72 +1,72 @@
-import { ArrowRight, Building, Crown, Star } from 'lucide-react';
+import { Key, Building, GlassWater, Plane, HardHat, ArrowRight } from 'lucide-react';
+import Reveal from './Reveal';
 
 interface HeroProps {
-  onNavigate: (page: string) => void;
+  onNavigate?: (page: string) => void;
 }
 
 const Hero = ({ onNavigate }: HeroProps) => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image with Overlay */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=1080&fit=crop"
-          alt="Luxury modern architecture"
-          className="w-full h-full object-cover animate-zoom-out"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-foreground/60 via-foreground/40 to-foreground/70" />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
+      {/* Background Subtle Gradient */}
+      <div className="absolute top-0 right-0 w-[50vw] h-[50vw] bg-primary-light rounded-full blur-[120px] opacity-50 -translate-y-1/2 translate-x-1/4 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[40vw] h-[40vw] bg-secondary rounded-full blur-[100px] opacity-50 translate-y-1/3 -translate-x-1/4 pointer-events-none" />
+
+      {/* Parallax Floating Icons */}
+      <div className="absolute inset-0 pointer-events-none opacity-20">
+        <HardHat className="absolute top-[20%] left-[10%] w-12 h-12 text-primary animate-float-slow" />
+        <Building className="absolute top-[15%] right-[15%] w-16 h-16 text-muted-foreground/30 animate-float-medium" />
+        <GlassWater className="absolute bottom-[20%] left-[20%] w-10 h-10 text-primary-hover animate-float-fast" />
+        <Plane className="absolute bottom-[30%] right-[10%] w-14 h-14 text-muted-foreground/30 animate-float-slow" />
+        <Key className="absolute top-[40%] left-[80%] w-8 h-8 text-primary animate-float-medium" />
       </div>
 
-      {/* Floating Elements */}
-      <div className="absolute top-1/4 left-10 animate-float-slow opacity-20">
-        <Building className="w-20 h-20 text-primary" />
-      </div>
-      <div className="absolute bottom-1/3 right-16 animate-float-medium opacity-20">
-        <Crown className="w-16 h-16 text-primary" />
-      </div>
-      <div className="absolute top-1/2 left-1/4 animate-float-fast opacity-20">
-        <Star className="w-12 h-12 text-primary" />
-      </div>
+      <div className="relative z-10 w-full max-w-5xl mx-auto px-6 flex flex-col items-center text-center">
+        <Reveal delay={200}>
+          <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl font-bold mb-8 leading-tight tracking-tight">
+            <span className="text-primary">Sun</span>
+            <span className="text-primary">Crisp</span>
+          </h1>
+        </Reveal>
 
-      {/* Content */}
-      <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
-        <p className="text-primary font-sans text-sm md:text-base uppercase tracking-[0.3em] mb-6 animate-fade-in">
-          Premier Construction & Hospitality
-        </p>
-        
-        <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-bold text-primary-foreground leading-tight mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-          Where Vision Meets
-          <span className="block text-primary mt-2">Masterful Craft</span>
-        </h1>
-        
-        <p className="text-primary-foreground/80 font-sans text-lg md:text-xl max-w-2xl mx-auto mb-12 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-          We design, build, and curate exceptional properties and experiences 
-          for those who expect nothing less than extraordinary.
-        </p>
+        <Reveal>
+          <div className="inline-flex items-center gap-2 px-5 py-2 border border-primary/20 rounded-full bg-primary-light/50 mb-8 backdrop-blur-sm">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-xs uppercase tracking-widest text-primary font-bold">
+              Constructions | Rentals | Hospitality
+            </span>
+          </div>
+        </Reveal>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.6s' }}>
-          <button
-            onClick={() => onNavigate('portfolio')}
-            className="btn-primary flex items-center justify-center gap-3 group"
-          >
-            View Our Work
-            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-          </button>
-          
-          <button
-            onClick={() => onNavigate('contact')}
-            className="btn-outline border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-foreground"
-          >
-            Get in Touch
-          </button>
-        </div>
+        <Reveal delay={400}>
+          <p className="font-sans text-muted-foreground text-lg md:text-xl tracking-wide max-w-2xl mx-auto mb-12 leading-relaxed">
+            From groundbreaking construction to exquisite rentals and world-class experiences. 
+            We build the future and curate the present.
+          </p>
+        </Reveal>
+
+        <Reveal delay={600}>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center w-full sm:w-auto">
+            <button 
+              className="btn-primary rounded-xl flex items-center justify-center gap-2 group"
+              onClick={() => onNavigate && onNavigate('portfolio')}
+            >
+              View Portfolio
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+            <button 
+              className="px-10 py-4 bg-card border border-border text-foreground hover:border-primary hover:text-primary rounded-xl font-sans font-bold uppercase tracking-widest text-sm transition-all hover:shadow-lg"
+              onClick={() => onNavigate && onNavigate('contact')}
+            >
+              Contact Us
+            </button>
+          </div>
+        </Reveal>
       </div>
-
+      
       {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 border-2 border-primary-foreground/50 rounded-full flex justify-center pt-2">
-          <div className="w-1 h-3 bg-primary-foreground/50 rounded-full" />
-        </div>
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-muted-foreground/30">
+        <div className="w-[1px] h-20 bg-gradient-to-b from-transparent via-primary/50 to-transparent" />
       </div>
     </section>
   );
