@@ -30,8 +30,8 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled
-          ? 'bg-background/80 dark:bg-background/90 backdrop-blur-xl backdrop-saturate-150 py-2 shadow-soft border-b border-border/50'
-          : 'bg-background/40 dark:bg-background/50 backdrop-blur-md py-4'
+          ? 'bg-card/95 dark:bg-card/95 backdrop-blur-xl py-2 shadow-lg border-b border-border'
+          : 'bg-card/80 dark:bg-card/90 backdrop-blur-lg py-4 border-b border-border/30'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 md:px-8">
@@ -49,29 +49,29 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
           </button>
 
           {/* Navigation - Always visible, horizontally scrollable on mobile */}
-          <div className="flex items-center gap-1 md:gap-4 overflow-x-auto scrollbar-hide">
+          <div className="flex items-center gap-1 md:gap-3 overflow-x-auto scrollbar-hide">
             {NAV_LINKS.map((link) => (
               <button
                 key={link.id}
                 onClick={() => handleNavClick(link.id)}
-                className={`relative whitespace-nowrap px-2 py-1.5 md:px-3 md:py-2 rounded-lg transition-all duration-300 text-[10px] md:text-xs font-semibold uppercase tracking-wider ${
+                className={`relative whitespace-nowrap px-2.5 py-1.5 md:px-3.5 md:py-2 rounded-lg transition-all duration-300 text-[10px] md:text-xs font-bold uppercase tracking-wider ${
                   currentPage === link.id 
                     ? 'bg-primary text-primary-foreground shadow-md' 
-                    : 'text-foreground hover:bg-primary/10 hover:text-primary'
+                    : 'text-foreground hover:bg-primary/15 hover:text-primary'
                 }`}
               >
                 {link.label}
               </button>
             ))}
             
-            <div className="flex items-center gap-1 pl-2 md:pl-4 border-l border-border/50 flex-shrink-0">
+            <div className="flex items-center gap-1 pl-2 md:pl-3 border-l border-border flex-shrink-0">
               <ThemeToggle />
               <button
                 onClick={() => navigate('/admin')}
-                className="p-2 rounded-full hover:bg-primary/10 transition-all duration-300 hover:scale-110 active:scale-95"
+                className="p-2 rounded-full hover:bg-primary/15 transition-all duration-300 hover:scale-110 active:scale-95"
                 title="Admin Panel"
               >
-                <Settings className="w-4 h-4 text-foreground/70 hover:text-primary transition-colors" />
+                <Settings className="w-4 h-4 text-foreground hover:text-primary transition-colors" />
               </button>
             </div>
           </div>
