@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import Navbar from '@/components/suncrisp/Navbar';
 import Hero from '@/components/suncrisp/Hero';
 import Properties from '@/components/suncrisp/Properties';
-import Experiences from '@/components/suncrisp/Experiences';
 import Services from '@/components/suncrisp/Services';
 import About from '@/components/suncrisp/About';
 import ContactFooter from '@/components/suncrisp/ContactFooter';
@@ -10,6 +9,7 @@ import Testimonials from '@/components/suncrisp/Testimonials';
 import Footer from '@/components/suncrisp/Footer';
 import PropertyDetail from '@/components/suncrisp/PropertyDetail';
 import FloatingCTA from '@/components/suncrisp/FloatingCTA';
+import FeaturedProjects from '@/components/suncrisp/FeaturedProjects';
 import { CONSTRUCTION_SERVICES } from '@/constants';
 import { Property, Service, Experience, AboutData, ContactData } from '@/types';
 import { projectService } from '@/services/projectService';
@@ -194,6 +194,11 @@ const Index = () => {
         return (
           <>
             <Hero onNavigate={handleNavigation} />
+            <FeaturedProjects 
+              items={constructionData} 
+              onItemClick={(item) => handleItemClick('construction', item)}
+              onViewAll={() => handleNavigation('construction')}
+            />
             <Testimonials />
           </>
         );
