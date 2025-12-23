@@ -59,6 +59,51 @@ export type Database = {
         }
         Relationships: []
       }
+      hospitality_projects: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number | null
+          id: string
+          images: string[] | null
+          location: string | null
+          long_description: string | null
+          price_info: string | null
+          short_description: string | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          images?: string[] | null
+          location?: string | null
+          long_description?: string | null
+          price_info?: string | null
+          short_description?: string | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          images?: string[] | null
+          location?: string | null
+          long_description?: string | null
+          price_info?: string | null
+          short_description?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       page_blocks: {
         Row: {
           block_key: string
