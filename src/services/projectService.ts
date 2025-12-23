@@ -4,8 +4,13 @@ export interface Project {
   id: string;
   title: string;
   description: string | null;
+  short_description: string | null;
+  long_description: string | null;
+  location: string | null;
   category: string | null;
   image_url: string;
+  images: string[];
+  display_order: number;
   created_at: string;
   updated_at: string;
 }
@@ -13,15 +18,25 @@ export interface Project {
 export interface CreateProjectInput {
   title: string;
   description?: string;
+  short_description?: string;
+  long_description?: string;
+  location?: string;
   category?: string;
   image_url: string;
+  images?: string[];
+  display_order?: number;
 }
 
 export interface UpdateProjectInput {
   title?: string;
   description?: string;
+  short_description?: string;
+  long_description?: string;
+  location?: string;
   category?: string;
   image_url?: string;
+  images?: string[];
+  display_order?: number;
 }
 
 const BUCKET_NAME = "project-images";
@@ -31,7 +46,17 @@ export const projectService = {
     const { data, error } = await supabase
       .from("projects")
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("display_order", { ascending: true });
+    
+    return { data, error };
+  },
+
+  async getByCategory(category: string): Promise<{ data: Project[] | null; error: Error | null }> {
+    const { data, error } = await supabase
+      .from("projects")
+      .select("*")
+      .ilike("category", category)
+      .order("display_order", { ascending: true });
     
     return { data, error };
   },
