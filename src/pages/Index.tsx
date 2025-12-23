@@ -39,7 +39,7 @@ const Index = () => {
   const [portfolioData, setPortfolioData] = useState<Property[]>([]);
   const [rentalsData, setRentalsData] = useState<Property[]>([]);
   const [constructionData, setConstructionData] = useState<Property[]>([]);
-  const [hospitalityData, setHospitalityData] = useState<Experience[]>([]);
+  const [hospitalityData, setHospitalityData] = useState<Property[]>([]);
   const [aboutData] = useState<AboutData>(INITIAL_ABOUT);
   const [contactData] = useState<ContactData>(INITIAL_CONTACT);
 
@@ -69,20 +69,22 @@ const Index = () => {
       }));
       setPortfolioData(mappedPortfolio);
 
-      // Derive Hospitality page data from portfolio category = Hospitality
-      const mappedHospitalityFromPortfolio: Experience[] = (portfolioProjects || [])
+      // Filter hospitality projects from portfolio (category = Hospitality)
+      const hospitalityProperties: Property[] = (portfolioProjects || [])
         .filter(p => (p.category || '').toLowerCase().includes('hospitality'))
         .map(h => ({
           id: h.id,
           title: h.title,
-          description: h.short_description || h.description || '',
-          image: h.image_url || '',
-          priceStart: h.description || 'Inquire for pricing',
-          detailedDescription: h.long_description || h.description || '',
-          gallery: h.images || [],
+          type: 'Hospitality',
           location: h.location || '',
+          price: h.short_description || '',
+          image: h.image_url || '',
+          description: h.short_description || h.description || '',
+          detailedDescription: h.long_description || h.description || '',
+          features: [],
+          gallery: h.images || [],
         }));
-      setHospitalityData(mappedHospitalityFromPortfolio);
+      setHospitalityData(hospitalityProperties);
 
       // Fetch construction projects (from construction_projects table)
       const { data: constructionProjects, error: constructionError } = await constructionService.getAll();
@@ -103,21 +105,6 @@ const Index = () => {
         console.log("[Index] Mapped construction:", mappedConstruction);
         setConstructionData(mappedConstruction);
       }
-
-      // Fetch hospitality projects (from projects table with category "Hospitality")
-      const { data: hospitalityProjects, error: hospitalityError } = await projectService.getByCategory('Hospitality');
-      console.log('[Index] Hospitality projects fetched:', hospitalityProjects?.length, 'Error:', hospitalityError);
-      const mappedHospitality: Experience[] = (hospitalityProjects || []).map(h => ({
-        id: h.id,
-        title: h.title,
-        description: h.short_description || h.description || '',
-        image: h.image_url || '',
-        priceStart: h.description || 'Inquire for pricing',
-        detailedDescription: h.long_description || h.description || '',
-        gallery: h.images || [],
-        location: h.location || '',
-      }));
-      setHospitalityData(mappedHospitality);
 
       // Fetch rentals (from rentals table)
       const { data: rentalItems, error: rentalError } = await rentalService.getAll();
@@ -254,7 +241,9 @@ const Index = () => {
       case 'hospitality':
         return (
           <div className="pt-20">
-            <Experiences
+            <Properties
+              title="Hospitality"
+              subtitle="Exceptional Hospitality Experiences"
               items={hospitalityData}
               onItemClick={(item) => handleItemClick('hospitality', item)}
             />
