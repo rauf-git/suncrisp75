@@ -1,92 +1,33 @@
-import { useState, useEffect } from 'react';
 import { Property } from '@/types';
-import { projectService, Project } from '@/services/projectService';
 import { MapPin, Maximize2, ArrowRight } from 'lucide-react';
 import Reveal from './Reveal';
 
 interface PropertiesProps {
   title: string;
   subtitle: string;
-  items?: Property[]; // Optional fallback items
+  items: Property[];
   onItemClick?: (item: Property) => void;
-  useDatabase?: boolean;
 }
 
-const Properties = ({ title, subtitle, items: fallbackItems = [], onItemClick, useDatabase = true }: PropertiesProps) => {
-  const [dbProjects, setDbProjects] = useState<Project[]>([]);
-  const [isLoading, setIsLoading] = useState(useDatabase);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!useDatabase) return;
-
-    const fetchProjects = async () => {
-      setIsLoading(true);
-      const { data, error } = await projectService.getAll();
-      if (error) {
-        setError("Failed to load projects");
-        console.error("Error fetching projects:", error);
-      } else {
-        setDbProjects(data || []);
-      }
-      setIsLoading(false);
-    };
-
-    fetchProjects();
-  }, [useDatabase]);
-
-  // Convert database projects to Property format
-  const dbItems: Property[] = dbProjects.map((project) => ({
-    id: project.id,
-    title: project.title,
-    description: project.description || "",
-    location: project.category || "Luxury Property",
-    price: "Contact for Pricing",
-    type: project.category || "Property",
-    image: project.image_url,
-    features: [],
-    gallery: [project.image_url],
-  }));
-
-  // Use database items if available, otherwise use fallback
-  const items = useDatabase && dbItems.length > 0 ? dbItems : fallbackItems;
-
-  if (isLoading) {
-    return (
-      <section className="section-padding bg-secondary relative">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-border pb-6">
-            <div>
-              <h2 className="font-serif text-3xl md:text-4xl text-foreground mb-2">{title}</h2>
-              <p className="text-muted-foreground font-sans text-base">{subtitle}</p>
-            </div>
-          </div>
-          <div className="flex items-center justify-center py-20">
-            <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (error && items.length === 0) {
-    return (
-      <section className="section-padding bg-secondary relative">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-border pb-6">
-            <div>
-              <h2 className="font-serif text-3xl md:text-4xl text-foreground mb-2">{title}</h2>
-              <p className="text-muted-foreground font-sans text-base">{subtitle}</p>
-            </div>
-          </div>
-          <p className="text-center text-muted-foreground py-20">{error}</p>
-        </div>
-      </section>
-    );
-  }
-
+const Properties = ({ title, subtitle, items, onItemClick }: PropertiesProps) => {
   if (items.length === 0) {
-    return null; // Don't render section if no items
+    return (
+      <section className="section-padding bg-secondary relative">
+        <div className="max-w-7xl mx-auto">
+          <Reveal>
+            <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-border pb-6">
+              <div>
+                <h2 className="font-serif text-3xl md:text-4xl text-foreground mb-2">{title}</h2>
+                <p className="text-muted-foreground font-sans text-base">{subtitle}</p>
+              </div>
+            </div>
+          </Reveal>
+          <div className="text-center py-20">
+            <p className="text-muted-foreground">No items available yet. Check back soon!</p>
+          </div>
+        </div>
+      </section>
+    );
   }
 
   return (
