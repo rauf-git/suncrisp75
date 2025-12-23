@@ -26,6 +26,31 @@ const Experiences = ({ items, onItemClick }: ExperiencesProps) => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
+  // Show empty state when no items
+  if (!items || items.length === 0) {
+    return (
+      <section className="section-padding bg-background">
+        <div className="max-w-7xl mx-auto">
+          <Reveal>
+            <div className="text-center mb-16">
+              <p className="text-primary font-sans text-sm uppercase tracking-[0.3em] mb-4">
+                Curated Stays
+              </p>
+              <h2 className="section-title mb-4">Curated Experiences</h2>
+              <div className="w-24 h-1 bg-primary mx-auto mb-6 rounded-full" />
+              <p className="section-subtitle mx-auto">
+                Beyond property, we design moments. Immersion in the extraordinary.
+              </p>
+            </div>
+          </Reveal>
+          <div className="text-center py-20">
+            <p className="text-muted-foreground">No hospitality experiences available yet. Check back soon!</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section 
       ref={containerRef}

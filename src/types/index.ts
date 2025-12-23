@@ -24,6 +24,7 @@ export interface Experience {
   priceStart: string;
   icon?: LucideIcon;
   gallery?: string[];
+  location?: string;
 }
 
 export interface Service {
