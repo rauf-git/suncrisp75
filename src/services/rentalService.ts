@@ -155,7 +155,20 @@ export const rentalService = {
     return { error };
   },
 
-  // Locations
+  async updateOrder(items: { id: string; display_order: number }[]): Promise<{ error: Error | null }> {
+    try {
+      for (const item of items) {
+        const { error } = await supabase
+          .from("rentals")
+          .update({ display_order: item.display_order })
+          .eq("id", item.id);
+        if (error) throw error;
+      }
+      return { error: null };
+    } catch (error) {
+      return { error: error as Error };
+    }
+  },
   async getAllLocations(): Promise<{ data: RentalLocation[] | null; error: Error | null }> {
     const { data, error } = await supabase
       .from("rental_locations")

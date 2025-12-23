@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Settings } from 'lucide-react';
+import { Settings, Menu, X } from 'lucide-react';
 import { NAV_LINKS } from '@/constants';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import suncrespLogo from '@/assets/suncrisp-logo.png';
@@ -12,6 +12,7 @@ interface NavbarProps {
 
 const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,62 +23,158 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close mobile menu on resize to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleNavClick = (id: string) => {
     onNavigate(id);
+    setIsMobileMenuOpen(false);
   };
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled
-          ? 'bg-card/95 dark:bg-card/95 backdrop-blur-xl py-2 shadow-lg border-b border-border'
-          : 'bg-card/80 dark:bg-card/90 backdrop-blur-lg py-4 border-b border-border/30'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <button
-            onClick={() => handleNavClick('home')}
-            className="hover:opacity-80 transition-all duration-300 hover:scale-105 active:scale-95 flex-shrink-0"
-          >
-            <img 
-              src={suncrespLogo} 
-              alt="SunCrisp Hospitality" 
-              className={`w-auto transition-all duration-300 ${isScrolled ? 'h-7 md:h-9' : 'h-8 md:h-10'}`}
-            />
-          </button>
+    <>
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          isScrolled
+            ? 'bg-background/80 backdrop-blur-xl py-2 shadow-lg border-b border-border/50'
+            : 'bg-background/60 backdrop-blur-lg py-4 border-b border-border/20'
+        }`}
+        style={{
+          WebkitBackdropFilter: 'blur(16px)',
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <button
+              onClick={() => handleNavClick('home')}
+              className="hover:opacity-80 transition-all duration-300 hover:scale-105 active:scale-95 flex-shrink-0"
+            >
+              <img 
+                src={suncrespLogo} 
+                alt="SunCrisp Hospitality" 
+                className={`w-auto transition-all duration-300 ${isScrolled ? 'h-7 md:h-9' : 'h-8 md:h-10'}`}
+              />
+            </button>
 
-          {/* Navigation - Always visible, horizontally scrollable on mobile */}
-          <div className="flex items-center gap-1 md:gap-3 overflow-x-auto scrollbar-hide">
-            {NAV_LINKS.map((link) => (
-              <button
-                key={link.id}
-                onClick={() => handleNavClick(link.id)}
-                className={`relative whitespace-nowrap px-2.5 py-1.5 md:px-3.5 md:py-2 rounded-lg transition-all duration-300 text-[10px] md:text-xs font-bold uppercase tracking-wider ${
-                  currentPage === link.id 
-                    ? 'bg-primary text-primary-foreground shadow-md' 
-                    : 'text-foreground hover:bg-primary/15 hover:text-primary'
-                }`}
-              >
-                {link.label}
-              </button>
-            ))}
-            
-            <div className="flex items-center gap-1 pl-2 md:pl-3 border-l border-border flex-shrink-0">
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-3">
+              {NAV_LINKS.map((link) => (
+                <button
+                  key={link.id}
+                  onClick={() => handleNavClick(link.id)}
+                  className={`relative whitespace-nowrap px-3.5 py-2 rounded-lg transition-all duration-300 text-xs font-bold uppercase tracking-wider ${
+                    currentPage === link.id 
+                      ? 'bg-primary text-primary-foreground shadow-md' 
+                      : 'text-foreground/90 hover:bg-primary/15 hover:text-primary'
+                  }`}
+                >
+                  {link.label}
+                </button>
+              ))}
+              
+              <div className="flex items-center gap-1 pl-3 border-l border-border/50 flex-shrink-0">
+                <ThemeToggle />
+                <button
+                  onClick={() => navigate('/admin')}
+                  className="p-2 rounded-full hover:bg-primary/15 transition-all duration-300 hover:scale-110 active:scale-95"
+                  title="Admin Panel"
+                >
+                  <Settings className="w-4 h-4 text-foreground/90 hover:text-primary transition-colors" />
+                </button>
+              </div>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="flex md:hidden items-center gap-2">
               <ThemeToggle />
               <button
-                onClick={() => navigate('/admin')}
-                className="p-2 rounded-full hover:bg-primary/15 transition-all duration-300 hover:scale-110 active:scale-95"
-                title="Admin Panel"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-all duration-300"
+                aria-label="Toggle menu"
               >
-                <Settings className="w-4 h-4 text-foreground hover:text-primary transition-colors" />
+                {isMobileMenuOpen ? (
+                  <X className="w-5 h-5 text-foreground" />
+                ) : (
+                  <Menu className="w-5 h-5 text-foreground" />
+                )}
               </button>
             </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-40 md:hidden">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-foreground/40 backdrop-blur-sm animate-fade-in"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          
+          {/* Menu Panel */}
+          <div 
+            className="absolute top-0 right-0 w-72 h-full bg-background/95 backdrop-blur-xl border-l border-border shadow-2xl animate-slide-in-right"
+            style={{
+              WebkitBackdropFilter: 'blur(20px)',
+            }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <span className="font-serif text-lg text-foreground">Menu</span>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 rounded-lg hover:bg-muted transition-colors"
+              >
+                <X className="w-5 h-5 text-foreground" />
+              </button>
+            </div>
+            
+            {/* Nav Links */}
+            <div className="p-4 space-y-2">
+              {NAV_LINKS.map((link, index) => (
+                <button
+                  key={link.id}
+                  onClick={() => handleNavClick(link.id)}
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 text-sm font-bold uppercase tracking-wider ${
+                    currentPage === link.id 
+                      ? 'bg-primary text-primary-foreground shadow-md' 
+                      : 'text-foreground hover:bg-primary/10 hover:text-primary'
+                  }`}
+                  style={{
+                    animationDelay: `${index * 50}ms`,
+                  }}
+                >
+                  {link.label}
+                </button>
+              ))}
+              
+              <div className="pt-4 mt-4 border-t border-border">
+                <button
+                  onClick={() => {
+                    navigate('/admin');
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-foreground hover:bg-primary/10 hover:text-primary transition-all duration-300"
+                >
+                  <Settings className="w-4 h-4" />
+                  <span className="text-sm font-bold uppercase tracking-wider">Admin Panel</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
