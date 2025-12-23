@@ -1,81 +1,58 @@
-import { Award, Users, Globe, Building } from 'lucide-react';
+import Reveal from './Reveal';
 import { AboutData } from '@/types';
 
 interface AboutProps {
   data: AboutData;
 }
 
-const stats = [
-  { icon: Building, value: '150+', label: 'Projects Completed' },
-  { icon: Users, value: '50+', label: 'Expert Team Members' },
-  { icon: Globe, value: '12', label: 'Countries Served' },
-  { icon: Award, value: '25+', label: 'Industry Awards' },
-];
-
 const About = ({ data }: AboutProps) => {
   return (
-    <section className="section-padding bg-background">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Image */}
-          <div className="relative animate-fade-in">
-            <div className="relative h-[500px] rounded-lg overflow-hidden">
-              <img
-                src={data.image}
-                alt="About Suncrisp"
-                className="w-full h-full object-cover"
-              />
-            </div>
+    <section className="section-padding bg-secondary relative flex items-center justify-center">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+        <Reveal>
+          <div className="relative">
+            {/* Decorative corners */}
+            <div className="absolute -top-4 -left-4 w-24 h-24 border-t-4 border-l-4 border-primary/20 rounded-tl-3xl" />
+            <div className="absolute -bottom-4 -right-4 w-24 h-24 border-b-4 border-r-4 border-primary/20 rounded-br-3xl" />
             
-            {/* Decorative Element */}
-            <div className="absolute -bottom-6 -right-6 w-48 h-48 border-2 border-primary rounded-lg -z-10" />
+            <img 
+              src={data.image} 
+              alt="About Suncrisp Team" 
+              className="w-full max-w-md mx-auto rounded-2xl shadow-elevated grayscale hover:grayscale-0 transition-all duration-700 object-cover aspect-[3/4]"
+            />
             
-            {/* Floating Stats Card */}
-            <div className="absolute -bottom-8 -left-8 bg-primary text-primary-foreground p-6 rounded-lg shadow-elevated">
-              <p className="font-serif text-4xl font-bold">20+</p>
-              <p className="text-primary-foreground/80 text-sm uppercase tracking-wider">Years of Excellence</p>
+            {/* Floating card */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-[85%] bg-card p-6 text-center border border-border rounded-xl shadow-lg">
+              <h3 className="font-serif text-xl text-foreground font-bold">Leadership</h3>
+              <p className="text-primary text-xs uppercase tracking-widest mt-1 font-semibold">Suncrisp Visionaries</p>
             </div>
           </div>
+        </Reveal>
 
-          {/* Content */}
-          <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <p className="text-primary font-sans text-sm uppercase tracking-[0.3em] mb-4">
-              Our Story
-            </p>
-            <h2 className="section-title mb-6">{data.title}</h2>
-            <p className="text-muted-foreground leading-relaxed mb-8">
+        <Reveal delay={200}>
+          <div>
+            <span className="text-primary text-xs font-bold uppercase tracking-[0.2em] mb-4 block">
+              Our Philosophy
+            </span>
+            <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground mb-8 leading-tight">
+              {data.title}
+            </h2>
+            <div className="text-muted-foreground mb-6 leading-relaxed text-lg whitespace-pre-line">
               {data.description}
-            </p>
-            
-            {/* Values */}
-            <div className="space-y-4 mb-10">
-              {['Integrity in every foundation', 'Innovation in design', 'Excellence in service'].map((value, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-primary rounded-full" />
-                  <span className="text-foreground font-medium">{value}</span>
-                </div>
+            </div>
+
+            <div className="flex flex-wrap gap-4 mt-8">
+              {['20+ Years Excellence', '$2B+ Portfolio', 'Global Operations'].map((badge) => (
+                <span 
+                  key={badge}
+                  className="px-5 py-2 bg-card border border-border rounded-full text-xs uppercase tracking-wide text-muted-foreground font-bold shadow-sm"
+                >
+                  {badge}
+                </span>
               ))}
             </div>
           </div>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-24 pt-16 border-t border-border">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <div
-                key={index}
-                className="text-center animate-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <Icon className="w-8 h-8 text-primary mx-auto mb-4" />
-                <p className="font-serif text-4xl font-bold text-foreground mb-2">{stat.value}</p>
-                <p className="text-muted-foreground text-sm uppercase tracking-wider">{stat.label}</p>
-              </div>
-            );
-          })}
-        </div>
+        </Reveal>
       </div>
     </section>
   );

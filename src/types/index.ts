@@ -1,5 +1,7 @@
 import { LucideIcon } from 'lucide-react';
 
+export type SectionType = 'portfolio' | 'construction' | 'rentals' | 'hospitality' | 'about' | 'contact';
+
 export interface Property {
   id: string;
   title: string;
@@ -8,6 +10,8 @@ export interface Property {
   price: string;
   image: string;
   description: string;
+  detailedDescription?: string;
+  gallery?: string[];
   features: string[];
 }
 
@@ -15,16 +19,20 @@ export interface Experience {
   id: string;
   title: string;
   description: string;
-  icon: LucideIcon;
+  detailedDescription?: string;
   image: string;
   priceStart: string;
+  icon?: LucideIcon;
+  gallery?: string[];
 }
 
 export interface Service {
   id: string;
   title: string;
   description: string;
-  icon: LucideIcon;
+  detailedDescription?: string;
+  icon?: LucideIcon;
+  gallery?: string[];
 }
 
 export interface Testimonial {
@@ -35,8 +43,8 @@ export interface Testimonial {
 }
 
 export interface NavLink {
-  label: string;
   id: string;
+  label: string;
 }
 
 export interface AboutData {
@@ -51,5 +59,3 @@ export interface ContactData {
   address: string;
   mapUrl: string;
 }
-
-export type SectionType = 'portfolio' | 'rentals' | 'construction' | 'hospitality' | 'about' | 'contact';

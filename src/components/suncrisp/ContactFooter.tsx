@@ -1,171 +1,110 @@
-import { useState } from 'react';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, Globe } from 'lucide-react';
+import Reveal from './Reveal';
 import { ContactData } from '@/types';
-import { toast } from 'sonner';
 
 interface ContactFooterProps {
   data: ContactData;
 }
 
 const ContactFooter = ({ data }: ContactFooterProps) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast.success('Message sent successfully! We will be in touch soon.');
-    setFormData({ name: '', email: '', subject: '', message: '' });
-  };
-
   return (
-    <section className="section-padding bg-foreground text-primary-foreground">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-16 animate-fade-in">
-          <p className="text-primary font-sans text-sm uppercase tracking-[0.3em] mb-4">
-            Get In Touch
-          </p>
-          <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-semibold mb-4">
-            Let's Build Something <span className="text-primary">Extraordinary</span>
-          </h2>
-          <p className="text-primary-foreground/70 max-w-2xl mx-auto">
-            Whether you're looking to develop a property, plan a luxury stay, or discuss a construction project, 
-            we're here to turn your vision into reality.
-          </p>
-        </div>
+    <section className="min-h-screen bg-background pt-8 pb-10 flex flex-col">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 flex-grow w-full">
+        
+        <Reveal>
+          <div className="mb-16">
+            <span className="text-primary font-sans font-bold uppercase tracking-[0.2em] text-sm mb-4 block">
+              Let's Talk
+            </span>
+            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-foreground mb-6">
+              Get in Touch
+            </h2>
+            <div className="h-1 w-24 bg-primary rounded-full" />
+          </div>
+        </Reveal>
 
-        <div className="grid lg:grid-cols-2 gap-16">
-          {/* Contact Info */}
-          <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            <h3 className="font-serif text-2xl font-semibold mb-8">Contact Information</h3>
-            
-            <div className="space-y-6 mb-12">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-5 h-5 text-primary" />
+        {/* Contact Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+          <Reveal>
+            <div className="bg-secondary p-10 h-full flex flex-col justify-between group rounded-3xl border border-border hover:border-primary/50 transition-all shadow-sm hover:shadow-elevated">
+              <div>
+                <div className="w-16 h-16 bg-background rounded-2xl flex items-center justify-center mb-8 shadow-sm group-hover:scale-110 transition-transform duration-500">
+                  <Mail className="w-8 h-8 text-primary" />
                 </div>
-                <div>
-                  <p className="text-primary-foreground/70 text-sm uppercase tracking-wider mb-1">Email</p>
-                  <a href={`mailto:${data.email}`} className="text-primary-foreground hover:text-primary transition-colors">
-                    {data.email}
-                  </a>
-                </div>
+                <h3 className="font-serif text-3xl text-foreground mb-4">Inquiries</h3>
+                <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
+                  Reach out to us directly via email or phone for any construction or hospitality needs.
+                </p>
               </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Phone className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-primary-foreground/70 text-sm uppercase tracking-wider mb-1">Phone</p>
-                  <a href={`tel:${data.phone}`} className="text-primary-foreground hover:text-primary transition-colors">
-                    {data.phone}
-                  </a>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <MapPin className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-primary-foreground/70 text-sm uppercase tracking-wider mb-1">Address</p>
-                  <p className="text-primary-foreground">{data.address}</p>
-                </div>
+              <div className="space-y-6">
+                <a 
+                  href={`mailto:${data.email}`} 
+                  className="flex items-center gap-4 text-foreground hover:text-primary transition-colors group/link"
+                >
+                  <div className="p-2 bg-background rounded-lg group-hover/link:bg-primary group-hover/link:text-primary-foreground transition-colors">
+                    <Mail size={20} />
+                  </div>
+                  <span className="uppercase tracking-widest text-sm font-bold">{data.email}</span>
+                </a>
+                <a 
+                  href={`tel:${data.phone}`}
+                  className="flex items-center gap-4 text-foreground hover:text-primary transition-colors group/link"
+                >
+                  <div className="p-2 bg-background rounded-lg group-hover/link:bg-primary group-hover/link:text-primary-foreground transition-colors">
+                    <Phone size={20} />
+                  </div>
+                  <span className="uppercase tracking-widest text-sm font-bold">{data.phone}</span>
+                </a>
               </div>
             </div>
+          </Reveal>
 
-            {/* Map */}
-            <div className="rounded-lg overflow-hidden h-64">
-              <iframe
-                src={data.mapUrl}
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Office Location"
-              />
+          <Reveal delay={200}>
+            <div className="bg-secondary p-10 h-full flex flex-col justify-between group rounded-3xl border border-border hover:border-primary/50 transition-all shadow-sm hover:shadow-elevated relative overflow-hidden">
+              <div className="relative z-10">
+                <div className="w-16 h-16 bg-background rounded-2xl flex items-center justify-center mb-8 shadow-sm group-hover:scale-110 transition-transform duration-500">
+                  <Globe className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="font-serif text-3xl text-foreground mb-4">Headquarters</h3>
+                <div className="flex items-start gap-4 text-muted-foreground mb-8">
+                  <MapPin size={24} className="text-primary flex-shrink-0 mt-1" />
+                  <span className="text-lg leading-relaxed">{data.address}</span>
+                </div>
+              </div>
+              
+              {/* Map Embed */}
+              <div className="w-full h-56 rounded-2xl overflow-hidden border border-border mt-auto relative z-10 grayscale hover:grayscale-0 transition-all duration-700">
+                <iframe 
+                  src={data.mapUrl} 
+                  width="100%" 
+                  height="100%" 
+                  style={{ border: 0 }} 
+                  allowFullScreen 
+                  loading="lazy" 
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Office Location"
+                />
+              </div>
             </div>
-          </div>
-
-          {/* Contact Form */}
-          <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <h3 className="font-serif text-2xl font-semibold mb-8">Send a Message</h3>
-            
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-primary-foreground/70 text-sm uppercase tracking-wider mb-2">
-                    Your Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                    className="w-full bg-primary-foreground/10 border border-primary-foreground/20 rounded-lg px-4 py-3 text-primary-foreground placeholder:text-primary-foreground/40 focus:outline-none focus:border-primary transition-colors"
-                    placeholder="John Doe"
-                  />
-                </div>
-                <div>
-                  <label className="block text-primary-foreground/70 text-sm uppercase tracking-wider mb-2">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                    className="w-full bg-primary-foreground/10 border border-primary-foreground/20 rounded-lg px-4 py-3 text-primary-foreground placeholder:text-primary-foreground/40 focus:outline-none focus:border-primary transition-colors"
-                    placeholder="john@example.com"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-primary-foreground/70 text-sm uppercase tracking-wider mb-2">
-                  Subject
-                </label>
-                <input
-                  type="text"
-                  value={formData.subject}
-                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  required
-                  className="w-full bg-primary-foreground/10 border border-primary-foreground/20 rounded-lg px-4 py-3 text-primary-foreground placeholder:text-primary-foreground/40 focus:outline-none focus:border-primary transition-colors"
-                  placeholder="How can we help?"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-primary-foreground/70 text-sm uppercase tracking-wider mb-2">
-                  Message
-                </label>
-                <textarea
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  required
-                  rows={5}
-                  className="w-full bg-primary-foreground/10 border border-primary-foreground/20 rounded-lg px-4 py-3 text-primary-foreground placeholder:text-primary-foreground/40 focus:outline-none focus:border-primary transition-colors resize-none"
-                  placeholder="Tell us about your project..."
-                />
-              </div>
-              
-              <button
-                type="submit"
-                className="btn-primary w-full flex items-center justify-center gap-3 group"
-              >
-                Send Message
-                <Send className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </button>
-            </form>
-          </div>
+          </Reveal>
         </div>
+
+        {/* Social / Connect */}
+        <div className="text-center py-12">
+          <Reveal delay={300}>
+            <a 
+              href="#" 
+              className="inline-flex items-center gap-3 btn-primary rounded-xl shadow-lg hover:shadow-elevated hover:-translate-y-1"
+            >
+              <Linkedin size={24} /> Connect on LinkedIn
+            </a>
+          </Reveal>
+        </div>
+      </div>
+      
+      {/* Copyright Footer */}
+      <div className="border-t border-border pt-8 text-center text-muted-foreground text-xs uppercase tracking-widest">
+        © {new Date().getFullYear()} Suncrisp Hospitality. All Rights Reserved.
       </div>
     </section>
   );

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Mail, Plus } from 'lucide-react';
 import Navbar from '@/components/suncrisp/Navbar';
 import Hero from '@/components/suncrisp/Hero';
 import Properties from '@/components/suncrisp/Properties';
@@ -9,27 +10,28 @@ import ContactFooter from '@/components/suncrisp/ContactFooter';
 import Testimonials from '@/components/suncrisp/Testimonials';
 import Footer from '@/components/suncrisp/Footer';
 import PropertyDetail from '@/components/suncrisp/PropertyDetail';
+import EmailModal from '@/components/suncrisp/EmailModal';
 import { RENTALS_DATA, PORTFOLIO_DATA, CONSTRUCTION_SERVICES, HOSPITALITY_DATA } from '@/constants';
 import { Property, Service, Experience, AboutData, ContactData } from '@/types';
 
 const INITIAL_ABOUT: AboutData = {
   title: "Building Futures Through Excellence",
-  description: "At Suncrisp Hospitality, we believe that true luxury lies in the integrity of construction and the art of service. With experience spanning major global markets, we have cultivated a portfolio that stands as a testament to quality. We don't just build structures; we create environments. From the foundation to the final guest experience, our integrated approach ensures every detail resonates with purpose and elegance.",
+  description: "At Suncrisp Hospitality, we believe that true luxury lies in the integrity of construction and the art of service. With experience spanning major global markets, we have cultivated a portfolio that stands as a testament to quality.\n\nWe don't just build structures; we create environments. From the foundation to the final guest experience, our integrated approach ensures every detail resonates with purpose and elegance.",
   image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&h=800&fit=crop&q=80"
 };
 
 const INITIAL_CONTACT: ContactData = {
-  email: "contact@suncrisphospitality.com",
-  phone: "+1 (555) 123-4567",
-  address: "Dubai Design District, UAE",
-  mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3610.1786539269224!2d55.29377407595462!3d25.197196977712395!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f428383853173%3A0x6b42b9370773070!2sDubai%20Design%20District!5e0!3m2!1sen!2sae!4v1709462800000!5m2!1sen!2sae"
+  email: "suncrisphospitality@gmail.com",
+  phone: "+91 9559665556",
+  address: "Door No.7-8-9, Ground Floor, Flat No.102, Harbour Park Road, Siri Puram Area, Pandurangapuram, Visakhkapatnam-530003",
+  mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3800.4835815693146!2d83.2956!3d17.7275!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTfCsDQzJzM5LjAiTiA4M8KwMTcnNDQuMCJF!5e0!3m2!1sen!2sin!4v1709462800000!5m2!1sen!2sin"
 };
 
 const Index = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
   const [selectedItem, setSelectedItem] = useState<Property | null>(null);
-  const [selectedSection, setSelectedSection] = useState<string>('');
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
 
   // Data state
   const [portfolioData] = useState<Property[]>(PORTFOLIO_DATA);
@@ -52,20 +54,16 @@ const Index = () => {
   const handleNavigation = (page: string) => {
     setCurrentPage(page);
     setSelectedItem(null);
-    setSelectedSection('');
   };
 
   const handleItemClick = (section: string, item: Property | Service | Experience) => {
     if ('features' in item) {
-      // It's a Property
       setSelectedItem(item as Property);
-      setSelectedSection(section);
     }
   };
 
   const handleBack = () => {
     setSelectedItem(null);
-    setSelectedSection('');
   };
 
   const renderPage = () => {
@@ -155,6 +153,26 @@ const Index = () => {
       <main>
         {renderPage()}
       </main>
+
+      {/* Floating Email Button */}
+      {!selectedItem && (
+        <button
+          onClick={() => setIsEmailModalOpen(true)}
+          className="fixed bottom-8 left-8 z-40 bg-card text-foreground p-4 rounded-full shadow-elevated border border-border transition-all duration-300 hover:scale-105 hover:border-primary group"
+          aria-label="Contact Us"
+        >
+          <Mail className="w-6 h-6 text-primary" />
+          <span className="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-foreground text-background text-xs font-bold uppercase tracking-widest px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg">
+            Contact Us
+          </span>
+        </button>
+      )}
+
+      {/* Email Modal */}
+      <EmailModal 
+        isOpen={isEmailModalOpen} 
+        onClose={() => setIsEmailModalOpen(false)} 
+      />
 
       {/* Footer - hide on contact page which has its own dark section */}
       {currentPage !== 'contact' && !selectedItem && (
