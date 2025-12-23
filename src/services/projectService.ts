@@ -37,18 +37,20 @@ export const projectService = {
   },
 
   async getByCategory(category: string): Promise<{ data: Project[] | null; error: Error | null }> {
-    // Validate category input
     const sanitizedCategory = category.trim().slice(0, 100);
     if (!sanitizedCategory) {
       return { data: null, error: new Error("Category is required") };
     }
 
+    // Use a wildcard pattern to handle minor variations (case/whitespace)
+    const pattern = `%${sanitizedCategory}%`;
+
     const { data, error } = await supabase
       .from("projects")
       .select("*")
-      .ilike("category", sanitizedCategory)
+      .ilike("category", pattern)
       .order("display_order", { ascending: true });
-    
+
     return { data, error };
   },
 
