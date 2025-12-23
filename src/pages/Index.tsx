@@ -206,13 +206,14 @@ const Index = () => {
                 title="Featured Projects"
               />
             )}
-            {/* Featured Construction Projects - always shown below */}
+            {/* Featured Construction Projects - grid layout */}
             {constructionData.length > 0 && (
               <FeaturedProjects 
                 items={constructionData.slice(0, 2)}
                 onItemClick={(item) => handleItemClick('construction', item)}
                 onViewAll={() => handleNavigation('construction')}
                 title="Latest Construction"
+                variant="grid"
               />
             )}
             <Testimonials />
