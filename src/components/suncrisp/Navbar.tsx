@@ -44,8 +44,8 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? 'bg-background/85 backdrop-blur-xl py-1 shadow-md border-b border-border/40'
-            : 'bg-background/70 backdrop-blur-lg py-1.5 border-b border-border/20'
+            ? 'bg-background/95 backdrop-blur-xl py-1 shadow-sm'
+            : 'bg-background/80 backdrop-blur-lg py-1.5'
         }`}
         style={{
           WebkitBackdropFilter: 'blur(16px)',
@@ -66,18 +66,21 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
             </button>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-1.5">
+            <div className="hidden md:flex items-center gap-3">
               {NAV_LINKS.map((link) => (
                 <button
                   key={link.id}
                   onClick={() => handleNavClick(link.id)}
-                  className={`relative whitespace-nowrap px-2.5 py-1.5 rounded-md transition-all duration-300 text-[10px] font-bold uppercase tracking-wider ${
+                  className={`relative whitespace-nowrap px-3 py-2 transition-all duration-300 text-xs font-bold uppercase tracking-wider group ${
                     currentPage === link.id 
-                      ? 'bg-primary text-primary-foreground shadow-sm' 
-                      : 'text-foreground/90 hover:bg-primary/15 hover:text-primary'
+                      ? 'text-primary' 
+                      : 'text-foreground/80 hover:text-primary'
                   }`}
                 >
                   {link.label}
+                  <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-primary transform origin-left transition-transform duration-300 ${
+                    currentPage === link.id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                  }`} />
                 </button>
               ))}
               

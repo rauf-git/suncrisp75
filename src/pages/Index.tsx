@@ -66,6 +66,7 @@ const Index = () => {
         detailedDescription: p.long_description || p.description || '',
         features: [],
         gallery: p.images || [],
+        is_featured: (p as typeof p & { is_featured?: boolean }).is_featured,
       }));
       setPortfolioData(mappedPortfolio);
 
@@ -191,13 +192,15 @@ const Index = () => {
 
     switch (currentPage) {
       case 'home':
+        // Get featured projects from portfolio
+        const featuredProjects = portfolioData.filter(p => p.is_featured);
         return (
           <>
             <Hero onNavigate={handleNavigation} />
             <FeaturedProjects 
-              items={constructionData} 
-              onItemClick={(item) => handleItemClick('construction', item)}
-              onViewAll={() => handleNavigation('construction')}
+              items={featuredProjects.length > 0 ? featuredProjects : constructionData.slice(0, 2)} 
+              onItemClick={(item) => handleItemClick(featuredProjects.length > 0 ? 'portfolio' : 'construction', item)}
+              onViewAll={() => handleNavigation(featuredProjects.length > 0 ? 'portfolio' : 'construction')}
             />
             <Testimonials />
           </>

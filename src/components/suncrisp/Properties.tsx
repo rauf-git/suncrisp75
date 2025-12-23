@@ -12,7 +12,7 @@ interface PropertiesProps {
 const Properties = ({ title, subtitle, items, onItemClick }: PropertiesProps) => {
   if (items.length === 0) {
     return (
-      <section className="section-padding bg-secondary relative">
+      <section className="section-padding bg-secondary relative pt-8">
         <div className="max-w-7xl mx-auto">
           <Reveal>
             <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-border pb-6">
@@ -31,18 +31,13 @@ const Properties = ({ title, subtitle, items, onItemClick }: PropertiesProps) =>
   }
 
   return (
-    <section className="section-padding bg-secondary relative">
+    <section className="section-padding bg-secondary relative pt-8">
       <div className="max-w-7xl mx-auto">
         <Reveal>
           <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-border pb-6">
             <div>
               <h2 className="font-serif text-3xl md:text-4xl text-foreground mb-2">{title}</h2>
               <p className="text-muted-foreground font-sans text-base">{subtitle}</p>
-            </div>
-            <div className="hidden md:block">
-              <span className="text-primary text-xs uppercase tracking-widest bg-primary-light px-4 py-2 rounded-lg font-bold">
-                Showing {items.length} Items
-              </span>
             </div>
           </div>
         </Reveal>
@@ -78,12 +73,13 @@ const Properties = ({ title, subtitle, items, onItemClick }: PropertiesProps) =>
                   <h3 className="font-serif text-xl text-foreground mb-2 group-hover:text-primary transition-colors">
                     {property.title}
                   </h3>
-                  <div className="flex items-center gap-2 text-muted-foreground text-sm mb-4">
-                    <MapPin className="w-4 h-4 text-primary" />
-                    {property.location}
-                  </div>
-                  <div className="pt-4 border-t border-border flex justify-between items-center">
-                    <span className="font-bold text-foreground">{property.price}</span>
+                  {property.location && (
+                    <div className="flex items-center gap-2 text-muted-foreground text-sm mb-4">
+                      <MapPin className="w-4 h-4 text-primary" />
+                      {property.location}
+                    </div>
+                  )}
+                  <div className="pt-4 border-t border-border flex justify-end items-center">
                     <ArrowRight className="w-4 h-4 text-primary transform group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>

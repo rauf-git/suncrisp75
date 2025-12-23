@@ -149,6 +149,7 @@ export type Database = {
           id: string
           image_url: string
           images: string[] | null
+          is_featured: boolean | null
           location: string | null
           long_description: string | null
           short_description: string | null
@@ -163,6 +164,7 @@ export type Database = {
           id?: string
           image_url: string
           images?: string[] | null
+          is_featured?: boolean | null
           location?: string | null
           long_description?: string | null
           short_description?: string | null
@@ -177,6 +179,7 @@ export type Database = {
           id?: string
           image_url?: string
           images?: string[] | null
+          is_featured?: boolean | null
           location?: string | null
           long_description?: string | null
           short_description?: string | null
