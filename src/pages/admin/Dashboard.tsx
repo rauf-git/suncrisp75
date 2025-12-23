@@ -11,6 +11,7 @@ import { RentalFormModal } from "@/components/admin/RentalFormModal";
 import { HospitalityFormModal } from "@/components/admin/HospitalityFormModal";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
 import { DraggableList } from "@/components/admin/DraggableList";
+import { ViewDetailModal } from "@/components/admin/ViewDetailModal";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
@@ -28,12 +29,14 @@ import {
   Key,
   FileText,
   MapPin,
-  Hotel
+  Hotel,
+  Eye
 } from "lucide-react";
 import { format } from "date-fns";
 
 type ContentType = "portfolio" | "construction" | "rentals" | "hospitality" | "pages";
 type DeleteTarget = { type: "project"; item: Project } | { type: "construction"; item: ConstructionProject } | { type: "rental"; item: Rental } | { type: "hospitality"; item: HospitalityProject };
+type ViewTarget = { type: "project"; item: Project } | { type: "construction"; item: ConstructionProject } | { type: "rental"; item: Rental } | { type: "hospitality"; item: HospitalityProject };
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<ContentType>("portfolio");
@@ -66,6 +69,9 @@ export default function AdminDashboard() {
   // Delete state
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  
+  // View detail state
+  const [viewTarget, setViewTarget] = useState<ViewTarget | null>(null);
   
   const { signOut, user } = useAuth();
   const navigate = useNavigate();
@@ -426,6 +432,7 @@ export default function AdminDashboard() {
                 renderItem={(project) => (
                   <ProjectCard
                     project={project}
+                    onView={() => setViewTarget({ type: "project", item: project })}
                     onEdit={() => handleEditProject(project)}
                     onDelete={() => setDeleteTarget({ type: "project", item: project })}
                   />
@@ -451,6 +458,7 @@ export default function AdminDashboard() {
                 renderItem={(construction) => (
                   <ConstructionCard
                     construction={construction}
+                    onView={() => setViewTarget({ type: "construction", item: construction })}
                     onEdit={() => handleEditConstruction(construction)}
                     onDelete={() => setDeleteTarget({ type: "construction", item: construction })}
                   />
@@ -476,6 +484,7 @@ export default function AdminDashboard() {
                 renderItem={(rental) => (
                   <RentalCard
                     rental={rental}
+                    onView={() => setViewTarget({ type: "rental", item: rental })}
                     onEdit={() => handleEditRental(rental)}
                     onDelete={() => setDeleteTarget({ type: "rental", item: rental })}
                   />
@@ -501,6 +510,7 @@ export default function AdminDashboard() {
                 renderItem={(hospitality) => (
                   <HospitalityCard
                     hospitality={hospitality}
+                    onView={() => setViewTarget({ type: "hospitality", item: hospitality })}
                     onEdit={() => handleEditHospitality(hospitality)}
                     onDelete={() => setDeleteTarget({ type: "hospitality", item: hospitality })}
                   />
@@ -586,6 +596,61 @@ export default function AdminDashboard() {
         onConfirm={handleDelete}
         isLoading={isDeleting}
       />
+
+      {/* View Detail Modal */}
+      {viewTarget && (
+        <ViewDetailModal
+          open={!!viewTarget}
+          onOpenChange={(open) => !open && setViewTarget(null)}
+          item={viewTarget.item}
+          type={viewTarget.type}
+          onSave={async (updates) => {
+            if (viewTarget.type === "project") {
+              await projectService.update(viewTarget.item.id, updates);
+              fetchProjects();
+            } else if (viewTarget.type === "construction") {
+              await constructionService.update(viewTarget.item.id, updates);
+              fetchConstructions();
+            } else if (viewTarget.type === "rental") {
+              await rentalService.update(viewTarget.item.id, updates);
+              fetchRentals();
+            } else if (viewTarget.type === "hospitality") {
+              await hospitalityService.update(viewTarget.item.id, updates);
+              fetchHospitality();
+            }
+            toast({ title: "Saved", description: "Changes saved successfully." });
+          }}
+          fields={
+            viewTarget.type === "project" ? [
+              { key: "title", label: "Title", type: "text" },
+              { key: "category", label: "Category", type: "text" },
+              { key: "location", label: "Location", type: "text" },
+              { key: "short_description", label: "Short Description", type: "textarea" },
+              { key: "long_description", label: "Full Description", type: "textarea" },
+            ] : viewTarget.type === "construction" ? [
+              { key: "title", label: "Title", type: "text" },
+              { key: "status", label: "Status", type: "text" },
+              { key: "address", label: "Address", type: "text" },
+              { key: "description", label: "Description", type: "textarea" },
+            ] : viewTarget.type === "rental" ? [
+              { key: "title", label: "Title", type: "text" },
+              { key: "address", label: "Address", type: "text" },
+              { key: "price", label: "Price", type: "text" },
+              { key: "bedrooms", label: "Bedrooms", type: "number" },
+              { key: "bathrooms", label: "Bathrooms", type: "number" },
+              { key: "area", label: "Area", type: "text" },
+              { key: "short_description", label: "Short Description", type: "textarea" },
+              { key: "long_description", label: "Full Description", type: "textarea" },
+            ] : [
+              { key: "title", label: "Title", type: "text" },
+              { key: "location", label: "Location", type: "text" },
+              { key: "price_info", label: "Price Info", type: "text" },
+              { key: "short_description", label: "Short Description", type: "textarea" },
+              { key: "long_description", label: "Full Description", type: "textarea" },
+            ]
+          }
+        />
+      )}
     </div>
   );
 }
@@ -605,10 +670,13 @@ function EmptyState({ onAdd, type }: { onAdd: () => void; type: string }) {
   );
 }
 
-function ProjectCard({ project, onEdit, onDelete }: { project: Project; onEdit: () => void; onDelete: () => void }) {
+function ProjectCard({ project, onView, onEdit, onDelete }: { project: Project; onView: () => void; onEdit: () => void; onDelete: () => void }) {
   return (
     <div className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated transition-all group">
-      <div className="aspect-video bg-muted relative overflow-hidden">
+      <div 
+        className="aspect-video bg-muted relative overflow-hidden cursor-pointer"
+        onClick={onView}
+      >
         <img
           src={project.image_url}
           alt={project.title}
@@ -639,8 +707,12 @@ function ProjectCard({ project, onEdit, onDelete }: { project: Project; onEdit: 
           Created {format(new Date(project.created_at), "MMM d, yyyy")}
         </p>
         <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={onView}>
+            <Eye className="w-4 h-4 mr-1" />
+            View
+          </Button>
           <Button variant="outline" size="sm" className="flex-1" onClick={onEdit}>
-            <Edit className="w-4 h-4 mr-2" />
+            <Edit className="w-4 h-4 mr-1" />
             Edit
           </Button>
           <Button
@@ -657,10 +729,13 @@ function ProjectCard({ project, onEdit, onDelete }: { project: Project; onEdit: 
   );
 }
 
-function ConstructionCard({ construction, onEdit, onDelete }: { construction: ConstructionProject; onEdit: () => void; onDelete: () => void }) {
+function ConstructionCard({ construction, onView, onEdit, onDelete }: { construction: ConstructionProject; onView: () => void; onEdit: () => void; onDelete: () => void }) {
   return (
     <div className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated transition-all group">
-      <div className="aspect-video bg-muted relative overflow-hidden">
+      <div 
+        className="aspect-video bg-muted relative overflow-hidden cursor-pointer"
+        onClick={onView}
+      >
         {construction.thumbnail_url ? (
           <img
             src={construction.thumbnail_url}
@@ -692,8 +767,12 @@ function ConstructionCard({ construction, onEdit, onDelete }: { construction: Co
           </p>
         )}
         <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={onView}>
+            <Eye className="w-4 h-4 mr-1" />
+            View
+          </Button>
           <Button variant="outline" size="sm" className="flex-1" onClick={onEdit}>
-            <Edit className="w-4 h-4 mr-2" />
+            <Edit className="w-4 h-4 mr-1" />
             Edit
           </Button>
           <Button
@@ -710,10 +789,13 @@ function ConstructionCard({ construction, onEdit, onDelete }: { construction: Co
   );
 }
 
-function RentalCard({ rental, onEdit, onDelete }: { rental: Rental; onEdit: () => void; onDelete: () => void }) {
+function RentalCard({ rental, onView, onEdit, onDelete }: { rental: Rental; onView: () => void; onEdit: () => void; onDelete: () => void }) {
   return (
     <div className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated transition-all group">
-      <div className="aspect-video bg-muted relative overflow-hidden">
+      <div 
+        className="aspect-video bg-muted relative overflow-hidden cursor-pointer"
+        onClick={onView}
+      >
         {rental.thumbnail_url ? (
           <img
             src={rental.thumbnail_url}
@@ -751,8 +833,12 @@ function RentalCard({ rental, onEdit, onDelete }: { rental: Rental; onEdit: () =
           </p>
         )}
         <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={onView}>
+            <Eye className="w-4 h-4 mr-1" />
+            View
+          </Button>
           <Button variant="outline" size="sm" className="flex-1" onClick={onEdit}>
-            <Edit className="w-4 h-4 mr-2" />
+            <Edit className="w-4 h-4 mr-1" />
             Edit
           </Button>
           <Button
@@ -769,10 +855,13 @@ function RentalCard({ rental, onEdit, onDelete }: { rental: Rental; onEdit: () =
   );
 }
 
-function HospitalityCard({ hospitality, onEdit, onDelete }: { hospitality: HospitalityProject; onEdit: () => void; onDelete: () => void }) {
+function HospitalityCard({ hospitality, onView, onEdit, onDelete }: { hospitality: HospitalityProject; onView: () => void; onEdit: () => void; onDelete: () => void }) {
   return (
     <div className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated transition-all group">
-      <div className="aspect-video bg-muted relative overflow-hidden">
+      <div 
+        className="aspect-video bg-muted relative overflow-hidden cursor-pointer"
+        onClick={onView}
+      >
         {hospitality.thumbnail_url ? (
           <img
             src={hospitality.thumbnail_url}
@@ -806,8 +895,12 @@ function HospitalityCard({ hospitality, onEdit, onDelete }: { hospitality: Hospi
           </p>
         )}
         <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={onView}>
+            <Eye className="w-4 h-4 mr-1" />
+            View
+          </Button>
           <Button variant="outline" size="sm" className="flex-1" onClick={onEdit}>
-            <Edit className="w-4 h-4 mr-2" />
+            <Edit className="w-4 h-4 mr-1" />
             Edit
           </Button>
           <Button
