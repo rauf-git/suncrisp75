@@ -52,6 +52,8 @@ const Index = () => {
   // Fetch data from database - SEPARATE for each section
   useEffect(() => {
     const fetchData = async () => {
+      console.log("[Index] Fetching all data from database...");
+      
       // Fetch portfolio projects (from projects table)
       const { data: portfolioProjects } = await projectService.getAll();
       if (portfolioProjects && portfolioProjects.length > 0) {
@@ -71,7 +73,8 @@ const Index = () => {
       }
 
       // Fetch construction projects (from construction_projects table)
-      const { data: constructionProjects } = await constructionService.getAll();
+      const { data: constructionProjects, error: constructionError } = await constructionService.getAll();
+      console.log("[Index] Construction projects fetched:", constructionProjects?.length, "Error:", constructionError);
       if (constructionProjects && constructionProjects.length > 0) {
         const mappedConstruction: Property[] = constructionProjects.map(c => ({
           id: c.id,
@@ -85,6 +88,7 @@ const Index = () => {
           features: [c.status || 'Under Construction'],
           gallery: c.images || [],
         }));
+        console.log("[Index] Mapped construction:", mappedConstruction);
         setConstructionData(mappedConstruction);
       }
 
@@ -105,7 +109,8 @@ const Index = () => {
       }
 
       // Fetch rentals (from rentals table)
-      const { data: rentalItems } = await rentalService.getAll();
+      const { data: rentalItems, error: rentalError } = await rentalService.getAll();
+      console.log("[Index] Rentals fetched:", rentalItems?.length, "Error:", rentalError);
       if (rentalItems && rentalItems.length > 0) {
         const mappedRentals: Property[] = rentalItems.map(r => ({
           id: r.id,
@@ -124,8 +129,11 @@ const Index = () => {
           ].filter(Boolean),
           gallery: r.images || [],
         }));
+        console.log("[Index] Mapped rentals:", mappedRentals);
         setRentalsData(mappedRentals);
       }
+
+      console.log("[Index] Fetch complete.");
     };
 
     fetchData();
