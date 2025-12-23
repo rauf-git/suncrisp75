@@ -1,4 +1,17 @@
 import { supabase } from "@/integrations/supabase/client";
+import { TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
+import {
+  createRentalSchema,
+  updateRentalSchema,
+  createLocationSchema,
+  updateLocationSchema,
+  uuidSchema,
+  validateFile,
+  type CreateRentalInput,
+  type UpdateRentalInput,
+  type CreateLocationInput,
+  type UpdateLocationInput
+} from "@/lib/validation";
 
 export interface RentalLocation {
   id: string;
@@ -31,54 +44,6 @@ export interface Rental {
   rental_locations?: RentalLocation;
 }
 
-export interface CreateRentalInput {
-  title: string;
-  short_description?: string;
-  long_description?: string;
-  location_id?: string;
-  address?: string;
-  price?: string;
-  bedrooms?: number;
-  bathrooms?: number;
-  area?: string;
-  amenities?: string[];
-  thumbnail_url?: string;
-  images?: string[];
-  is_featured?: boolean;
-  display_order?: number;
-}
-
-export interface UpdateRentalInput {
-  title?: string;
-  short_description?: string;
-  long_description?: string;
-  location_id?: string;
-  address?: string;
-  price?: string;
-  bedrooms?: number;
-  bathrooms?: number;
-  area?: string;
-  amenities?: string[];
-  thumbnail_url?: string;
-  images?: string[];
-  is_featured?: boolean;
-  display_order?: number;
-}
-
-export interface CreateLocationInput {
-  name: string;
-  description?: string;
-  image_url?: string;
-  display_order?: number;
-}
-
-export interface UpdateLocationInput {
-  name?: string;
-  description?: string;
-  image_url?: string;
-  display_order?: number;
-}
-
 const BUCKET_NAME = "content-images";
 
 export const rentalService = {
@@ -93,6 +58,12 @@ export const rentalService = {
   },
 
   async getById(id: string): Promise<{ data: Rental | null; error: Error | null }> {
+    // Validate UUID
+    const idResult = uuidSchema.safeParse(id);
+    if (!idResult.success) {
+      return { data: null, error: new Error("Invalid rental ID format") };
+    }
+
     const { data, error } = await supabase
       .from("rentals")
       .select("*, rental_locations(*)")
@@ -103,6 +74,12 @@ export const rentalService = {
   },
 
   async getByLocation(locationId: string): Promise<{ data: Rental[] | null; error: Error | null }> {
+    // Validate UUID
+    const idResult = uuidSchema.safeParse(locationId);
+    if (!idResult.success) {
+      return { data: null, error: new Error("Invalid location ID format") };
+    }
+
     const { data, error } = await supabase
       .from("rentals")
       .select("*, rental_locations(*)")
@@ -123,9 +100,16 @@ export const rentalService = {
   },
 
   async create(rental: CreateRentalInput): Promise<{ data: Rental | null; error: Error | null }> {
+    // Validate input with Zod schema
+    const validationResult = createRentalSchema.safeParse(rental);
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.errors.map(e => e.message).join(", ");
+      return { data: null, error: new Error(errorMessage) };
+    }
+
     const { data, error } = await supabase
       .from("rentals")
-      .insert(rental)
+      .insert(validationResult.data as TablesInsert<"rentals">)
       .select("*, rental_locations(*)")
       .single();
     
@@ -133,9 +117,22 @@ export const rentalService = {
   },
 
   async update(id: string, updates: UpdateRentalInput): Promise<{ data: Rental | null; error: Error | null }> {
+    // Validate UUID
+    const idResult = uuidSchema.safeParse(id);
+    if (!idResult.success) {
+      return { data: null, error: new Error("Invalid rental ID format") };
+    }
+
+    // Validate input with Zod schema
+    const validationResult = updateRentalSchema.safeParse(updates);
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.errors.map(e => e.message).join(", ");
+      return { data: null, error: new Error(errorMessage) };
+    }
+
     const { data, error } = await supabase
       .from("rentals")
-      .update(updates)
+      .update(validationResult.data as TablesUpdate<"rentals">)
       .eq("id", id)
       .select("*, rental_locations(*)")
       .single();
@@ -144,6 +141,12 @@ export const rentalService = {
   },
 
   async delete(id: string): Promise<{ error: Error | null }> {
+    // Validate UUID
+    const idResult = uuidSchema.safeParse(id);
+    if (!idResult.success) {
+      return { error: new Error("Invalid rental ID format") };
+    }
+
     const { error } = await supabase
       .from("rentals")
       .delete()
@@ -163,6 +166,12 @@ export const rentalService = {
   },
 
   async getLocationById(id: string): Promise<{ data: RentalLocation | null; error: Error | null }> {
+    // Validate UUID
+    const idResult = uuidSchema.safeParse(id);
+    if (!idResult.success) {
+      return { data: null, error: new Error("Invalid location ID format") };
+    }
+
     const { data, error } = await supabase
       .from("rental_locations")
       .select("*")
@@ -173,9 +182,16 @@ export const rentalService = {
   },
 
   async createLocation(location: CreateLocationInput): Promise<{ data: RentalLocation | null; error: Error | null }> {
+    // Validate input with Zod schema
+    const validationResult = createLocationSchema.safeParse(location);
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.errors.map(e => e.message).join(", ");
+      return { data: null, error: new Error(errorMessage) };
+    }
+
     const { data, error } = await supabase
       .from("rental_locations")
-      .insert(location)
+      .insert(validationResult.data as TablesInsert<"rental_locations">)
       .select()
       .single();
     
@@ -183,9 +199,22 @@ export const rentalService = {
   },
 
   async updateLocation(id: string, updates: UpdateLocationInput): Promise<{ data: RentalLocation | null; error: Error | null }> {
+    // Validate UUID
+    const idResult = uuidSchema.safeParse(id);
+    if (!idResult.success) {
+      return { data: null, error: new Error("Invalid location ID format") };
+    }
+
+    // Validate input with Zod schema
+    const validationResult = updateLocationSchema.safeParse(updates);
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.errors.map(e => e.message).join(", ");
+      return { data: null, error: new Error(errorMessage) };
+    }
+
     const { data, error } = await supabase
       .from("rental_locations")
-      .update(updates)
+      .update(validationResult.data as TablesUpdate<"rental_locations">)
       .eq("id", id)
       .select()
       .single();
@@ -194,6 +223,12 @@ export const rentalService = {
   },
 
   async deleteLocation(id: string): Promise<{ error: Error | null }> {
+    // Validate UUID
+    const idResult = uuidSchema.safeParse(id);
+    if (!idResult.success) {
+      return { error: new Error("Invalid location ID format") };
+    }
+
     const { error } = await supabase
       .from("rental_locations")
       .delete()
@@ -204,7 +239,13 @@ export const rentalService = {
 
   // Image upload
   async uploadImage(file: File): Promise<{ url: string | null; error: Error | null }> {
-    const fileExt = file.name.split(".").pop();
+    // Validate file
+    const fileValidation = validateFile(file);
+    if (!fileValidation.valid) {
+      return { url: null, error: new Error(fileValidation.error) };
+    }
+
+    const fileExt = file.name.split(".").pop()?.toLowerCase();
     const fileName = `rentals/${crypto.randomUUID()}.${fileExt}`;
 
     const { error: uploadError } = await supabase.storage
@@ -236,3 +277,6 @@ export const rentalService = {
     return { error };
   },
 };
+
+// Re-export types for backwards compatibility
+export type { CreateRentalInput, UpdateRentalInput, CreateLocationInput, UpdateLocationInput };

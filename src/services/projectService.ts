@@ -1,4 +1,13 @@
 import { supabase } from "@/integrations/supabase/client";
+import { TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
+import { 
+  createProjectSchema, 
+  updateProjectSchema, 
+  uuidSchema,
+  validateFile,
+  type CreateProjectInput,
+  type UpdateProjectInput
+} from "@/lib/validation";
 
 export interface Project {
   id: string;
@@ -15,30 +24,6 @@ export interface Project {
   updated_at: string;
 }
 
-export interface CreateProjectInput {
-  title: string;
-  description?: string;
-  short_description?: string;
-  long_description?: string;
-  location?: string;
-  category?: string;
-  image_url: string;
-  images?: string[];
-  display_order?: number;
-}
-
-export interface UpdateProjectInput {
-  title?: string;
-  description?: string;
-  short_description?: string;
-  long_description?: string;
-  location?: string;
-  category?: string;
-  image_url?: string;
-  images?: string[];
-  display_order?: number;
-}
-
 const BUCKET_NAME = "project-images";
 
 export const projectService = {
@@ -52,16 +37,28 @@ export const projectService = {
   },
 
   async getByCategory(category: string): Promise<{ data: Project[] | null; error: Error | null }> {
+    // Validate category input
+    const sanitizedCategory = category.trim().slice(0, 100);
+    if (!sanitizedCategory) {
+      return { data: null, error: new Error("Category is required") };
+    }
+
     const { data, error } = await supabase
       .from("projects")
       .select("*")
-      .ilike("category", category)
+      .ilike("category", sanitizedCategory)
       .order("display_order", { ascending: true });
     
     return { data, error };
   },
 
   async getById(id: string): Promise<{ data: Project | null; error: Error | null }> {
+    // Validate UUID
+    const idResult = uuidSchema.safeParse(id);
+    if (!idResult.success) {
+      return { data: null, error: new Error("Invalid project ID format") };
+    }
+
     const { data, error } = await supabase
       .from("projects")
       .select("*")
@@ -72,9 +69,16 @@ export const projectService = {
   },
 
   async create(project: CreateProjectInput): Promise<{ data: Project | null; error: Error | null }> {
+    // Validate input with Zod schema
+    const validationResult = createProjectSchema.safeParse(project);
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.errors.map(e => e.message).join(", ");
+      return { data: null, error: new Error(errorMessage) };
+    }
+
     const { data, error } = await supabase
       .from("projects")
-      .insert(project)
+      .insert(validationResult.data as TablesInsert<"projects">)
       .select()
       .single();
     
@@ -82,9 +86,22 @@ export const projectService = {
   },
 
   async update(id: string, updates: UpdateProjectInput): Promise<{ data: Project | null; error: Error | null }> {
+    // Validate UUID
+    const idResult = uuidSchema.safeParse(id);
+    if (!idResult.success) {
+      return { data: null, error: new Error("Invalid project ID format") };
+    }
+
+    // Validate input with Zod schema
+    const validationResult = updateProjectSchema.safeParse(updates);
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.errors.map(e => e.message).join(", ");
+      return { data: null, error: new Error(errorMessage) };
+    }
+
     const { data, error } = await supabase
       .from("projects")
-      .update(updates)
+      .update(validationResult.data as TablesUpdate<"projects">)
       .eq("id", id)
       .select()
       .single();
@@ -93,6 +110,12 @@ export const projectService = {
   },
 
   async delete(id: string): Promise<{ error: Error | null }> {
+    // Validate UUID
+    const idResult = uuidSchema.safeParse(id);
+    if (!idResult.success) {
+      return { error: new Error("Invalid project ID format") };
+    }
+
     const { error } = await supabase
       .from("projects")
       .delete()
@@ -102,7 +125,13 @@ export const projectService = {
   },
 
   async uploadImage(file: File): Promise<{ url: string | null; error: Error | null }> {
-    const fileExt = file.name.split(".").pop();
+    // Validate file
+    const fileValidation = validateFile(file);
+    if (!fileValidation.valid) {
+      return { url: null, error: new Error(fileValidation.error) };
+    }
+
+    const fileExt = file.name.split(".").pop()?.toLowerCase();
     const fileName = `${crypto.randomUUID()}.${fileExt}`;
     const filePath = `${fileName}`;
 
@@ -145,17 +174,9 @@ export const projectService = {
   },
 
   validateFile(file: File): { valid: boolean; error?: string } {
-    const acceptedTypes = ["image/jpeg", "image/png", "image/webp"];
-    const maxSize = this.getMaxFileSize();
-
-    if (!acceptedTypes.includes(file.type)) {
-      return { valid: false, error: "Only JPG, PNG, and WEBP files are allowed" };
-    }
-
-    if (file.size > maxSize) {
-      return { valid: false, error: "File size must be less than 5MB" };
-    }
-
-    return { valid: true };
+    return validateFile(file);
   },
 };
+
+// Re-export types for backwards compatibility
+export type { CreateProjectInput, UpdateProjectInput };
