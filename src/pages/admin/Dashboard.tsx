@@ -4,9 +4,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { projectService, Project } from "@/services/projectService";
 import { constructionService, ConstructionProject } from "@/services/constructionService";
 import { rentalService, Rental, RentalLocation } from "@/services/rentalService";
+import { hospitalityService, HospitalityProject } from "@/services/hospitalityService";
 import { ProjectFormModal } from "@/components/admin/ProjectFormModal";
 import { ConstructionFormModal } from "@/components/admin/ConstructionFormModal";
 import { RentalFormModal } from "@/components/admin/RentalFormModal";
+import { HospitalityFormModal } from "@/components/admin/HospitalityFormModal";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,12 +26,13 @@ import {
   HardHat,
   Key,
   FileText,
-  MapPin
+  MapPin,
+  Hotel
 } from "lucide-react";
 import { format } from "date-fns";
 
-type ContentType = "portfolio" | "construction" | "rentals" | "pages";
-type DeleteTarget = { type: "project"; item: Project } | { type: "construction"; item: ConstructionProject } | { type: "rental"; item: Rental };
+type ContentType = "portfolio" | "construction" | "rentals" | "hospitality" | "pages";
+type DeleteTarget = { type: "project"; item: Project } | { type: "construction"; item: ConstructionProject } | { type: "rental"; item: Rental } | { type: "hospitality"; item: HospitalityProject };
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<ContentType>("portfolio");
@@ -52,6 +55,12 @@ export default function AdminDashboard() {
   const [isLoadingRentals, setIsLoadingRentals] = useState(true);
   const [isRentalFormOpen, setIsRentalFormOpen] = useState(false);
   const [editingRental, setEditingRental] = useState<Rental | null>(null);
+  
+  // Hospitality state
+  const [hospitalityProjects, setHospitalityProjects] = useState<HospitalityProject[]>([]);
+  const [isLoadingHospitality, setIsLoadingHospitality] = useState(true);
+  const [isHospitalityFormOpen, setIsHospitalityFormOpen] = useState(false);
+  const [editingHospitality, setEditingHospitality] = useState<HospitalityProject | null>(null);
   
   // Delete state
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
@@ -106,10 +115,22 @@ export default function AdminDashboard() {
     setIsLoadingRentals(false);
   };
 
+  const fetchHospitality = async () => {
+    setIsLoadingHospitality(true);
+    const { data, error } = await hospitalityService.getAll();
+    if (error) {
+      toast({ title: "Error", description: "Failed to load hospitality projects", variant: "destructive" });
+    } else {
+      setHospitalityProjects(data || []);
+    }
+    setIsLoadingHospitality(false);
+  };
+
   useEffect(() => {
     fetchProjects();
     fetchConstructions();
     fetchRentals();
+    fetchHospitality();
   }, []);
 
   const handleSignOut = async () => {
@@ -150,6 +171,17 @@ export default function AdminDashboard() {
     setEditingRental(null);
   };
 
+  // Hospitality handlers
+  const handleEditHospitality = (hospitality: HospitalityProject) => {
+    setEditingHospitality(hospitality);
+    setIsHospitalityFormOpen(true);
+  };
+
+  const handleHospitalityFormClose = () => {
+    setIsHospitalityFormOpen(false);
+    setEditingHospitality(null);
+  };
+
   // Delete handler
   const handleDelete = async () => {
     if (!deleteTarget) return;
@@ -179,6 +211,14 @@ export default function AdminDashboard() {
         if (error) throw error;
         toast({ title: "Rental deleted", description: "The rental property has been deleted successfully." });
         fetchRentals();
+      } else if (deleteTarget.type === "hospitality") {
+        if (deleteTarget.item.thumbnail_url) {
+          await hospitalityService.deleteImage(deleteTarget.item.thumbnail_url);
+        }
+        const { error } = await hospitalityService.delete(deleteTarget.item.id);
+        if (error) throw error;
+        toast({ title: "Hospitality deleted", description: "The hospitality project has been deleted successfully." });
+        fetchHospitality();
       }
     } catch (error) {
       toast({ title: "Error", description: "Failed to delete item", variant: "destructive" });
@@ -198,18 +238,23 @@ export default function AdminDashboard() {
     } else if (activeTab === "rentals") {
       setEditingRental(null);
       setIsRentalFormOpen(true);
+    } else if (activeTab === "hospitality") {
+      setEditingHospitality(null);
+      setIsHospitalityFormOpen(true);
     }
   };
 
   const refreshData = () => {
     if (activeTab === "portfolio") fetchProjects();
     else if (activeTab === "construction") fetchConstructions();
+    else if (activeTab === "hospitality") fetchHospitality();
     else if (activeTab === "rentals") fetchRentals();
   };
 
   const isLoading = activeTab === "portfolio" ? isLoadingProjects : 
                     activeTab === "construction" ? isLoadingConstructions : 
-                    activeTab === "rentals" ? isLoadingRentals : false;
+                    activeTab === "rentals" ? isLoadingRentals :
+                    activeTab === "hospitality" ? isLoadingHospitality : false;
 
   return (
     <div className="min-h-screen bg-background">
@@ -241,7 +286,7 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ContentType)} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
+          <TabsList className="grid w-full grid-cols-5 mb-8">
             <TabsTrigger value="portfolio" className="flex items-center gap-2">
               <Building2 className="w-4 h-4" />
               <span className="hidden sm:inline">Portfolio</span>
@@ -253,6 +298,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="rentals" className="flex items-center gap-2">
               <Key className="w-4 h-4" />
               <span className="hidden sm:inline">Rentals</span>
+            </TabsTrigger>
+            <TabsTrigger value="hospitality" className="flex items-center gap-2">
+              <Hotel className="w-4 h-4" />
+              <span className="hidden sm:inline">Hospitality</span>
             </TabsTrigger>
             <TabsTrigger value="pages" className="flex items-center gap-2">
               <FileText className="w-4 h-4" />
@@ -268,6 +317,7 @@ export default function AdminDashboard() {
                 {activeTab === "portfolio" && `${projects.length} projects`}
                 {activeTab === "construction" && `${constructions.length} projects`}
                 {activeTab === "rentals" && `${rentals.length} rentals, ${rentalLocations.length} locations`}
+                {activeTab === "hospitality" && `${hospitalityProjects.length} projects`}
               </span>
             </div>
             <div className="flex items-center gap-3">
@@ -278,7 +328,7 @@ export default function AdminDashboard() {
               {activeTab !== "pages" && (
                 <Button onClick={handleAddClick} className="bg-primary hover:bg-primary/90">
                   <Plus className="w-4 h-4 mr-2" />
-                  Add {activeTab === "portfolio" ? "Project" : activeTab === "construction" ? "Construction" : "Rental"}
+                  Add {activeTab === "portfolio" ? "Project" : activeTab === "construction" ? "Construction" : activeTab === "rentals" ? "Rental" : "Hospitality"}
                 </Button>
               )}
             </div>
@@ -381,21 +431,45 @@ export default function AdminDashboard() {
             )}
           </TabsContent>
 
-          {/* Pages Tab */}
+          {/* Hospitality Tab */}
+          <TabsContent value="hospitality">
+            {isLoadingHospitality ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : hospitalityProjects.length === 0 ? (
+              <EmptyState onAdd={handleAddClick} type="hospitality" />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {hospitalityProjects.map((hospitality) => (
+                  <HospitalityCard
+                    key={hospitality.id}
+                    hospitality={hospitality}
+                    onEdit={() => handleEditHospitality(hospitality)}
+                    onDelete={() => setDeleteTarget({ type: "hospitality", item: hospitality })}
+                  />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Pages Tab - Only Home, About, Contact */}
           <TabsContent value="pages">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {["home", "portfolio", "construction", "rentals", "hospitality", "about", "contact"].map((page) => (
+              {["home", "about", "contact"].map((page) => (
                 <div
                   key={page}
                   className="bg-card border border-border rounded-xl p-6 hover:shadow-elevated transition-all cursor-pointer group"
                   onClick={() => {/* TODO: open page editor */}}
                 >
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-serif text-lg capitalize">{page}</h3>
+                    <h3 className="font-serif text-lg capitalize">{page === "home" ? "Home Page" : page === "about" ? "About Us" : "Contact"}</h3>
                     <Edit className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Edit content blocks, images, and text for the {page} page.
+                    {page === "home" && "Edit hero section, testimonials, and trusted brands text."}
+                    {page === "about" && "Edit about us text content and images."}
+                    {page === "contact" && "Edit address, phone, email, and map coordinates."}
                   </p>
                 </div>
               ))}
@@ -425,6 +499,13 @@ export default function AdminDashboard() {
         rental={editingRental}
         locations={rentalLocations}
         onSuccess={fetchRentals}
+      />
+
+      <HospitalityFormModal
+        open={isHospitalityFormOpen}
+        onOpenChange={handleHospitalityFormClose}
+        project={editingHospitality}
+        onSuccess={fetchHospitality}
       />
 
       <DeleteConfirmDialog
@@ -595,6 +676,61 @@ function RentalCard({ rental, onEdit, onDelete }: { rental: Rental; onEdit: () =
         {rental.short_description && (
           <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
             {rental.short_description}
+          </p>
+        )}
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="flex-1" onClick={onEdit}>
+            <Edit className="w-4 h-4 mr-2" />
+            Edit
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            onClick={onDelete}
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function HospitalityCard({ hospitality, onEdit, onDelete }: { hospitality: HospitalityProject; onEdit: () => void; onDelete: () => void }) {
+  return (
+    <div className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated transition-all group">
+      <div className="aspect-video bg-muted relative overflow-hidden">
+        {hospitality.thumbnail_url ? (
+          <img
+            src={hospitality.thumbnail_url}
+            alt={hospitality.title}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <Hotel className="w-12 h-12 text-muted-foreground" />
+          </div>
+        )}
+        {hospitality.location && (
+          <span className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded flex items-center gap-1">
+            <MapPin className="w-3 h-3" />
+            {hospitality.location}
+          </span>
+        )}
+        {hospitality.price_info && (
+          <span className="absolute bottom-3 right-3 bg-background/90 text-foreground text-sm font-semibold px-2 py-1 rounded">
+            {hospitality.price_info}
+          </span>
+        )}
+      </div>
+      <div className="p-5">
+        <h3 className="font-serif text-lg font-semibold text-foreground mb-2 line-clamp-1">
+          {hospitality.title}
+        </h3>
+        {hospitality.short_description && (
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+            {hospitality.short_description}
           </p>
         )}
         <div className="flex gap-2">
