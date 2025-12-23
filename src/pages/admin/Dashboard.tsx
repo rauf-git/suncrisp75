@@ -10,6 +10,7 @@ import { RentalFormModal } from "@/components/admin/RentalFormModal";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
 import { DraggableList } from "@/components/admin/DraggableList";
 import { ViewDetailModal } from "@/components/admin/ViewDetailModal";
+import { HomePageEditor } from "@/components/admin/HomePageEditor";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
@@ -64,6 +65,9 @@ export default function AdminDashboard() {
   
   // View detail state
   const [viewTarget, setViewTarget] = useState<ViewTarget | null>(null);
+  
+  // Home page editor state
+  const [isHomeEditorOpen, setIsHomeEditorOpen] = useState(false);
   
   const { signOut, user } = useAuth();
   const navigate = useNavigate();
@@ -432,37 +436,35 @@ export default function AdminDashboard() {
           </TabsContent>
 
 
-          {/* Pages Tab - Only Home, About, Contact */}
+          {/* Pages Tab */}
           <TabsContent value="pages">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[
-                { 
-                  key: "home", 
-                  title: "Home Page", 
-                  description: "Edit hero section, testimonials, and trusted brands text."
-                },
-                { 
-                  key: "about", 
-                  title: "About Us", 
-                  description: "Edit about us text content and images."
-                }
-              ].map((page) => (
-                <div
-                  key={page.key}
-                  className="bg-card border border-border rounded-xl p-6 hover:shadow-elevated transition-all cursor-pointer group"
-                  onClick={() => {
-                    toast({ title: "Coming soon", description: `Page editor for ${page.title} is under development.` });
-                  }}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-serif text-lg">{page.title}</h3>
-                    <Edit className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {page.description}
-                  </p>
+              <div
+                className="bg-card border border-border rounded-xl p-6 hover:shadow-elevated transition-all cursor-pointer group"
+                onClick={() => setIsHomeEditorOpen(true)}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-serif text-lg">Home Page</h3>
+                  <Edit className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                 </div>
-              ))}
+                <p className="text-sm text-muted-foreground">
+                  Edit testimonials and trusted brands text.
+                </p>
+              </div>
+              <div
+                className="bg-card border border-border rounded-xl p-6 hover:shadow-elevated transition-all cursor-pointer group"
+                onClick={() => {
+                  toast({ title: "Coming soon", description: "Page editor for About Us is under development." });
+                }}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-serif text-lg">About Us</h3>
+                  <Edit className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Edit about us text content and images.
+                </p>
+              </div>
             </div>
           </TabsContent>
         </Tabs>
@@ -491,6 +493,10 @@ export default function AdminDashboard() {
         onSuccess={fetchRentals}
       />
 
+      <HomePageEditor
+        open={isHomeEditorOpen}
+        onOpenChange={setIsHomeEditorOpen}
+      />
 
       <DeleteConfirmDialog
         open={!!deleteTarget}
