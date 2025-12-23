@@ -13,6 +13,8 @@ import PropertyDetail from '@/components/suncrisp/PropertyDetail';
 import EmailModal from '@/components/suncrisp/EmailModal';
 import { RENTALS_DATA, PORTFOLIO_DATA, CONSTRUCTION_SERVICES, HOSPITALITY_DATA } from '@/constants';
 import { Property, Service, Experience, AboutData, ContactData } from '@/types';
+import { projectService } from '@/services/projectService';
+import { rentalService } from '@/services/rentalService';
 
 const INITIAL_ABOUT: AboutData = {
   title: "Building Futures Through Excellence",
@@ -34,17 +36,80 @@ const Index = () => {
   const [selectedSection, setSelectedSection] = useState<string>('');
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
 
-  // Data state
-  const [portfolioData] = useState<Property[]>(PORTFOLIO_DATA);
-  const [rentalsData] = useState<Property[]>(RENTALS_DATA);
+  // Data state - initialized with static data, then updated from database
+  const [portfolioData, setPortfolioData] = useState<Property[]>(PORTFOLIO_DATA);
+  const [rentalsData, setRentalsData] = useState<Property[]>(RENTALS_DATA);
   const [constructionData] = useState<Service[]>(CONSTRUCTION_SERVICES);
-  const [hospitalityData] = useState<Experience[]>(HOSPITALITY_DATA);
+  const [hospitalityData, setHospitalityData] = useState<Experience[]>(HOSPITALITY_DATA);
   const [aboutData] = useState<AboutData>(INITIAL_ABOUT);
   const [contactData] = useState<ContactData>(INITIAL_CONTACT);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 100);
     return () => clearTimeout(timer);
+  }, []);
+
+  // Fetch data from database
+  useEffect(() => {
+    const fetchData = async () => {
+      // Fetch portfolio projects
+      const { data: portfolioProjects } = await projectService.getAll();
+      if (portfolioProjects && portfolioProjects.length > 0) {
+        const mappedPortfolio: Property[] = portfolioProjects
+          .filter(p => p.category?.toLowerCase() !== 'hospitality')
+          .map(p => ({
+            id: p.id,
+            title: p.title,
+            type: p.category || 'Project',
+            location: p.location || '',
+            price: '',
+            image: p.image_url,
+            description: p.description || '',
+            features: []
+          }));
+        if (mappedPortfolio.length > 0) {
+          setPortfolioData(mappedPortfolio);
+        }
+      }
+
+      // Fetch hospitality projects
+      const { data: hospitalityProjects } = await projectService.getByCategory('hospitality');
+      if (hospitalityProjects && hospitalityProjects.length > 0) {
+        const mappedHospitality: Experience[] = hospitalityProjects.map(p => ({
+          id: p.id,
+          title: p.title,
+          description: p.description || '',
+          image: p.image_url,
+          priceStart: p.short_description || 'Inquire for pricing'
+        }));
+        setHospitalityData(mappedHospitality);
+      }
+
+      // Fetch rentals
+      const { data: rentalItems } = await rentalService.getAll();
+      if (rentalItems && rentalItems.length > 0) {
+        const mappedRentals: Property[] = rentalItems.map(r => ({
+          id: r.id,
+          title: r.title,
+          type: 'Rental',
+          location: r.address || '',
+          price: r.price || '',
+          image: r.thumbnail_url || '',
+          description: r.short_description || '',
+          features: [
+            r.bedrooms ? `${r.bedrooms} Beds` : '',
+            r.bathrooms ? `${r.bathrooms} Baths` : '',
+            r.area || '',
+            ...(r.amenities || [])
+          ].filter(Boolean)
+        }));
+        if (mappedRentals.length > 0) {
+          setRentalsData(mappedRentals);
+        }
+      }
+    };
+
+    fetchData();
   }, []);
 
   // Scroll to top when page changes
