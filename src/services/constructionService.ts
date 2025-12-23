@@ -1,4 +1,13 @@
 import { supabase } from "@/integrations/supabase/client";
+import { TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
+import {
+  createConstructionSchema,
+  updateConstructionSchema,
+  uuidSchema,
+  validateFile,
+  type CreateConstructionInput,
+  type UpdateConstructionInput
+} from "@/lib/validation";
 
 export interface ConstructionProject {
   id: string;
@@ -15,30 +24,6 @@ export interface ConstructionProject {
   updated_at: string;
 }
 
-export interface CreateConstructionInput {
-  title: string;
-  description?: string;
-  status?: string;
-  address?: string;
-  latitude?: number;
-  longitude?: number;
-  thumbnail_url?: string;
-  images?: string[];
-  display_order?: number;
-}
-
-export interface UpdateConstructionInput {
-  title?: string;
-  description?: string;
-  status?: string;
-  address?: string;
-  latitude?: number;
-  longitude?: number;
-  thumbnail_url?: string;
-  images?: string[];
-  display_order?: number;
-}
-
 const BUCKET_NAME = "content-images";
 
 export const constructionService = {
@@ -52,6 +37,12 @@ export const constructionService = {
   },
 
   async getById(id: string): Promise<{ data: ConstructionProject | null; error: Error | null }> {
+    // Validate UUID
+    const idResult = uuidSchema.safeParse(id);
+    if (!idResult.success) {
+      return { data: null, error: new Error("Invalid construction project ID format") };
+    }
+
     const { data, error } = await supabase
       .from("construction_projects")
       .select("*")
@@ -62,9 +53,16 @@ export const constructionService = {
   },
 
   async create(project: CreateConstructionInput): Promise<{ data: ConstructionProject | null; error: Error | null }> {
+    // Validate input with Zod schema
+    const validationResult = createConstructionSchema.safeParse(project);
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.errors.map(e => e.message).join(", ");
+      return { data: null, error: new Error(errorMessage) };
+    }
+
     const { data, error } = await supabase
       .from("construction_projects")
-      .insert(project)
+      .insert(validationResult.data as TablesInsert<"construction_projects">)
       .select()
       .single();
     
@@ -72,9 +70,22 @@ export const constructionService = {
   },
 
   async update(id: string, updates: UpdateConstructionInput): Promise<{ data: ConstructionProject | null; error: Error | null }> {
+    // Validate UUID
+    const idResult = uuidSchema.safeParse(id);
+    if (!idResult.success) {
+      return { data: null, error: new Error("Invalid construction project ID format") };
+    }
+
+    // Validate input with Zod schema
+    const validationResult = updateConstructionSchema.safeParse(updates);
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.errors.map(e => e.message).join(", ");
+      return { data: null, error: new Error(errorMessage) };
+    }
+
     const { data, error } = await supabase
       .from("construction_projects")
-      .update(updates)
+      .update(validationResult.data as TablesUpdate<"construction_projects">)
       .eq("id", id)
       .select()
       .single();
@@ -83,6 +94,12 @@ export const constructionService = {
   },
 
   async delete(id: string): Promise<{ error: Error | null }> {
+    // Validate UUID
+    const idResult = uuidSchema.safeParse(id);
+    if (!idResult.success) {
+      return { error: new Error("Invalid construction project ID format") };
+    }
+
     const { error } = await supabase
       .from("construction_projects")
       .delete()
@@ -92,7 +109,13 @@ export const constructionService = {
   },
 
   async uploadImage(file: File): Promise<{ url: string | null; error: Error | null }> {
-    const fileExt = file.name.split(".").pop();
+    // Validate file
+    const fileValidation = validateFile(file);
+    if (!fileValidation.valid) {
+      return { url: null, error: new Error(fileValidation.error) };
+    }
+
+    const fileExt = file.name.split(".").pop()?.toLowerCase();
     const fileName = `construction/${crypto.randomUUID()}.${fileExt}`;
 
     const { error: uploadError } = await supabase.storage
@@ -124,3 +147,6 @@ export const constructionService = {
     return { error };
   },
 };
+
+// Re-export types for backwards compatibility
+export type { CreateConstructionInput, UpdateConstructionInput };

@@ -1,5 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
-import { Json } from "@/integrations/supabase/types";
+import { Json, TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
+import {
+  createPageBlockSchema,
+  updatePageBlockSchema,
+  uuidSchema,
+  type CreatePageBlockInput,
+  type UpdatePageBlockInput
+} from "@/lib/validation";
 
 export interface PageBlockContent {
   title?: string;
@@ -29,47 +36,57 @@ export interface PageBlock {
   updated_at: string;
 }
 
-export interface CreatePageBlockInput {
-  page_key: string;
-  block_type: string;
-  block_key: string;
-  content: PageBlockContent;
-  display_order?: number;
-  is_active?: boolean;
-}
-
-export interface UpdatePageBlockInput {
-  content?: PageBlockContent;
-  display_order?: number;
-  is_active?: boolean;
-}
-
 export const pageBlockService = {
   async getByPage(pageKey: string): Promise<{ data: PageBlock[] | null; error: Error | null }> {
+    // Validate page key
+    const sanitizedPageKey = pageKey.trim().slice(0, 100);
+    if (!sanitizedPageKey) {
+      return { data: null, error: new Error("Page key is required") };
+    }
+
     const { data, error } = await supabase
       .from("page_blocks")
       .select("*")
-      .eq("page_key", pageKey)
+      .eq("page_key", sanitizedPageKey)
       .order("display_order", { ascending: true });
     
     return { data: data as PageBlock[] | null, error };
   },
 
   async getByKey(pageKey: string, blockKey: string): Promise<{ data: PageBlock | null; error: Error | null }> {
+    // Validate keys
+    const sanitizedPageKey = pageKey.trim().slice(0, 100);
+    const sanitizedBlockKey = blockKey.trim().slice(0, 100);
+    
+    if (!sanitizedPageKey || !sanitizedBlockKey) {
+      return { data: null, error: new Error("Page key and block key are required") };
+    }
+
     const { data, error } = await supabase
       .from("page_blocks")
       .select("*")
-      .eq("page_key", pageKey)
-      .eq("block_key", blockKey)
+      .eq("page_key", sanitizedPageKey)
+      .eq("block_key", sanitizedBlockKey)
       .maybeSingle();
     
     return { data: data as PageBlock | null, error };
   },
 
   async create(block: CreatePageBlockInput): Promise<{ data: PageBlock | null; error: Error | null }> {
-    const insertData = {
-      ...block,
-      content: block.content as unknown as Json,
+    // Validate input with Zod schema
+    const validationResult = createPageBlockSchema.safeParse(block);
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.errors.map(e => e.message).join(", ");
+      return { data: null, error: new Error(errorMessage) };
+    }
+
+    const insertData: TablesInsert<"page_blocks"> = {
+      page_key: validationResult.data.page_key,
+      block_type: validationResult.data.block_type,
+      block_key: validationResult.data.block_key,
+      content: validationResult.data.content as unknown as Json,
+      display_order: validationResult.data.display_order,
+      is_active: validationResult.data.is_active,
     };
     
     const { data, error } = await supabase
@@ -82,10 +99,27 @@ export const pageBlockService = {
   },
 
   async update(id: string, updates: UpdatePageBlockInput): Promise<{ data: PageBlock | null; error: Error | null }> {
-    const updateData = {
-      ...updates,
-      content: updates.content ? (updates.content as unknown as Json) : undefined,
+    // Validate UUID
+    const idResult = uuidSchema.safeParse(id);
+    if (!idResult.success) {
+      return { data: null, error: new Error("Invalid page block ID format") };
+    }
+
+    // Validate input with Zod schema
+    const validationResult = updatePageBlockSchema.safeParse(updates);
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.errors.map(e => e.message).join(", ");
+      return { data: null, error: new Error(errorMessage) };
+    }
+
+    const updateData: TablesUpdate<"page_blocks"> = {
+      display_order: validationResult.data.display_order,
+      is_active: validationResult.data.is_active,
     };
+    
+    if (validationResult.data.content) {
+      updateData.content = validationResult.data.content as unknown as Json;
+    }
     
     const { data, error } = await supabase
       .from("page_blocks")
@@ -98,16 +132,35 @@ export const pageBlockService = {
   },
 
   async updateByKey(pageKey: string, blockKey: string, updates: UpdatePageBlockInput): Promise<{ data: PageBlock | null; error: Error | null }> {
-    const updateData = {
-      ...updates,
-      content: updates.content ? (updates.content as unknown as Json) : undefined,
+    // Validate keys
+    const sanitizedPageKey = pageKey.trim().slice(0, 100);
+    const sanitizedBlockKey = blockKey.trim().slice(0, 100);
+    
+    if (!sanitizedPageKey || !sanitizedBlockKey) {
+      return { data: null, error: new Error("Page key and block key are required") };
+    }
+
+    // Validate input with Zod schema
+    const validationResult = updatePageBlockSchema.safeParse(updates);
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.errors.map(e => e.message).join(", ");
+      return { data: null, error: new Error(errorMessage) };
+    }
+
+    const updateData: TablesUpdate<"page_blocks"> = {
+      display_order: validationResult.data.display_order,
+      is_active: validationResult.data.is_active,
     };
+    
+    if (validationResult.data.content) {
+      updateData.content = validationResult.data.content as unknown as Json;
+    }
     
     const { data, error } = await supabase
       .from("page_blocks")
       .update(updateData)
-      .eq("page_key", pageKey)
-      .eq("block_key", blockKey)
+      .eq("page_key", sanitizedPageKey)
+      .eq("block_key", sanitizedBlockKey)
       .select()
       .single();
     
@@ -115,6 +168,12 @@ export const pageBlockService = {
   },
 
   async delete(id: string): Promise<{ error: Error | null }> {
+    // Validate UUID
+    const idResult = uuidSchema.safeParse(id);
+    if (!idResult.success) {
+      return { error: new Error("Invalid page block ID format") };
+    }
+
     const { error } = await supabase
       .from("page_blocks")
       .delete()
@@ -124,6 +183,20 @@ export const pageBlockService = {
   },
 
   async reorder(pageKey: string, orderedIds: string[]): Promise<{ error: Error | null }> {
+    // Validate page key
+    const sanitizedPageKey = pageKey.trim().slice(0, 100);
+    if (!sanitizedPageKey) {
+      return { error: new Error("Page key is required") };
+    }
+
+    // Validate all IDs
+    for (const id of orderedIds) {
+      const idResult = uuidSchema.safeParse(id);
+      if (!idResult.success) {
+        return { error: new Error("Invalid page block ID format in reorder list") };
+      }
+    }
+
     const updates = orderedIds.map((id, index) => ({
       id,
       display_order: index + 1,
@@ -141,3 +214,6 @@ export const pageBlockService = {
     return { error: null };
   },
 };
+
+// Re-export types for backwards compatibility
+export type { CreatePageBlockInput, UpdatePageBlockInput };
