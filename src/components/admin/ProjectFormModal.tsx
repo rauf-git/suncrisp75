@@ -18,7 +18,9 @@ interface ProjectFormModalProps {
 export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: ProjectFormModalProps) {
   const [title, setTitle] = useState(project?.title || "");
   const [description, setDescription] = useState(project?.description || "");
+  const [location, setLocation] = useState(project?.location || "");
   const [category, setCategory] = useState(project?.category || "");
+  const [displayOrder, setDisplayOrder] = useState(project?.display_order || 0);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(project?.image_url || null);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +34,9 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
   const resetForm = () => {
     setTitle("");
     setDescription("");
+    setLocation("");
     setCategory("");
+    setDisplayOrder(0);
     setImageFile(null);
     setImagePreview(null);
     setErrors({});
@@ -123,7 +127,9 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
         const updates: UpdateProjectInput = {
           title: title.trim(),
           description: description.trim() || undefined,
+          location: location.trim() || undefined,
           category: category.trim() || undefined,
+          display_order: displayOrder,
         };
         
         if (imageFile) {
@@ -141,7 +147,9 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
         const newProject: CreateProjectInput = {
           title: title.trim(),
           description: description.trim() || undefined,
+          location: location.trim() || undefined,
           category: category.trim() || undefined,
+          display_order: displayOrder,
           image_url: imageUrl,
         };
 
@@ -173,7 +181,9 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
     if (open && project) {
       setTitle(project.title);
       setDescription(project.description || "");
+      setLocation(project.location || "");
       setCategory(project.category || "");
+      setDisplayOrder(project.display_order || 0);
       setImagePreview(project.image_url);
       setImageFile(null);
       setErrors({});
@@ -222,15 +232,41 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
           </div>
 
           {/* Category */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="category">Category</Label>
+              <Input
+                id="category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                placeholder="e.g., commercial, residential"
+                disabled={isLoading}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="location">Location</Label>
+              <Input
+                id="location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="e.g., Dubai, Abu Dhabi"
+                disabled={isLoading}
+              />
+            </div>
+          </div>
+
+          {/* Display Order */}
           <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
+            <Label htmlFor="displayOrder">Display Order</Label>
             <Input
-              id="category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              placeholder="e.g., property, service, experience"
+              id="displayOrder"
+              type="number"
+              value={displayOrder}
+              onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
+              placeholder="0"
               disabled={isLoading}
             />
+            <p className="text-xs text-muted-foreground">Lower numbers appear first</p>
           </div>
 
           {/* Image Upload */}

@@ -14,13 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
+      construction_projects: {
+        Row: {
+          address: string | null
+          created_at: string
+          description: string | null
+          display_order: number | null
+          id: string
+          images: string[] | null
+          latitude: number | null
+          longitude: number | null
+          status: string | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          images?: string[] | null
+          latitude?: number | null
+          longitude?: number | null
+          status?: string | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          images?: string[] | null
+          latitude?: number | null
+          longitude?: number | null
+          status?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      page_blocks: {
+        Row: {
+          block_key: string
+          block_type: string
+          content: Json
+          created_at: string
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          page_key: string
+          updated_at: string
+        }
+        Insert: {
+          block_key: string
+          block_type: string
+          content?: Json
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          page_key: string
+          updated_at?: string
+        }
+        Update: {
+          block_key?: string
+          block_type?: string
+          content?: Json
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          page_key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           category: string | null
           created_at: string
           description: string | null
+          display_order: number | null
           id: string
           image_url: string
+          images: string[] | null
+          location: string | null
+          long_description: string | null
+          short_description: string | null
           title: string
           updated_at: string
         }
@@ -28,8 +114,13 @@ export type Database = {
           category?: string | null
           created_at?: string
           description?: string | null
+          display_order?: number | null
           id?: string
           image_url: string
+          images?: string[] | null
+          location?: string | null
+          long_description?: string | null
+          short_description?: string | null
           title: string
           updated_at?: string
         }
@@ -37,12 +128,115 @@ export type Database = {
           category?: string | null
           created_at?: string
           description?: string | null
+          display_order?: number | null
           id?: string
           image_url?: string
+          images?: string[] | null
+          location?: string | null
+          long_description?: string | null
+          short_description?: string | null
           title?: string
           updated_at?: string
         }
         Relationships: []
+      }
+      rental_locations: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number | null
+          id: string
+          image_url: string | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      rentals: {
+        Row: {
+          address: string | null
+          amenities: string[] | null
+          area: string | null
+          bathrooms: number | null
+          bedrooms: number | null
+          created_at: string
+          display_order: number | null
+          id: string
+          images: string[] | null
+          is_featured: boolean | null
+          location_id: string | null
+          long_description: string | null
+          price: string | null
+          short_description: string | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          amenities?: string[] | null
+          area?: string | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          images?: string[] | null
+          is_featured?: boolean | null
+          location_id?: string | null
+          long_description?: string | null
+          price?: string | null
+          short_description?: string | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          amenities?: string[] | null
+          area?: string | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          images?: string[] | null
+          is_featured?: boolean | null
+          location_id?: string | null
+          long_description?: string | null
+          price?: string | null
+          short_description?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rentals_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "rental_locations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
