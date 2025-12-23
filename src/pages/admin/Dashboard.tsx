@@ -549,13 +549,16 @@ export default function AdminDashboard() {
               { key: "title", label: "Title", type: "text" },
               { key: "category", label: "Category", type: "text" },
               { key: "location", label: "Location", type: "text" },
-              { key: "short_description", label: "Short Description", type: "textarea" },
+              { key: "content_heading", label: "Content Heading", type: "text" },
               { key: "long_description", label: "Full Description", type: "textarea" },
+              { key: "visit_url", label: "Visit Link", type: "url" },
             ] : viewTarget.type === "construction" ? [
               { key: "title", label: "Title", type: "text" },
               { key: "status", label: "Status", type: "text" },
               { key: "address", label: "Address", type: "text" },
+              { key: "content_heading", label: "Content Heading", type: "text" },
               { key: "description", label: "Description", type: "textarea" },
+              { key: "visit_url", label: "Visit Link", type: "url" },
             ] : [
               { key: "title", label: "Title", type: "text" },
               { key: "address", label: "Address", type: "text" },
@@ -563,8 +566,9 @@ export default function AdminDashboard() {
               { key: "bedrooms", label: "Bedrooms", type: "number" },
               { key: "bathrooms", label: "Bathrooms", type: "number" },
               { key: "area", label: "Area", type: "text" },
-              { key: "short_description", label: "Short Description", type: "textarea" },
+              { key: "content_heading", label: "Content Heading", type: "text" },
               { key: "long_description", label: "Full Description", type: "textarea" },
+              { key: "visit_url", label: "Visit Link", type: "url" },
             ]
           }
         />

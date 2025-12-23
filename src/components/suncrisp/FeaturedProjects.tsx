@@ -6,35 +6,36 @@ interface FeaturedProjectsProps {
   items: Property[];
   onItemClick?: (item: Property) => void;
   onViewAll?: () => void;
+  title?: string;
 }
 
-const FeaturedProjects = ({ items, onItemClick, onViewAll }: FeaturedProjectsProps) => {
+const FeaturedProjects = ({ items, onItemClick, onViewAll, title = "Featured Projects" }: FeaturedProjectsProps) => {
   // Get only the first 2 items
   const featuredItems = items.slice(0, 2);
 
   if (featuredItems.length === 0) return null;
 
   return (
-    <section className="py-20 md:py-28 bg-background relative overflow-hidden">
+    <section className="py-16 md:py-20 bg-background relative overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
       <div className="absolute bottom-0 right-0 w-80 h-80 bg-accent/5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
       
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <Reveal>
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12 md:mb-16">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-10 md:mb-12">
             <div>
-              <span className="text-xs font-medium tracking-[0.3em] text-primary uppercase mb-3 block">
+              <span className="text-xs font-medium tracking-[0.3em] text-primary uppercase mb-2 block">
                 Featured Works
               </span>
-              <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground leading-tight">
-                Featured Projects
+              <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl text-foreground leading-tight">
+                {title}
               </h2>
             </div>
             {onViewAll && (
               <button 
                 onClick={onViewAll}
-                className="mt-6 md:mt-0 group flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                className="mt-4 md:mt-0 group flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
               >
                 View All Projects
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -43,7 +44,7 @@ const FeaturedProjects = ({ items, onItemClick, onViewAll }: FeaturedProjectsPro
           </div>
         </Reveal>
 
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
           {featuredItems.map((item, index) => (
             <Reveal key={item.id} delay={index * 0.15}>
               <article 
@@ -51,8 +52,8 @@ const FeaturedProjects = ({ items, onItemClick, onViewAll }: FeaturedProjectsPro
                 onClick={() => onItemClick?.(item)}
               >
                 {/* Image Container with rounded corners */}
-                <div className="relative mb-6 overflow-hidden rounded-2xl">
-                  <div className="aspect-[4/3] overflow-hidden bg-muted rounded-2xl">
+                <div className="relative mb-5 overflow-hidden rounded-xl">
+                  <div className="aspect-[4/3] overflow-hidden bg-muted rounded-xl">
                     <img 
                       src={item.image} 
                       alt={item.title}
@@ -67,7 +68,7 @@ const FeaturedProjects = ({ items, onItemClick, onViewAll }: FeaturedProjectsPro
                 </div>
 
                 {/* Content */}
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <div className="flex items-center gap-3">
                     <span className="text-xs font-medium tracking-widest text-primary uppercase">
                       {item.type || 'Construction'}
@@ -82,7 +83,7 @@ const FeaturedProjects = ({ items, onItemClick, onViewAll }: FeaturedProjectsPro
                     )}
                   </div>
                   
-                  <h3 className="font-serif text-xl md:text-2xl text-foreground group-hover:text-primary transition-colors duration-300">
+                  <h3 className="font-serif text-lg md:text-xl text-foreground group-hover:text-primary transition-colors duration-300">
                     {item.title}
                   </h3>
 

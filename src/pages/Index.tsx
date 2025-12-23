@@ -197,11 +197,24 @@ const Index = () => {
         return (
           <>
             <Hero onNavigate={handleNavigation} />
-            <FeaturedProjects 
-              items={featuredProjects.length > 0 ? featuredProjects : constructionData.slice(0, 2)} 
-              onItemClick={(item) => handleItemClick(featuredProjects.length > 0 ? 'portfolio' : 'construction', item)}
-              onViewAll={() => handleNavigation(featuredProjects.length > 0 ? 'portfolio' : 'construction')}
-            />
+            {/* Featured Portfolio Projects - shown first if available */}
+            {featuredProjects.length > 0 && (
+              <FeaturedProjects 
+                items={featuredProjects}
+                onItemClick={(item) => handleItemClick('portfolio', item)}
+                onViewAll={() => handleNavigation('portfolio')}
+                title="Featured Projects"
+              />
+            )}
+            {/* Featured Construction Projects - always shown below */}
+            {constructionData.length > 0 && (
+              <FeaturedProjects 
+                items={constructionData.slice(0, 2)}
+                onItemClick={(item) => handleItemClick('construction', item)}
+                onViewAll={() => handleNavigation('construction')}
+                title="Latest Construction"
+              />
+            )}
             <Testimonials />
           </>
         );
