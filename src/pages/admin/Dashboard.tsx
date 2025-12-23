@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { projectService, Project } from "@/services/projectService";
@@ -10,6 +10,7 @@ import { ConstructionFormModal } from "@/components/admin/ConstructionFormModal"
 import { RentalFormModal } from "@/components/admin/RentalFormModal";
 import { HospitalityFormModal } from "@/components/admin/HospitalityFormModal";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
+import { DraggableList } from "@/components/admin/DraggableList";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
@@ -182,6 +183,75 @@ export default function AdminDashboard() {
     setEditingHospitality(null);
   };
 
+  // Reorder handlers
+  const handleReorderProjects = useCallback(async (reordered: Project[]) => {
+    setProjects(reordered);
+    const updates = reordered.map((item, index) => ({
+      id: item.id,
+      display_order: index
+    }));
+    
+    try {
+      for (const update of updates) {
+        await projectService.update(update.id, { display_order: update.display_order });
+      }
+      toast({ title: "Order saved", description: "Project order has been updated." });
+    } catch {
+      toast({ title: "Error", description: "Failed to save order", variant: "destructive" });
+      fetchProjects();
+    }
+  }, [toast]);
+
+  const handleReorderConstructions = useCallback(async (reordered: ConstructionProject[]) => {
+    setConstructions(reordered);
+    const updates = reordered.map((item, index) => ({
+      id: item.id,
+      display_order: index
+    }));
+    
+    try {
+      for (const update of updates) {
+        await constructionService.update(update.id, { display_order: update.display_order });
+      }
+      toast({ title: "Order saved", description: "Construction order has been updated." });
+    } catch {
+      toast({ title: "Error", description: "Failed to save order", variant: "destructive" });
+      fetchConstructions();
+    }
+  }, [toast]);
+
+  const handleReorderRentals = useCallback(async (reordered: Rental[]) => {
+    setRentals(reordered);
+    const updates = reordered.map((item, index) => ({
+      id: item.id,
+      display_order: index
+    }));
+    
+    try {
+      await rentalService.updateOrder(updates);
+      toast({ title: "Order saved", description: "Rental order has been updated." });
+    } catch {
+      toast({ title: "Error", description: "Failed to save order", variant: "destructive" });
+      fetchRentals();
+    }
+  }, [toast]);
+
+  const handleReorderHospitality = useCallback(async (reordered: HospitalityProject[]) => {
+    setHospitalityProjects(reordered);
+    const updates = reordered.map((item, index) => ({
+      id: item.id,
+      display_order: index
+    }));
+    
+    try {
+      await hospitalityService.updateOrder(updates);
+      toast({ title: "Order saved", description: "Hospitality order has been updated." });
+    } catch {
+      toast({ title: "Error", description: "Failed to save order", variant: "destructive" });
+      fetchHospitality();
+    }
+  }, [toast]);
+
   // Delete handler
   const handleDelete = async () => {
     if (!deleteTarget) return;
@@ -220,7 +290,7 @@ export default function AdminDashboard() {
         toast({ title: "Hospitality deleted", description: "The hospitality project has been deleted successfully." });
         fetchHospitality();
       }
-    } catch (error) {
+    } catch {
       toast({ title: "Error", description: "Failed to delete item", variant: "destructive" });
     }
     
@@ -316,9 +386,14 @@ export default function AdminDashboard() {
               <span className="text-sm text-muted-foreground">
                 {activeTab === "portfolio" && `${projects.length} projects`}
                 {activeTab === "construction" && `${constructions.length} projects`}
-                {activeTab === "rentals" && `${rentals.length} rentals, ${rentalLocations.length} locations`}
+                {activeTab === "rentals" && `${rentals.length} rentals`}
                 {activeTab === "hospitality" && `${hospitalityProjects.length} projects`}
               </span>
+              {activeTab !== "pages" && (
+                <span className="text-xs text-primary bg-primary/10 px-2 py-1 rounded">
+                  Drag to reorder
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-3">
               <Button variant="outline" size="sm" onClick={refreshData} disabled={isLoading}>
@@ -343,16 +418,19 @@ export default function AdminDashboard() {
             ) : projects.length === 0 ? (
               <EmptyState onAdd={handleAddClick} type="project" />
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {projects.map((project) => (
+              <DraggableList
+                items={projects}
+                onReorder={handleReorderProjects}
+                keyExtractor={(p) => p.id}
+                droppableId="portfolio-list"
+                renderItem={(project) => (
                   <ProjectCard
-                    key={project.id}
                     project={project}
                     onEdit={() => handleEditProject(project)}
                     onDelete={() => setDeleteTarget({ type: "project", item: project })}
                   />
-                ))}
-              </div>
+                )}
+              />
             )}
           </TabsContent>
 
@@ -365,16 +443,19 @@ export default function AdminDashboard() {
             ) : constructions.length === 0 ? (
               <EmptyState onAdd={handleAddClick} type="construction" />
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {constructions.map((construction) => (
+              <DraggableList
+                items={constructions}
+                onReorder={handleReorderConstructions}
+                keyExtractor={(c) => c.id}
+                droppableId="construction-list"
+                renderItem={(construction) => (
                   <ConstructionCard
-                    key={construction.id}
                     construction={construction}
                     onEdit={() => handleEditConstruction(construction)}
                     onDelete={() => setDeleteTarget({ type: "construction", item: construction })}
                   />
-                ))}
-              </div>
+                )}
+              />
             )}
           </TabsContent>
 
@@ -384,50 +465,22 @@ export default function AdminDashboard() {
               <div className="flex items-center justify-center py-20">
                 <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
               </div>
-            ) : rentals.length === 0 && rentalLocations.length === 0 ? (
+            ) : rentals.length === 0 ? (
               <EmptyState onAdd={handleAddClick} type="rental" />
             ) : (
-              <div className="space-y-8">
-                {/* Locations */}
-                <div>
-                  <h3 className="font-serif text-lg mb-4">Locations ({rentalLocations.length})</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {rentalLocations.map((location) => (
-                      <div key={location.id} className="bg-card border border-border rounded-lg p-4 hover:shadow-elevated transition-all">
-                        <div className="flex items-center gap-2 mb-2">
-                          <MapPin className="w-4 h-4 text-primary" />
-                          <span className="font-medium">{location.name}</span>
-                        </div>
-                        {location.description && (
-                          <p className="text-sm text-muted-foreground line-clamp-2">{location.description}</p>
-                        )}
-                      </div>
-                    ))}
-                    <button
-                      onClick={() => {/* TODO: add location modal */}}
-                      className="border-2 border-dashed border-border rounded-lg p-4 flex items-center justify-center gap-2 text-muted-foreground hover:border-primary hover:text-primary transition-colors"
-                    >
-                      <Plus className="w-4 h-4" />
-                      Add Location
-                    </button>
-                  </div>
-                </div>
-
-                {/* Rentals */}
-                <div>
-                  <h3 className="font-serif text-lg mb-4">Rental Properties ({rentals.length})</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {rentals.map((rental) => (
-                      <RentalCard
-                        key={rental.id}
-                        rental={rental}
-                        onEdit={() => handleEditRental(rental)}
-                        onDelete={() => setDeleteTarget({ type: "rental", item: rental })}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <DraggableList
+                items={rentals}
+                onReorder={handleReorderRentals}
+                keyExtractor={(r) => r.id}
+                droppableId="rentals-list"
+                renderItem={(rental) => (
+                  <RentalCard
+                    rental={rental}
+                    onEdit={() => handleEditRental(rental)}
+                    onDelete={() => setDeleteTarget({ type: "rental", item: rental })}
+                  />
+                )}
+              />
             )}
           </TabsContent>
 
@@ -440,36 +493,55 @@ export default function AdminDashboard() {
             ) : hospitalityProjects.length === 0 ? (
               <EmptyState onAdd={handleAddClick} type="hospitality" />
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {hospitalityProjects.map((hospitality) => (
+              <DraggableList
+                items={hospitalityProjects}
+                onReorder={handleReorderHospitality}
+                keyExtractor={(h) => h.id}
+                droppableId="hospitality-list"
+                renderItem={(hospitality) => (
                   <HospitalityCard
-                    key={hospitality.id}
                     hospitality={hospitality}
                     onEdit={() => handleEditHospitality(hospitality)}
                     onDelete={() => setDeleteTarget({ type: "hospitality", item: hospitality })}
                   />
-                ))}
-              </div>
+                )}
+              />
             )}
           </TabsContent>
 
           {/* Pages Tab - Only Home, About, Contact */}
           <TabsContent value="pages">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {["home", "about", "contact"].map((page) => (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                { 
+                  key: "home", 
+                  title: "Home Page", 
+                  description: "Edit hero section, testimonials, and trusted brands text."
+                },
+                { 
+                  key: "about", 
+                  title: "About Us", 
+                  description: "Edit about us text content and images."
+                },
+                { 
+                  key: "contact", 
+                  title: "Contact", 
+                  description: "Edit address, phone, email, and map coordinates."
+                }
+              ].map((page) => (
                 <div
-                  key={page}
+                  key={page.key}
                   className="bg-card border border-border rounded-xl p-6 hover:shadow-elevated transition-all cursor-pointer group"
-                  onClick={() => {/* TODO: open page editor */}}
+                  onClick={() => {
+                    toast({ title: "Coming soon", description: `Page editor for ${page.title} is under development.` });
+                  }}
                 >
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-serif text-lg capitalize">{page === "home" ? "Home Page" : page === "about" ? "About Us" : "Contact"}</h3>
+                    <h3 className="font-serif text-lg">{page.title}</h3>
                     <Edit className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {page === "home" && "Edit hero section, testimonials, and trusted brands text."}
-                    {page === "about" && "Edit about us text content and images."}
-                    {page === "contact" && "Edit address, phone, email, and map coordinates."}
+                    {page.description}
                   </p>
                 </div>
               ))}
@@ -543,12 +615,12 @@ function ProjectCard({ project, onEdit, onDelete }: { project: Project; onEdit: 
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         {project.category && (
-          <span className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded">
+          <span className="absolute top-3 right-3 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded">
             {project.category}
           </span>
         )}
         {project.location && (
-          <span className="absolute top-3 right-3 bg-background/90 text-foreground text-xs px-2 py-1 rounded flex items-center gap-1">
+          <span className="absolute bottom-3 right-3 bg-background/90 text-foreground text-xs px-2 py-1 rounded flex items-center gap-1">
             <MapPin className="w-3 h-3" />
             {project.location}
           </span>
@@ -600,7 +672,7 @@ function ConstructionCard({ construction, onEdit, onDelete }: { construction: Co
             <HardHat className="w-12 h-12 text-muted-foreground" />
           </div>
         )}
-        <span className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded">
+        <span className="absolute top-3 right-3 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded">
           {construction.status}
         </span>
       </div>
@@ -654,7 +726,7 @@ function RentalCard({ rental, onEdit, onDelete }: { rental: Rental; onEdit: () =
           </div>
         )}
         {rental.is_featured && (
-          <span className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded">
+          <span className="absolute top-3 right-3 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded">
             Featured
           </span>
         )}
@@ -713,7 +785,7 @@ function HospitalityCard({ hospitality, onEdit, onDelete }: { hospitality: Hospi
           </div>
         )}
         {hospitality.location && (
-          <span className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded flex items-center gap-1">
+          <span className="absolute top-3 right-3 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded flex items-center gap-1">
             <MapPin className="w-3 h-3" />
             {hospitality.location}
           </span>

@@ -23,7 +23,7 @@ const App = () => (
             {/* Public routes */}
             <Route path="/" element={<Index />} />
             
-            {/* Admin routes */}
+            {/* Admin routes - using specific paths to avoid 404 on refresh */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route
               path="/admin"
@@ -34,7 +34,7 @@ const App = () => (
               }
             />
             <Route
-              path="/admin/*"
+              path="/admin/dashboard"
               element={
                 <ProtectedRoute requireAdmin>
                   <AdminDashboard />
