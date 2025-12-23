@@ -130,14 +130,17 @@ export function ViewDetailModal({
   const mainImage = getImageUrl();
   const currentGallery = getGalleryImages();
 
+  // Filter out short_description from fields
+  const filteredFields = fields.filter(f => f.key !== 'short_description');
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl max-h-[90vh] p-0 overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
+      <DialogContent className="max-w-4xl max-h-[85vh] p-0 overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
         
-        <DialogHeader className="px-8 py-5 border-b border-border/50 bg-gradient-to-r from-muted/50 to-transparent relative z-10">
+        <DialogHeader className="px-6 py-4 border-b border-border/50 bg-gradient-to-r from-muted/50 to-transparent relative z-10">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[10px] font-semibold tracking-[0.25em] text-primary uppercase mb-1.5">
@@ -185,8 +188,8 @@ export function ViewDetailModal({
           </div>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-100px)]">
-          <div className="p-8 space-y-8 relative z-10">
+        <ScrollArea className="max-h-[calc(85vh-80px)]">
+          <div className="p-6 space-y-6 relative z-10">
             {/* Hero Image with classy shape */}
             {mainImage && (
               <div className="relative">
@@ -372,9 +375,30 @@ export function ViewDetailModal({
               </div>
             )}
 
+            {/* Heading Field for descriptions */}
+            {(getValue("content_heading") || isEditing) && (
+              <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
+                <Label className="text-[10px] font-bold tracking-[0.2em] text-muted-foreground uppercase block mb-3">
+                  Section Heading
+                </Label>
+                {isEditing ? (
+                  <Input 
+                    value={String(getValue("content_heading") || "")} 
+                    onChange={(e) => setEditedValues(prev => ({ ...prev, content_heading: e.target.value }))} 
+                    placeholder="Enter a heading for the description section"
+                    className="bg-background/50 border-border/50 focus:border-primary/50" 
+                  />
+                ) : getValue("content_heading") ? (
+                  <p className="text-foreground font-serif text-lg">
+                    {String(getValue("content_heading"))}
+                  </p>
+                ) : null}
+              </div>
+            )}
+
             {/* Fields Grid with elegant styling */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {fields.map((field) => {
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredFields.map((field) => {
                 const value = getValue(field.key);
                 return (
                   <div 
