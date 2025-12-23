@@ -1,60 +1,54 @@
-import { ArrowRight } from 'lucide-react';
 import { Service } from '@/types';
 import Reveal from './Reveal';
 
 interface ServicesProps {
   title: string;
   items: Service[];
-  onItemClick: (item: Service) => void;
+  onItemClick?: (item: Service) => void;
 }
 
 const Services = ({ title, items, onItemClick }: ServicesProps) => {
   return (
-    <section className="section-padding bg-background">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
+    <section className="section-padding bg-secondary relative overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-border/50 to-transparent opacity-50 pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto relative z-10">
         <Reveal>
-          <div className="text-center mb-16">
-            <p className="text-primary font-sans text-sm uppercase tracking-[0.3em] mb-4">
-              What We Do
-            </p>
-            <h2 className="section-title mb-4">{title}</h2>
-            <div className="w-24 h-1 bg-primary mx-auto mb-6 rounded-full" />
-            <p className="section-subtitle mx-auto">
-              Expert craftsmanship and comprehensive solutions for every project
-            </p>
+          <div className="flex items-center gap-4 mb-16">
+            <div className="w-2 h-12 bg-primary rounded-full" />
+            <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground">
+              {title}
+            </h2>
           </div>
         </Reveal>
 
-        {/* Services Grid */}
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {items.map((service, index) => {
             const Icon = service.icon;
             return (
               <Reveal key={service.id} delay={index * 100}>
-                <div
-                  className="group p-8 bg-card border border-border rounded-2xl cursor-pointer transition-all duration-500 hover:shadow-elevated hover:border-primary/30 hover:-translate-y-1"
-                  onClick={() => onItemClick(service)}
+                <div 
+                  className="group relative p-10 bg-card rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 shadow-soft hover:shadow-elevated overflow-hidden cursor-pointer"
+                  onClick={() => onItemClick && onItemClick(service)}
                 >
-                  <div className="flex items-start gap-6">
-                    {/* Icon */}
-                    <div className="flex-shrink-0 w-16 h-16 bg-primary-light rounded-2xl flex items-center justify-center transition-colors group-hover:bg-primary">
-                      {Icon && <Icon className="w-8 h-8 text-primary group-hover:text-primary-foreground transition-colors" />}
+                  {/* Large background icon */}
+                  {Icon && (
+                    <Icon className="absolute -right-6 -bottom-6 w-40 h-40 text-secondary transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500 ease-in-out" />
+                  )}
+                  
+                  <div className="relative z-10">
+                    <div className="w-14 h-14 rounded-xl bg-primary-light flex items-center justify-center mb-6 group-hover:bg-primary transition-colors duration-300">
+                      {Icon && <Icon size={24} className="text-primary group-hover:text-primary-foreground transition-colors duration-300" />}
                     </div>
                     
-                    {/* Content */}
-                    <div className="flex-1">
-                      <h3 className="font-serif text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors">
-                        {service.title}
-                      </h3>
-                      <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                        {service.description}
-                      </p>
-                      <span className="inline-flex items-center gap-2 text-primary text-sm font-semibold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
-                        Learn More
-                        <ArrowRight className="w-4 h-4" />
-                      </span>
-                    </div>
+                    <h3 className="text-2xl font-serif text-foreground mb-4 group-hover:text-primary transition-colors">
+                      {service.title}
+                    </h3>
+                    
+                    <p className="text-muted-foreground font-sans leading-relaxed max-w-sm">
+                      {service.description}
+                    </p>
                   </div>
                 </div>
               </Reveal>
