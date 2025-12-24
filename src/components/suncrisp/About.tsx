@@ -7,8 +7,8 @@ interface AboutProps {
 
 const About = ({ data }: AboutProps) => {
   return (
-    <section className="section-padding bg-secondary relative flex items-center justify-center">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+    <section className="py-10 md:py-14 px-4 bg-secondary relative flex items-center justify-center">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
         <Reveal>
           <div className="relative">
             {/* Decorative corners */}

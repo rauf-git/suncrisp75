@@ -45,8 +45,8 @@ const BrandStorySection = () => {
   }, []);
 
   return (
-    <section className="min-h-screen flex items-center bg-muted/30">
-      <div className="w-full max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-20">
+    <section className="py-12 md:py-16 bg-muted/30">
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-8">
         <div className="flex flex-col md:grid md:grid-cols-[1fr,auto] gap-6 md:gap-8 lg:gap-12 items-center">
           {/* Left Side - Heading, Paragraph and Know More Button */}
           <Reveal delay={200}>

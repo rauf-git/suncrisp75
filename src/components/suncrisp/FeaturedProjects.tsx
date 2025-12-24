@@ -31,10 +31,10 @@ const FeaturedProjects = ({
 
   // Scrolling variant (compact cards)
   if (variant === 'scroll') {
-    return <section className="py-10 md:py-14 bg-background relative overflow-hidden">
+    return <section className="py-8 md:py-10 bg-background relative overflow-hidden">
         <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
         
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
           <Reveal>
             <div className="flex items-end justify-between mb-6">
               <div>
@@ -102,13 +102,13 @@ const FeaturedProjects = ({
   }
 
   // Grid variant (original large cards for construction)
-  return <section className="py-16 md:py-20 bg-background relative overflow-hidden">
+  return <section className="py-10 md:py-12 bg-background relative overflow-hidden">
       <div className="absolute top-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
       <div className="absolute bottom-0 right-0 w-80 h-80 bg-accent/5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
       
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 relative z-10">
         <Reveal>
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-10 md:mb-12">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-6 md:mb-8">
             <div>
               
               <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl text-foreground leading-tight">
