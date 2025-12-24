@@ -16,7 +16,7 @@ interface LocationWithRentals extends RentalLocation {
   rentals: Rental[];
 }
 
-// Featured Property Card (Large Left Card)
+// Featured Property Card (Full Width)
 const FeaturedPropertyCard = ({ 
   rental, 
   onClick 
@@ -25,91 +25,94 @@ const FeaturedPropertyCard = ({
   onClick: () => void;
 }) => {
   const images = rental.images?.length ? rental.images : (rental.thumbnail_url ? [rental.thumbnail_url] : []);
-  const amenities = rental.amenities?.slice(0, 4) || [];
+  const amenities = rental.amenities?.slice(0, 6) || [];
 
   return (
     <div 
-      className="group cursor-pointer h-full bg-card border border-border rounded-2xl overflow-hidden hover:shadow-elevated hover:border-primary/30 transition-all duration-300"
+      className="group cursor-pointer bg-card border border-border rounded-2xl overflow-hidden hover:shadow-elevated hover:border-primary/30 transition-all duration-300"
       onClick={onClick}
     >
-      {/* Image - 60% height */}
-      <div className="relative h-[60%] overflow-hidden">
-        {images.length > 0 ? (
-          <AutoCarousel
-            images={images}
-            alt={rental.title}
-            autoplayInterval={5000}
-            showArrows={true}
-            showDots={true}
-            showCounter={false}
-          />
-        ) : (
-          <div className="w-full h-full bg-muted flex items-center justify-center">
-            <span className="text-muted-foreground">No image</span>
-          </div>
-        )}
-        {rental.price && (
-          <div className="absolute top-4 right-4">
-            <span className="bg-primary text-primary-foreground font-bold px-4 py-2 rounded-lg shadow-md text-sm">
-              {rental.price}
-            </span>
-          </div>
-        )}
-      </div>
-
-      {/* Content - 40% height */}
-      <div className="h-[40%] p-6 flex flex-col justify-between">
-        <div className="space-y-3">
-          <h3 className="font-serif text-2xl lg:text-3xl font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
-            {rental.title}
-          </h3>
-          {rental.short_description && (
-            <p className="text-muted-foreground text-sm lg:text-base line-clamp-2">
-              {rental.short_description}
-            </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+        {/* Image Section */}
+        <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[350px] overflow-hidden">
+          {images.length > 0 ? (
+            <AutoCarousel
+              images={images}
+              alt={rental.title}
+              autoplayInterval={5000}
+              showArrows={true}
+              showDots={true}
+              showCounter={false}
+            />
+          ) : (
+            <div className="w-full h-full bg-muted flex items-center justify-center">
+              <span className="text-muted-foreground">No image</span>
+            </div>
           )}
-          
-          {/* Property features */}
-          <div className="flex flex-wrap gap-3 pt-2">
-            {rental.bedrooms && (
-              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                <Bed className="w-4 h-4" />
-                <span>{rental.bedrooms} Beds</span>
-              </div>
-            )}
-            {rental.bathrooms && (
-              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                <Bath className="w-4 h-4" />
-                <span>{rental.bathrooms} Baths</span>
-              </div>
-            )}
-            {rental.area && (
-              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                <Maximize className="w-4 h-4" />
-                <span>{rental.area}</span>
-              </div>
-            )}
-          </div>
-
-          {/* Amenities */}
-          {amenities.length > 0 && (
-            <div className="flex flex-wrap gap-2 pt-2">
-              {amenities.map((amenity, index) => (
-                <span key={index} className="text-xs bg-muted px-2.5 py-1 rounded-full">
-                  {amenity}
-                </span>
-              ))}
+          {rental.price && (
+            <div className="absolute top-4 right-4">
+              <span className="bg-primary text-primary-foreground font-bold px-4 py-2 rounded-lg shadow-md text-sm">
+                {rental.price}
+              </span>
             </div>
           )}
         </div>
 
-        <Button 
-          className="w-full mt-4 group/btn"
-          onClick={(e) => { e.stopPropagation(); onClick(); }}
-        >
-          View Property
-          <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-        </Button>
+        {/* Content Section */}
+        <div className="p-6 md:p-8 flex flex-col justify-center">
+          <div className="space-y-4">
+            <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl font-semibold text-foreground group-hover:text-primary transition-colors">
+              {rental.title}
+            </h3>
+            {rental.short_description && (
+              <p className="text-muted-foreground text-sm md:text-base lg:text-lg line-clamp-3">
+                {rental.short_description}
+              </p>
+            )}
+            
+            {/* Property features */}
+            <div className="flex flex-wrap gap-4 pt-2">
+              {rental.bedrooms && (
+                <div className="flex items-center gap-2 text-sm md:text-base text-muted-foreground">
+                  <Bed className="w-5 h-5" />
+                  <span>{rental.bedrooms} Beds</span>
+                </div>
+              )}
+              {rental.bathrooms && (
+                <div className="flex items-center gap-2 text-sm md:text-base text-muted-foreground">
+                  <Bath className="w-5 h-5" />
+                  <span>{rental.bathrooms} Baths</span>
+                </div>
+              )}
+              {rental.area && (
+                <div className="flex items-center gap-2 text-sm md:text-base text-muted-foreground">
+                  <Maximize className="w-5 h-5" />
+                  <span>{rental.area}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Amenities */}
+            {amenities.length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-2">
+                {amenities.map((amenity, index) => (
+                  <span key={index} className="text-xs md:text-sm bg-muted px-3 py-1.5 rounded-full">
+                    {amenity}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <Button 
+              className="w-full md:w-auto mt-4 group/btn"
+              size="lg"
+              onClick={(e) => { e.stopPropagation(); onClick(); }}
+            >
+              View Property
+              <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -186,13 +189,13 @@ const LoadingSkeleton = () => (
         <Skeleton className="h-12 w-64 mx-auto mb-4" />
         <Skeleton className="h-6 w-96 mx-auto" />
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Skeleton className="h-[500px] rounded-2xl" />
-        <div className="grid grid-cols-1 gap-4">
-          <Skeleton className="h-[154px] rounded-xl" />
-          <Skeleton className="h-[154px] rounded-xl" />
-          <Skeleton className="h-[154px] rounded-xl" />
-        </div>
+      {/* Full width property card skeleton */}
+      <Skeleton className="h-[400px] w-full rounded-2xl mb-6" />
+      {/* Location cards in a row */}
+      <div className="grid grid-cols-3 gap-4">
+        <Skeleton className="h-[200px] rounded-xl" />
+        <Skeleton className="h-[200px] rounded-xl" />
+        <Skeleton className="h-[200px] rounded-xl" />
       </div>
     </div>
   </section>
@@ -408,21 +411,19 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
             </div>
           </Reveal>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left Side - Featured Property Card (spans 3 rows height) */}
+          <div className="space-y-6">
+            {/* Full Width Featured Property Card */}
             {featuredRental && (
               <Reveal delay={100}>
-                <div className="h-full min-h-[500px] lg:min-h-0" style={{ gridRow: 'span 3' }}>
-                  <FeaturedPropertyCard
-                    rental={featuredRental}
-                    onClick={() => onItemClick(mapRentalToProperty(featuredRental))}
-                  />
-                </div>
+                <FeaturedPropertyCard
+                  rental={featuredRental}
+                  onClick={() => onItemClick(mapRentalToProperty(featuredRental))}
+                />
               </Reveal>
             )}
 
-            {/* Right Side - 3 Location Cards stacked */}
-            <div className="grid grid-cols-1 gap-4">
+            {/* Location Cards - Side by Side (even on mobile) */}
+            <div className="grid grid-cols-3 gap-4 overflow-x-auto">
               {topLocations.map((location, index) => (
                 <Reveal key={location.id} delay={150 + index * 50}>
                   <LocationCardSmall
