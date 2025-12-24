@@ -72,9 +72,9 @@ const Hero = ({
       <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-background/40" />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-20">
-        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-center">
           {/* Left Column - Text Content */}
-          <div className="max-w-xl order-1 text-center lg:text-left">
+          <div className="flex-1 max-w-xl order-1 text-center md:text-left">
             <Reveal delay={200}>
               <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight tracking-tight">
                 <span className="text-primary">Sun</span>
@@ -92,7 +92,7 @@ const Hero = ({
             </Reveal>
 
             <Reveal delay={400}>
-              <p className="font-sans text-muted-foreground text-base md:text-lg tracking-wide max-w-lg mb-8 leading-relaxed mx-auto lg:mx-0">
+              <p className="font-sans text-muted-foreground text-base md:text-lg tracking-wide max-w-lg mb-8 leading-relaxed mx-auto md:mx-0">
                 {heroData.description || 'From groundbreaking construction to exquisite rentals and world-class experiences. We build the future and curate the present.'}
               </p>
             </Reveal>
@@ -106,7 +106,7 @@ const Hero = ({
 
           {/* Right Column - Image Carousel */}
           <Reveal delay={600} width="100%">
-            <div className="relative w-full max-w-md lg:max-w-lg xl:max-w-xl order-2 mx-auto">
+            <div className="flex-1 w-full max-w-md md:max-w-lg xl:max-w-xl order-2">
               <HeroImageCarousel key={heroImages.length} images={heroImages} interval={5000} />
             </div>
           </Reveal>
