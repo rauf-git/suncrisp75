@@ -259,6 +259,7 @@ export type Database = {
       }
       rental_locations: {
         Row: {
+          content_sections: Json | null
           created_at: string
           description: string | null
           display_order: number | null
@@ -268,6 +269,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          content_sections?: Json | null
           created_at?: string
           description?: string | null
           display_order?: number | null
@@ -277,6 +279,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          content_sections?: Json | null
           created_at?: string
           description?: string | null
           display_order?: number | null

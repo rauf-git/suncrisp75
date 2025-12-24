@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/suncrisp/Navbar';
 import Hero from '@/components/suncrisp/Hero';
 import Properties from '@/components/suncrisp/Properties';
+import RentalsByLocation from '@/components/suncrisp/RentalsByLocation';
 import Services from '@/components/suncrisp/Services';
 import About from '@/components/suncrisp/About';
 import ContactFooter from '@/components/suncrisp/ContactFooter';
@@ -266,10 +267,7 @@ const Index = () => {
       case 'rentals':
         return (
           <div className="pt-20">
-            <Properties
-              title="Luxury Rentals"
-              subtitle="Exclusive Properties for Short & Long Term Stays"
-              items={rentalsData}
+            <RentalsByLocation
               onItemClick={(item) => handleItemClick('rentals', item)}
             />
           </div>

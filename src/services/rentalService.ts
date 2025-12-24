@@ -13,12 +13,19 @@ import {
   type UpdateLocationInput
 } from "@/lib/validation";
 
+export interface LocationContentSection {
+  heading?: string;
+  content?: string;
+  image?: string;
+}
+
 export interface RentalLocation {
   id: string;
   name: string;
   description: string | null;
   image_url: string | null;
   display_order: number;
+  content_sections: LocationContentSection[] | null;
   created_at: string;
   updated_at: string;
 }
