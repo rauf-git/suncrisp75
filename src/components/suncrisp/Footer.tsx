@@ -64,8 +64,11 @@ const Footer = ({ onNavigate }: FooterProps) => {
             <img 
               src={suncrespLogo} 
               alt="SunCrisp Hospitality" 
-              className="h-12 w-auto mb-4"
+              className="h-12 w-auto mb-2"
             />
+            <p className="font-serif text-foreground font-bold text-sm mb-4">
+              SUNCRISP HOSPITALITY LLP
+            </p>
             <p className="text-muted-foreground text-sm leading-relaxed">
               Door No.7-8-9, Ground Floor, Flat No.102,<br />
               Located At Harbour Park Road,<br />

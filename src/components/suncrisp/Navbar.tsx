@@ -35,6 +35,11 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
   }, []);
 
   const handleNavClick = (id: string) => {
+    if (id === 'about-us') {
+      navigate('/about-us');
+      setIsMobileMenuOpen(false);
+      return;
+    }
     onNavigate(id);
     setIsMobileMenuOpen(false);
   };
