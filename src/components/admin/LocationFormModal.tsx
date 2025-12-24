@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { rentalService, RentalLocation, LocationContentSection } from "@/services/rentalService";
-import { Upload, X, Image as ImageIcon } from "lucide-react";
+import { X, Image as ImageIcon, Plus, GripVertical } from "lucide-react";
 import { ContentSectionsEditor } from "./ContentSectionsEditor";
 
 interface LocationFormModalProps {
@@ -21,8 +21,8 @@ export function LocationFormModal({ open, onOpenChange, location, onSuccess }: L
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [displayOrder, setDisplayOrder] = useState(0);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [images, setImages] = useState<string[]>([]);
+  const [uploadingImages, setUploadingImages] = useState<{ file: File; preview: string }[]>([]);
   const [contentSections, setContentSections] = useState<LocationContentSection[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ name?: string }>({});
@@ -36,48 +36,62 @@ export function LocationFormModal({ open, onOpenChange, location, onSuccess }: L
     setName("");
     setDescription("");
     setDisplayOrder(0);
-    setImageFile(null);
-    setImagePreview(null);
+    setImages([]);
+    setUploadingImages([]);
     setContentSections([]);
     setErrors({});
   };
 
   const handleClose = () => {
     if (!isLoading) {
+      // Revoke object URLs to prevent memory leaks
+      uploadingImages.forEach(img => URL.revokeObjectURL(img.preview));
       resetForm();
       onOpenChange(false);
     }
   };
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
 
-    if (!file.type.startsWith("image/")) {
-      toast({ title: "Invalid file", description: "Please select an image file", variant: "destructive" });
-      return;
+    const validFiles: { file: File; preview: string }[] = [];
+
+    for (const file of files) {
+      if (!file.type.startsWith("image/")) {
+        toast({ title: "Invalid file", description: `${file.name} is not an image file`, variant: "destructive" });
+        continue;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        toast({ title: "File too large", description: `${file.name} must be less than 5MB`, variant: "destructive" });
+        continue;
+      }
+
+      validFiles.push({
+        file,
+        preview: URL.createObjectURL(file)
+      });
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ title: "File too large", description: "Image must be less than 5MB", variant: "destructive" });
-      return;
-    }
-
-    setImageFile(file);
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setImagePreview(e.target?.result as string);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleRemoveImage = () => {
-    setImageFile(null);
-    setImagePreview(isEditMode ? location?.image_url || null : null);
+    setUploadingImages(prev => [...prev, ...validFiles]);
+    
+    // Reset input
     if (imageInputRef.current) {
       imageInputRef.current.value = "";
     }
+  };
+
+  const handleRemoveExistingImage = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleRemoveNewImage = (index: number) => {
+    setUploadingImages(prev => {
+      const removed = prev[index];
+      URL.revokeObjectURL(removed.preview);
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
   const validateForm = (): boolean => {
@@ -99,25 +113,34 @@ export function LocationFormModal({ open, onOpenChange, location, onSuccess }: L
     setIsLoading(true);
 
     try {
-      let imageUrl = location?.image_url || null;
-
-      // Upload new image if selected
-      if (imageFile) {
-        const { url, error: uploadError } = await rentalService.uploadImage(imageFile);
+      // Upload new images
+      const uploadedUrls: string[] = [];
+      for (const img of uploadingImages) {
+        const { url, error: uploadError } = await rentalService.uploadImage(img.file);
         if (uploadError || !url) {
           toast({
             title: "Upload failed",
-            description: uploadError?.message || "Failed to upload image",
+            description: uploadError?.message || `Failed to upload ${img.file.name}`,
             variant: "destructive",
           });
           setIsLoading(false);
           return;
         }
-        imageUrl = url;
+        uploadedUrls.push(url);
+      }
 
-        // Delete old image if updating
-        if (isEditMode && location?.image_url) {
-          await rentalService.deleteImage(location.image_url);
+      // Combine existing images with newly uploaded ones
+      const allImages = [...images, ...uploadedUrls];
+      
+      // Use first image as the main image_url for backwards compatibility
+      const mainImageUrl = allImages.length > 0 ? allImages[0] : null;
+
+      // Find images to delete (images that were in original but not in current)
+      if (isEditMode && location) {
+        const originalImages = location.images || (location.image_url ? [location.image_url] : []);
+        const imagesToDelete = originalImages.filter(img => !images.includes(img));
+        for (const imgUrl of imagesToDelete) {
+          await rentalService.deleteImage(imgUrl);
         }
       }
 
@@ -125,7 +148,8 @@ export function LocationFormModal({ open, onOpenChange, location, onSuccess }: L
         const { error } = await rentalService.updateLocation(location.id, {
           name: name.trim(),
           description: description.trim() || undefined,
-          image_url: imageUrl || undefined,
+          image_url: mainImageUrl || undefined,
+          images: allImages,
           display_order: displayOrder,
           content_sections: contentSections,
         });
@@ -139,7 +163,8 @@ export function LocationFormModal({ open, onOpenChange, location, onSuccess }: L
         const { error } = await rentalService.createLocation({
           name: name.trim(),
           description: description.trim() || undefined,
-          image_url: imageUrl || undefined,
+          image_url: mainImageUrl || undefined,
+          images: allImages,
           display_order: displayOrder,
           content_sections: contentSections,
         });
@@ -170,14 +195,23 @@ export function LocationFormModal({ open, onOpenChange, location, onSuccess }: L
       setName(location.name);
       setDescription(location.description || "");
       setDisplayOrder(location.display_order);
-      setImagePreview(location.image_url);
+      // Use images array, fall back to image_url if images is empty
+      const existingImages = location.images?.length 
+        ? location.images 
+        : (location.image_url ? [location.image_url] : []);
+      setImages(existingImages);
+      setUploadingImages([]);
       setContentSections(location.content_sections || []);
-      setImageFile(null);
       setErrors({});
     } else if (open && !location) {
       resetForm();
     }
   }, [open, location]);
+
+  const allPreviewImages = [
+    ...images.map((url, i) => ({ type: 'existing' as const, url, index: i })),
+    ...uploadingImages.map((img, i) => ({ type: 'new' as const, url: img.preview, index: i }))
+  ];
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -234,41 +268,62 @@ export function LocationFormModal({ open, onOpenChange, location, onSuccess }: L
                 />
               </div>
 
-              {/* Image */}
+              {/* Images */}
               <div className="space-y-2">
-                <Label>Location Image (Optional)</Label>
+                <Label>Location Images (for carousel)</Label>
+                <p className="text-sm text-muted-foreground">
+                  Upload multiple images to display in a carousel on the rentals page
+                </p>
 
-                {imagePreview ? (
-                  <div className="relative group">
-                    <img
-                      src={imagePreview}
-                      alt="Location preview"
-                      className="w-full h-40 object-cover rounded-lg border border-border"
-                      loading="lazy"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleRemoveImage}
-                      className="absolute top-2 right-2 p-1.5 bg-background/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground"
-                      disabled={isLoading}
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ) : (
-                  <div
-                    onClick={() => imageInputRef.current?.click()}
-                    className="w-full h-40 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors hover:border-primary hover:bg-primary/5"
-                  >
-                    <ImageIcon className="w-8 h-8 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">Click to upload image</p>
+                {/* Image Grid */}
+                {allPreviewImages.length > 0 && (
+                  <div className="grid grid-cols-3 gap-3 mt-3">
+                    {allPreviewImages.map((img, i) => (
+                      <div key={`${img.type}-${img.index}`} className="relative group aspect-[4/3]">
+                        <img
+                          src={img.url}
+                          alt={`Location image ${i + 1}`}
+                          className="w-full h-full object-cover rounded-lg border border-border"
+                          loading="lazy"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (img.type === 'existing') {
+                              handleRemoveExistingImage(img.index);
+                            } else {
+                              handleRemoveNewImage(img.index);
+                            }
+                          }}
+                          className="absolute top-1 right-1 p-1 bg-background/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground"
+                          disabled={isLoading}
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                        {i === 0 && (
+                          <span className="absolute bottom-1 left-1 text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded">
+                            Main
+                          </span>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 )}
+
+                {/* Add Image Button */}
+                <div
+                  onClick={() => imageInputRef.current?.click()}
+                  className="w-full h-24 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors hover:border-primary hover:bg-primary/5 mt-3"
+                >
+                  <Plus className="w-6 h-6 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">Click to add images</p>
+                </div>
 
                 <input
                   ref={imageInputRef}
                   type="file"
                   accept="image/*"
+                  multiple
                   onChange={handleImageSelect}
                   className="hidden"
                   disabled={isLoading}

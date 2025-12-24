@@ -265,6 +265,7 @@ export type Database = {
           display_order: number | null
           id: string
           image_url: string | null
+          images: string[] | null
           name: string
           updated_at: string
         }
@@ -275,6 +276,7 @@ export type Database = {
           display_order?: number | null
           id?: string
           image_url?: string | null
+          images?: string[] | null
           name: string
           updated_at?: string
         }
@@ -285,6 +287,7 @@ export type Database = {
           display_order?: number | null
           id?: string
           image_url?: string | null
+          images?: string[] | null
           name?: string
           updated_at?: string
         }

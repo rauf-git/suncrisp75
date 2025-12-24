@@ -224,6 +224,7 @@ export const createLocationSchema = z.object({
     .url("Invalid image URL")
     .max(MAX_URL_LENGTH, `Image URL must be less than ${MAX_URL_LENGTH} characters`)
     .optional(),
+  images: z.array(z.string().url().max(MAX_URL_LENGTH)).optional(),
   display_order: z.number().int().min(0).max(9999).optional(),
   content_sections: z.array(contentSectionSchema).optional(),
 });
