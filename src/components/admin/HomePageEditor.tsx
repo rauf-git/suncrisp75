@@ -179,9 +179,17 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
       // Save / create hero block
       if (heroBlock) {
         const existingContent = heroBlock.content as HeroContent;
-        await pageBlockService.update(heroBlock.id, {
-          content: { ...existingContent, hero_images: heroImages },
+        const normalizedHeroContent = {
+          ...existingContent,
+          // avoid failing validation on empty-string URLs
+          background_image: existingContent.background_image?.trim() ? existingContent.background_image.trim() : undefined,
+          hero_images: heroImages,
+        };
+
+        const { error: heroUpdateError } = await pageBlockService.update(heroBlock.id, {
+          content: normalizedHeroContent as unknown as Record<string, unknown>,
         });
+        if (heroUpdateError) throw heroUpdateError;
       } else {
         const { data: createdHero, error: createError } = await pageBlockService.create({
           page_key: "home",
@@ -203,9 +211,10 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
       };
       
       if (brandStoryBlock) {
-        await pageBlockService.update(brandStoryBlock.id, {
+        const { error: brandStoryUpdateError } = await pageBlockService.update(brandStoryBlock.id, {
           content: brandStoryContent as unknown as Record<string, unknown>,
         });
+        if (brandStoryUpdateError) throw brandStoryUpdateError;
       } else {
         const { data: createdBrandStory, error: brandStoryError } = await pageBlockService.create({
           page_key: "home",
@@ -247,8 +256,9 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
 
       toast({ title: "Saved", description: "Home page content updated successfully." });
       onOpenChange(false);
-    } catch {
-      toast({ title: "Error", description: "Failed to save changes", variant: "destructive" });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to save changes";
+      toast({ title: "Error", description: message, variant: "destructive" });
     }
 
     setIsSaving(false);

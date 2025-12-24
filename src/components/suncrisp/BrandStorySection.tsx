@@ -45,8 +45,8 @@ const BrandStorySection = () => {
   }, []);
 
   return (
-    <section className="py-20 md:py-28 bg-muted/30">
-      <div className="max-w-7xl mx-auto px-6 md:px-12">
+    <section className="min-h-screen flex items-center bg-muted/30">
+      <div className="w-full max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-20">
         <Reveal>
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-center mb-12 md:mb-16">
             {data.heading}
@@ -60,7 +60,7 @@ const BrandStorySection = () => {
               <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
                 {data.paragraph}
               </p>
-              <Button 
+              <Button
                 onClick={() => navigate('/our-brand-story')}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3"
               >
@@ -73,14 +73,14 @@ const BrandStorySection = () => {
           <Reveal delay={400}>
             <div className="relative">
               <div className="absolute -inset-3 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-2xl blur-sm" />
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-2xl border border-primary/20">
+              <div className="relative h-[52vh] md:h-[56vh] lg:h-[62vh] rounded-xl overflow-hidden shadow-2xl border border-primary/20">
                 <img
                   src={data.image}
                   alt="Our Brand Story"
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
               </div>
-              {/* Subtle glow effect */}
               <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-3/4 h-4 bg-primary/20 blur-xl rounded-full" />
             </div>
           </Reveal>
