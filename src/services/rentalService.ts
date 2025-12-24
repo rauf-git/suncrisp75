@@ -37,6 +37,7 @@ export interface Rental {
   short_description: string | null;
   long_description: string | null;
   location_id: string | null;
+  location_ids: string[];
   address: string | null;
   price: string | null;
   bedrooms: number | null;
