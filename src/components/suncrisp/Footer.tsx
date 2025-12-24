@@ -1,5 +1,6 @@
 import { Phone, Mail } from 'lucide-react';
 import { NAV_LINKS } from '@/constants';
+import suncrespLogo from '@/assets/suncrisp-logo-new.jpg';
 
 interface FooterProps {
   onNavigate?: (page: string) => void;
@@ -58,11 +59,13 @@ const Footer = ({ onNavigate }: FooterProps) => {
             </div>
           </div>
 
-          {/* Column 3: Company Address */}
+          {/* Column 3: Logo & Company Address */}
           <div>
-            <h3 className="font-serif text-foreground font-bold text-lg mb-6 uppercase tracking-wide">
-              SUNCRISP HOSPITALITY LLP
-            </h3>
+            <img 
+              src={suncrespLogo} 
+              alt="SunCrisp Hospitality" 
+              className="h-16 w-auto mb-4"
+            />
             <p className="text-muted-foreground text-sm leading-relaxed">
               Door No.7-8-9, Ground Floor, Flat No.102,<br />
               Located At Harbour Park Road,<br />
