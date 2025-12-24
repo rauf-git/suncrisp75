@@ -26,9 +26,9 @@ interface HeroContent {
   title?: string;
   subtitle?: string;
   description?: string;
-  background_image?: string;
-  video_url?: string;
-  hero_images?: string[];
+  backgroundImage?: string;
+  videoUrl?: string;
+  heroImages?: string[];
 }
 
 interface BrandStorySectionContent {
@@ -84,8 +84,9 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
 
     if (heroResult.data) {
       setHeroBlock(heroResult.data);
-      const content = heroResult.data.content as HeroContent;
-      setHeroImages(content.hero_images || []);
+      const content = heroResult.data.content as HeroContent & { hero_images?: string[] };
+      // Support both heroImages and hero_images for backwards compatibility
+      setHeroImages(content.heroImages || content.hero_images || []);
     }
 
     if (brandStoryResult.data) {
@@ -182,8 +183,8 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
         const normalizedHeroContent = {
           ...existingContent,
           // avoid failing validation on empty-string URLs
-          background_image: existingContent.background_image?.trim() ? existingContent.background_image.trim() : undefined,
-          hero_images: heroImages,
+          backgroundImage: existingContent.backgroundImage?.trim() ? existingContent.backgroundImage.trim() : undefined,
+          heroImages: heroImages,
         };
 
         const { error: heroUpdateError } = await pageBlockService.update(heroBlock.id, {
@@ -195,7 +196,7 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
           page_key: "home",
           block_key: "hero",
           block_type: "hero",
-          content: { hero_images: heroImages } as unknown as Record<string, unknown>,
+          content: { heroImages: heroImages } as unknown as Record<string, unknown>,
           display_order: 1,
           is_active: true,
         });
