@@ -922,38 +922,87 @@ function RentalCard({ rental, onView, onEdit, onDelete }: { rental: Rental; onVi
 }
 
 function LocationCard({ location, rentalCount, onEdit, onDelete }: { location: RentalLocation; rentalCount: number; onEdit: () => void; onDelete: () => void }) {
+  const images = location.images?.length ? location.images : (location.image_url ? [location.image_url] : []);
+  
   return (
-    <div className="bg-card border border-border rounded-xl p-5 hover:shadow-elevated transition-all">
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-            <MapPin className="w-5 h-5 text-primary" />
+    <div className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated transition-all group">
+      {/* Image Preview */}
+      <div 
+        className="aspect-video bg-muted relative overflow-hidden cursor-pointer"
+        onClick={onEdit}
+      >
+        {images.length > 0 ? (
+          <>
+            <img
+              src={images[0]}
+              alt={location.name}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            {images.length > 1 && (
+              <span className="absolute top-3 right-3 bg-background/90 text-foreground text-xs px-2 py-1 rounded">
+                +{images.length - 1} more
+              </span>
+            )}
+          </>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <MapPin className="w-12 h-12 text-muted-foreground" />
           </div>
-          <div>
-            <h3 className="font-serif text-lg font-semibold text-foreground">{location.name}</h3>
-            <span className="text-sm text-muted-foreground">{rentalCount} properties</span>
+        )}
+        <span className="absolute bottom-3 right-3 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded">
+          {rentalCount} {rentalCount === 1 ? 'property' : 'properties'}
+        </span>
+      </div>
+      
+      <div className="p-5">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <MapPin className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-serif text-lg font-semibold text-foreground">{location.name}</h3>
+              <span className="text-sm text-muted-foreground">Order: {location.display_order}</span>
+            </div>
           </div>
         </div>
-      </div>
-      {location.description && (
-        <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{location.description}</p>
-      )}
-      {location.content_sections && location.content_sections.length > 0 && (
-        <p className="text-xs text-primary mb-4">{location.content_sections.length} content section(s)</p>
-      )}
-      <div className="flex gap-2">
-        <Button variant="outline" size="sm" className="flex-1" onClick={onEdit}>
-          <Edit className="w-4 h-4 mr-1" />
-          Edit
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
-          onClick={onDelete}
-        >
-          <Trash2 className="w-4 h-4" />
-        </Button>
+        {location.description && (
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{location.description}</p>
+        )}
+        
+        {/* Image thumbnails preview */}
+        {images.length > 1 && (
+          <div className="flex gap-1 mb-3 overflow-hidden">
+            {images.slice(0, 4).map((img, i) => (
+              <div key={i} className="w-10 h-10 rounded overflow-hidden flex-shrink-0">
+                <img src={img} alt="" className="w-full h-full object-cover" />
+              </div>
+            ))}
+            {images.length > 4 && (
+              <div className="w-10 h-10 rounded bg-muted flex items-center justify-center text-xs text-muted-foreground">
+                +{images.length - 4}
+              </div>
+            )}
+          </div>
+        )}
+        
+        {location.content_sections && location.content_sections.length > 0 && (
+          <p className="text-xs text-primary mb-3">{location.content_sections.length} content section(s)</p>
+        )}
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="flex-1" onClick={onEdit}>
+            <Edit className="w-4 h-4 mr-1" />
+            Edit
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            onClick={onDelete}
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );
