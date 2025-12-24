@@ -13,7 +13,7 @@ const FeaturedProjects = ({
   items,
   onItemClick,
   onViewAll,
-  title = "Featured Projects",
+  title = "Our Projects",
   variant = "scroll"
 }: FeaturedProjectsProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
