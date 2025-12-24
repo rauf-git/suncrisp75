@@ -147,6 +147,13 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
         });
       }
 
+      // Notify the site to re-fetch latest blocks (hero video, etc.)
+      window.dispatchEvent(
+        new CustomEvent("page-block-updated", {
+          detail: { page_key: "home", block_key: "hero" },
+        })
+      );
+
       toast({ title: "Saved", description: "Home page content updated successfully." });
       onOpenChange(false);
     } catch {
@@ -189,7 +196,7 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0">
+      <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
         <DialogHeader className="px-6 py-4 border-b border-border shrink-0">
           <DialogTitle className="font-serif text-2xl">Edit Home Page</DialogTitle>
         </DialogHeader>
@@ -226,6 +233,19 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
                     <p className="text-xs text-muted-foreground mt-1">
                       Leave empty to show only the background image. Video will appear on the right side of the hero section.
                     </p>
+
+                    {!videoUrlError && heroVideoUrl.trim() && (
+                      <div className="mt-3 aspect-video w-full rounded-lg overflow-hidden border border-border bg-muted">
+                        <iframe
+                          src={`https://www.youtube.com/embed/${heroVideoUrl.trim().replace(/^.*(?:v=|youtu\.be\/|embed\/|shorts\/|live\/)([a-zA-Z0-9_-]{11}).*$/,'$1')}?rel=0&modestbranding=1`}
+                          title="Hero video preview"
+                          className="w-full h-full"
+                          loading="lazy"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

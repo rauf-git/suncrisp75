@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { pageContentService, ContentSection } from "@/services/pageContentService";
 import { ContentSectionsEditor } from "./ContentSectionsEditor";
-import { Loader2 } from "lucide-react";
+import { Loader2, Upload } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { validateFile } from "@/lib/validation";
 
 interface PageContentEditorProps {
   open: boolean;
@@ -24,12 +26,15 @@ export function PageContentEditor({
 }: PageContentEditorProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  
+  const [isUploadingHero, setIsUploadingHero] = useState(false);
+
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [heroImage, setHeroImage] = useState("");
   const [contentSections, setContentSections] = useState<ContentSection[]>([]);
-  
+
+  const heroFileInputRef = useRef<HTMLInputElement>(null);
+
   const { toast } = useToast();
 
   useEffect(() => {
@@ -74,6 +79,13 @@ export function PageContentEditor({
 
       if (error) throw error;
 
+      // Notify pages currently open to refetch content
+      window.dispatchEvent(
+        new CustomEvent("page-content-updated", {
+          detail: { page_key: pageKey },
+        })
+      );
+
       toast({ title: "Saved", description: `${pageTitle} content updated successfully.` });
       onOpenChange(false);
     } catch {
@@ -83,9 +95,40 @@ export function PageContentEditor({
     setIsSaving(false);
   };
 
+  const handleUploadHeroImage = async (file: File) => {
+    const fileValidation = validateFile(file);
+    if (!fileValidation.valid) {
+      toast({ title: "Invalid file", description: fileValidation.error, variant: "destructive" });
+      return;
+    }
+
+    setIsUploadingHero(true);
+    try {
+      const fileExt = file.name.split(".").pop()?.toLowerCase();
+      const filePath = `pages/${pageKey}/${crypto.randomUUID()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("content-images")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from("content-images")
+        .getPublicUrl(filePath);
+
+      setHeroImage(urlData.publicUrl);
+      toast({ title: "Uploaded", description: "Hero image uploaded." });
+    } catch {
+      toast({ title: "Error", description: "Failed to upload hero image", variant: "destructive" });
+    } finally {
+      setIsUploadingHero(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0">
+      <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
         <DialogHeader className="px-6 py-4 border-b border-border shrink-0">
           <DialogTitle className="font-serif text-2xl">Edit {pageTitle}</DialogTitle>
         </DialogHeader>
@@ -121,19 +164,47 @@ export function PageContentEditor({
 
               {/* Hero Image */}
               <div>
-                <Label htmlFor="heroImage">Hero Image URL (Optional)</Label>
+                <div className="flex items-center justify-between gap-3">
+                  <Label htmlFor="heroImage">Hero Image (Optional)</Label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      ref={heroFileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleUploadHeroImage(file);
+                        if (heroFileInputRef.current) heroFileInputRef.current.value = "";
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => heroFileInputRef.current?.click()}
+                      disabled={isUploadingHero}
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      {isUploadingHero ? "Uploading..." : "Upload"}
+                    </Button>
+                  </div>
+                </div>
+
                 <Input
                   id="heroImage"
                   value={heroImage}
                   onChange={(e) => setHeroImage(e.target.value)}
                   placeholder="https://example.com/image.jpg"
                 />
+
                 {heroImage && (
                   <div className="mt-2 aspect-video w-full max-w-sm rounded-lg overflow-hidden border border-border">
                     <img
                       src={heroImage}
-                      alt="Hero preview"
+                      alt={`${pageTitle} hero image preview`}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = "/placeholder.svg";
                       }}

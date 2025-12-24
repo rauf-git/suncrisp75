@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -275,289 +276,287 @@ export function RentalFormModal({ open, onOpenChange, rental, locations, onSucce
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
+        <DialogHeader className="px-6 py-4 border-b border-border shrink-0">
           <DialogTitle className="font-serif text-xl">
             {isEditMode ? "Edit Rental Property" : "Add Rental Property"}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Title */}
-          <div className="space-y-2">
-            <Label htmlFor="title">Title *</Label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter property title"
-              className={errors.title ? "border-destructive" : ""}
-              disabled={isLoading}
-            />
-            {errors.title && (
-              <p className="text-sm text-destructive">{errors.title}</p>
-            )}
-          </div>
-
-          {/* Location & Featured */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Location</Label>
-              <Select value={locationId} onValueChange={setLocationId} disabled={isLoading}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select location" />
-                </SelectTrigger>
-                <SelectContent>
-                  {locations.map((loc) => (
-                    <SelectItem key={loc.id} value={loc.id}>{loc.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Featured</Label>
-              <div className="flex items-center gap-2 h-10">
-                <Switch checked={isFeatured} onCheckedChange={setIsFeatured} disabled={isLoading} />
-                <span className="text-sm text-muted-foreground">{isFeatured ? "Yes" : "No"}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Short Description */}
-          <div className="space-y-2">
-            <Label htmlFor="shortDescription">Short Description</Label>
-            <Textarea
-              id="shortDescription"
-              value={shortDescription}
-              onChange={(e) => setShortDescription(e.target.value)}
-              placeholder="Brief description for listings"
-              rows={2}
-              disabled={isLoading}
-            />
-          </div>
-
-          {/* Long Description */}
-          <div className="space-y-2">
-            <Label htmlFor="longDescription">Full Description</Label>
-            <Textarea
-              id="longDescription"
-              value={longDescription}
-              onChange={(e) => setLongDescription(e.target.value)}
-              placeholder="Detailed property description"
-              rows={4}
-              disabled={isLoading}
-            />
-          </div>
-
-          {/* Price, Address */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="price">Price</Label>
-              <Input
-                id="price"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                placeholder="e.g., $2,500/month"
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
-              <Input
-                id="address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="Property address"
-                disabled={isLoading}
-              />
-            </div>
-          </div>
-
-          {/* Beds, Baths, Area, Order */}
-          <div className="grid grid-cols-4 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="bedrooms">Beds</Label>
-              <Input
-                id="bedrooms"
-                type="number"
-                value={bedrooms}
-                onChange={(e) => setBedrooms(e.target.value)}
-                placeholder="0"
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="bathrooms">Baths</Label>
-              <Input
-                id="bathrooms"
-                type="number"
-                value={bathrooms}
-                onChange={(e) => setBathrooms(e.target.value)}
-                placeholder="0"
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="area">Area</Label>
-              <Input
-                id="area"
-                value={area}
-                onChange={(e) => setArea(e.target.value)}
-                placeholder="e.g., 1,500 sqft"
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="displayOrder">Order</Label>
-              <Input
-                id="displayOrder"
-                type="number"
-                value={displayOrder}
-                onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
-                placeholder="0"
-                disabled={isLoading}
-              />
-            </div>
-          </div>
-
-          {/* Amenities */}
-          <div className="space-y-2">
-            <Label htmlFor="amenities">Amenities (comma-separated)</Label>
-            <Input
-              id="amenities"
-              value={amenities}
-              onChange={(e) => setAmenities(e.target.value)}
-              placeholder="Pool, Gym, Parking, etc."
-              disabled={isLoading}
-            />
-          </div>
-
-          {/* Thumbnail */}
-          <div className="space-y-2">
-            <Label>Thumbnail Image</Label>
-            
-            {thumbnailPreview ? (
-              <div className="relative group">
-                <img
-                  src={thumbnailPreview}
-                  alt="Preview"
-                  className="w-full h-40 object-cover rounded-lg border border-border"
-                />
-                <button
-                  type="button"
-                  onClick={handleRemoveThumbnail}
-                  className="absolute top-2 right-2 p-1.5 bg-background/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground"
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="px-6 py-6 space-y-5">
+              {/* Title */}
+              <div className="space-y-2">
+                <Label htmlFor="title">Title *</Label>
+                <Input
+                  id="title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Enter property title"
+                  className={errors.title ? "border-destructive" : ""}
                   disabled={isLoading}
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                />
+                {errors.title && (
+                  <p className="text-sm text-destructive">{errors.title}</p>
+                )}
               </div>
-            ) : (
-              <div
-                onClick={() => thumbnailInputRef.current?.click()}
-                className="w-full h-40 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors hover:border-primary hover:bg-primary/5"
-              >
-                <ImageIcon className="w-8 h-8 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">Click to upload thumbnail</p>
+
+              {/* Location & Featured */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Location</Label>
+                  <Select value={locationId} onValueChange={setLocationId} disabled={isLoading}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {locations.map((loc) => (
+                        <SelectItem key={loc.id} value={loc.id}>{loc.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Featured</Label>
+                  <div className="flex items-center gap-2 h-10">
+                    <Switch checked={isFeatured} onCheckedChange={setIsFeatured} disabled={isLoading} />
+                    <span className="text-sm text-muted-foreground">{isFeatured ? "Yes" : "No"}</span>
+                  </div>
+                </div>
               </div>
-            )}
 
-            <input
-              ref={thumbnailInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleThumbnailSelect}
-              className="hidden"
-              disabled={isLoading}
-            />
+              {/* Short Description */}
+              <div className="space-y-2">
+                <Label htmlFor="shortDescription">Short Description</Label>
+                <Textarea
+                  id="shortDescription"
+                  value={shortDescription}
+                  onChange={(e) => setShortDescription(e.target.value)}
+                  placeholder="Brief description for listings"
+                  rows={2}
+                  disabled={isLoading}
+                />
+              </div>
 
-            {thumbnailPreview && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => thumbnailInputRef.current?.click()}
-                disabled={isLoading}
-              >
-                <Upload className="w-4 h-4 mr-2" />
-                Replace Thumbnail
-              </Button>
-            )}
-          </div>
+              {/* Long Description */}
+              <div className="space-y-2">
+                <Label htmlFor="longDescription">Full Description</Label>
+                <Textarea
+                  id="longDescription"
+                  value={longDescription}
+                  onChange={(e) => setLongDescription(e.target.value)}
+                  placeholder="Detailed property description"
+                  rows={4}
+                  disabled={isLoading}
+                />
+              </div>
 
-          {/* Gallery Images */}
-          <div className="space-y-2">
-            <Label>Gallery Images</Label>
-            <div className="grid grid-cols-4 gap-2">
-              {images.map((img, index) => (
-                <div key={`existing-${index}`} className="relative group aspect-square">
-                  <img
-                    src={img}
-                    alt={`Gallery ${index + 1}`}
-                    className="w-full h-full object-cover rounded-lg border border-border"
+              {/* Price, Address */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="price">Price</Label>
+                  <Input
+                    id="price"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    placeholder="e.g., $2,500/month"
+                    disabled={isLoading}
                   />
-                  <button
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="address">Address</Label>
+                  <Input
+                    id="address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="Property address"
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+
+              {/* Beds, Baths, Area, Order */}
+              <div className="grid grid-cols-4 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="bedrooms">Beds</Label>
+                  <Input
+                    id="bedrooms"
+                    type="number"
+                    value={bedrooms}
+                    onChange={(e) => setBedrooms(e.target.value)}
+                    placeholder="0"
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="bathrooms">Baths</Label>
+                  <Input
+                    id="bathrooms"
+                    type="number"
+                    value={bathrooms}
+                    onChange={(e) => setBathrooms(e.target.value)}
+                    placeholder="0"
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="area">Area</Label>
+                  <Input
+                    id="area"
+                    value={area}
+                    onChange={(e) => setArea(e.target.value)}
+                    placeholder="e.g., 1,500 sqft"
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="displayOrder">Order</Label>
+                  <Input
+                    id="displayOrder"
+                    type="number"
+                    value={displayOrder}
+                    onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
+                    placeholder="0"
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+
+              {/* Amenities */}
+              <div className="space-y-2">
+                <Label htmlFor="amenities">Amenities (comma-separated)</Label>
+                <Input
+                  id="amenities"
+                  value={amenities}
+                  onChange={(e) => setAmenities(e.target.value)}
+                  placeholder="Pool, Gym, Parking, etc."
+                  disabled={isLoading}
+                />
+              </div>
+
+              {/* Thumbnail */}
+              <div className="space-y-2">
+                <Label>Thumbnail Image</Label>
+
+                {thumbnailPreview ? (
+                  <div className="relative group">
+                    <img
+                      src={thumbnailPreview}
+                      alt="Thumbnail preview"
+                      className="w-full h-40 object-cover rounded-lg border border-border"
+                      loading="lazy"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveThumbnail}
+                      className="absolute top-2 right-2 p-1.5 bg-background/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground"
+                      disabled={isLoading}
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => thumbnailInputRef.current?.click()}
+                    className="w-full h-40 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors hover:border-primary hover:bg-primary/5"
+                  >
+                    <ImageIcon className="w-8 h-8 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">Click to upload thumbnail</p>
+                  </div>
+                )}
+
+                <input
+                  ref={thumbnailInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleThumbnailSelect}
+                  className="hidden"
+                  disabled={isLoading}
+                />
+
+                {thumbnailPreview && (
+                  <Button
                     type="button"
-                    onClick={() => handleRemoveExistingImage(index)}
-                    className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => thumbnailInputRef.current?.click()}
                     disabled={isLoading}
                   >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
-              {newImageFiles.map((file, index) => (
-                <div key={`new-${index}`} className="relative group aspect-square">
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt={`New ${index + 1}`}
-                    className="w-full h-full object-cover rounded-lg border-2 border-primary border-dashed"
-                  />
+                    <Upload className="w-4 h-4 mr-2" />
+                    Replace Thumbnail
+                  </Button>
+                )}
+              </div>
+
+              {/* Gallery Images */}
+              <div className="space-y-2">
+                <Label>Gallery Images</Label>
+                <div className="grid grid-cols-4 gap-2">
+                  {images.map((img, index) => (
+                    <div key={`existing-${index}`} className="relative group aspect-square">
+                      <img
+                        src={img}
+                        alt={`Gallery image ${index + 1}`}
+                        className="w-full h-full object-cover rounded-lg border border-border"
+                        loading="lazy"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveExistingImage(index)}
+                        className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        disabled={isLoading}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+
+                  {newImageFiles.map((file, index) => (
+                    <div key={`new-${index}`} className="relative group aspect-square">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`New gallery image ${index + 1}`}
+                        className="w-full h-full object-cover rounded-lg border-2 border-primary border-dashed"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveNewImage(index)}
+                        className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        disabled={isLoading}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+
                   <button
                     type="button"
-                    onClick={() => handleRemoveNewImage(index)}
-                    className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => imagesInputRef.current?.click()}
+                    className="aspect-square border-2 border-dashed border-border rounded-lg flex items-center justify-center hover:border-primary hover:bg-primary/5 transition-colors"
                     disabled={isLoading}
                   >
-                    <Trash2 className="w-3 h-3" />
+                    <Plus className="w-6 h-6 text-muted-foreground" />
                   </button>
                 </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => imagesInputRef.current?.click()}
-                className="aspect-square border-2 border-dashed border-border rounded-lg flex items-center justify-center hover:border-primary hover:bg-primary/5 transition-colors"
-                disabled={isLoading}
-              >
-                <Plus className="w-6 h-6 text-muted-foreground" />
-              </button>
+                <input
+                  ref={imagesInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleAddImages}
+                  className="hidden"
+                  disabled={isLoading}
+                />
+              </div>
             </div>
-            <input
-              ref={imagesInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleAddImages}
-              className="hidden"
-              disabled={isLoading}
-            />
-          </div>
+          </ScrollArea>
 
-          {/* Actions */}
-          <div className="flex gap-3 justify-end pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={isLoading}
-            >
+          <DialogFooter className="px-6 py-4 border-t border-border shrink-0 bg-background flex flex-row items-center justify-end gap-3">
+            <Button type="button" variant="outline" onClick={handleClose} disabled={isLoading}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              className="bg-primary hover:bg-primary/90"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="bg-primary hover:bg-primary/90" disabled={isLoading}>
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
               ) : isEditMode ? (
@@ -566,7 +565,7 @@ export function RentalFormModal({ open, onOpenChange, rental, locations, onSucce
                 "Create Rental"
               )}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

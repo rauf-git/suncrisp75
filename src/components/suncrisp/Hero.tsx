@@ -17,19 +17,24 @@ interface HeroData {
 }
 
 const extractYouTubeId = (url: string): string | null => {
-  if (!url) return null;
-  
-  // Match various YouTube URL formats
+  const input = (url || "").trim();
+  if (!input) return null;
+
+  // Allow a raw YouTube ID
+  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
+
+  // Support common formats: watch?v=, youtu.be/, embed/, shorts/, live/
   const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
-    /^([a-zA-Z0-9_-]{11})$/,
+    /[?&]v=([a-zA-Z0-9_-]{11})/,
+    /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/live\/([a-zA-Z0-9_-]{11})/,
   ];
-  
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match && match[1]) {
-      return match[1];
-    }
+
+  for (const p of patterns) {
+    const m = input.match(p);
+    if (m?.[1]) return m[1];
   }
   return null;
 };
@@ -38,17 +43,28 @@ const Hero = ({ onNavigate }: HeroProps) => {
   const navigate = useNavigate();
   const [heroData, setHeroData] = useState<HeroData>({});
 
+  const fetchHeroData = async () => {
+    const { data } = await pageBlockService.getByKey("home", "hero");
+    if (data?.content) {
+      setHeroData(data.content as HeroData);
+    }
+  };
+
   useEffect(() => {
-    const fetchHeroData = async () => {
-      const { data } = await pageBlockService.getByKey("home", "hero");
-      if (data?.content) {
-        setHeroData(data.content as HeroData);
+    fetchHeroData();
+
+    const onUpdated = (e: Event) => {
+      const evt = e as CustomEvent<{ page_key?: string; block_key?: string }>;
+      if (evt.detail?.page_key === "home" && evt.detail?.block_key === "hero") {
+        fetchHeroData();
       }
     };
-    fetchHeroData();
+
+    window.addEventListener("page-block-updated", onUpdated);
+    return () => window.removeEventListener("page-block-updated", onUpdated);
   }, []);
 
-  const videoId = extractYouTubeId(heroData.video_url || '');
+  const videoId = extractYouTubeId(heroData.video_url || "");
   const hasVideo = !!videoId;
 
   return (
