@@ -45,7 +45,7 @@ const BrandStorySection = () => {
   }, []);
 
   return (
-    <section className="py-20 md:py-28 bg-background">
+    <section className="py-20 md:py-28 bg-muted/30">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         <Reveal>
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-center mb-12 md:mb-16">
@@ -54,7 +54,7 @@ const BrandStorySection = () => {
         </Reveal>
 
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          {/* Text Content */}
+          {/* Left Side - Paragraph with Know More Button */}
           <Reveal delay={200}>
             <div className="space-y-6">
               <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
@@ -69,17 +69,19 @@ const BrandStorySection = () => {
             </div>
           </Reveal>
 
-          {/* Image */}
+          {/* Right Side - Image */}
           <Reveal delay={400}>
             <div className="relative">
-              <div className="absolute -inset-2 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-2xl blur-sm" />
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-xl border border-primary/20">
+              <div className="absolute -inset-3 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-2xl blur-sm" />
+              <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-2xl border border-primary/20">
                 <img
                   src={data.image}
                   alt="Our Brand Story"
                   className="w-full h-full object-cover"
                 />
               </div>
+              {/* Subtle glow effect */}
+              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-3/4 h-4 bg-primary/20 blur-xl rounded-full" />
             </div>
           </Reveal>
         </div>
