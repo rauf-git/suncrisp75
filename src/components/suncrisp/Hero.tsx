@@ -98,7 +98,7 @@ const Hero = ({
 
           {/* Right Column - Image Carousel (smaller, right side on md+, below on mobile) */}
           <Reveal delay={600} width="100%">
-            <div className="relative w-full md:w-[340px] lg:w-[400px] xl:w-[480px] order-2">
+            <div className="relative w-full md:w-[380px] lg:w-[460px] xl:w-[540px] order-2">
               <HeroImageCarousel key={heroImages.length} images={heroImages} interval={5000} />
             </div>
           </Reveal>
