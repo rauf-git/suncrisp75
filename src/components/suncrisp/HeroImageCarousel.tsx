@@ -53,7 +53,7 @@ const HeroImageCarousel = ({ images, interval = 4000 }: HeroImageCarouselProps) 
             <img
               src={image}
               alt={`Hero image ${index + 1}`}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-center"
               loading={index === 0 ? "eager" : "lazy"}
             />
           </div>
