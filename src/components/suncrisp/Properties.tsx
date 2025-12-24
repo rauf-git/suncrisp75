@@ -46,14 +46,14 @@ const Properties = ({ title, subtitle, items, onItemClick }: PropertiesProps) =>
           {items.map((property, index) => (
             <Reveal key={property.id} delay={index * 100}>
               <div 
-                className="bg-card rounded-xl overflow-hidden shadow-soft cursor-pointer border border-border"
+                className="group bg-card rounded-xl overflow-hidden shadow-soft cursor-pointer border border-border md:hover:shadow-elevated md:hover:border-primary/30 transition-all duration-300"
                 onClick={() => onItemClick && onItemClick(property)}
               >
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <img 
                     src={property.image} 
                     alt={property.title} 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover md:group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
                   <div className="absolute top-4 left-4">
                     <span className="bg-card/90 backdrop-blur text-foreground text-xs font-bold px-3 py-1.5 rounded-md uppercase tracking-wider shadow-sm">
@@ -63,7 +63,7 @@ const Properties = ({ title, subtitle, items, onItemClick }: PropertiesProps) =>
                 </div>
                 
                 <div className="p-6">
-                  <h3 className="font-serif text-xl text-foreground mb-2">
+                  <h3 className="font-serif text-xl text-foreground mb-2 md:group-hover:text-primary transition-colors">
                     {property.title}
                   </h3>
                   {property.location && (
@@ -73,7 +73,7 @@ const Properties = ({ title, subtitle, items, onItemClick }: PropertiesProps) =>
                     </div>
                   )}
                   <div className="pt-4 border-t border-border flex justify-end items-center">
-                    <ArrowRight className="w-4 h-4 text-primary" />
+                    <ArrowRight className="w-4 h-4 text-primary md:group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               </div>
