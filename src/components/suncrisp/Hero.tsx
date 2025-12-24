@@ -57,6 +57,16 @@ const Hero = ({
     console.warn('[Hero] No hero images configured. Upload images via Admin → Pages → Home.');
   }
   return <section className="relative min-h-[85vh] flex items-center overflow-hidden">
+      {/* Background Image */}
+      {heroData.backgroundImage && (
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={heroData.backgroundImage} 
+            alt="" 
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
       {/* Background gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-background/80" />
       {/* Dark gradient overlay - stronger on left side */}

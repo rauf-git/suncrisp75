@@ -26,7 +26,7 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
   // Close mobile menu on resize to desktop
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 768) {
+      if (window.innerWidth >= 1024) {
         setIsMobileMenuOpen(false);
       }
     };
@@ -66,7 +66,7 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
             </button>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-3">
               {NAV_LINKS.map((link) => (
                 <button
                   key={link.id}
@@ -96,8 +96,8 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
               </div>
             </div>
 
-            {/* Mobile Menu Button */}
-            <div className="flex md:hidden items-center gap-2">
+            {/* Mobile/Tablet Menu Button */}
+            <div className="flex lg:hidden items-center gap-2">
               <ThemeToggle />
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -115,9 +115,9 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile/Tablet Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-40 md:hidden">
+        <div className="fixed inset-0 z-40 lg:hidden">
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-foreground/40 backdrop-blur-sm animate-fade-in"
