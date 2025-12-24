@@ -26,6 +26,14 @@ const Footer = ({ onNavigate }: FooterProps) => {
                   </button>
                 </li>
               ))}
+              <li>
+                <button 
+                  onClick={() => onNavigate?.('brand-story')}
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300 block w-fit text-sm font-medium"
+                >
+                  Our Brand Story
+                </button>
+              </li>
             </ul>
           </div>
 
