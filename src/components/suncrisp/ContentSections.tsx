@@ -77,7 +77,7 @@ const ContentSections = ({
           {sections.map((section, index) => <Reveal key={index} delay={index * 100}>
               <div className={`${index % 2 === 1 ? 'glass-card rounded-xl p-8 md:p-10' : ''}`}>
                 <div className={`flex flex-col ${section.image ? 'md:flex-row md:gap-8 md:items-start' : ''} ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}>
-                  {section.image && <div className={`mb-6 md:mb-0 md:w-1/2 md:flex-shrink-0 rounded-xl overflow-hidden shadow-elevated ${index % 2 === 1 ? '-mx-2 md:mx-0' : ''}`}>
+                  {section.image && <div className={`mb-6 md:mb-0 md:w-1/2 md:flex-shrink-0 rounded-xl overflow-hidden shadow-elevated flex items-center justify-center ${index % 2 === 1 ? '-mx-2 md:mx-0' : ''}`}>
                       <img src={section.image} alt={section.heading || `Section ${index + 1}`} className="w-full h-auto object-cover aspect-video" loading="lazy" />
                     </div>}
                   <div className={`prose prose-lg max-w-none ${section.image ? 'md:w-1/2' : ''}`}>
