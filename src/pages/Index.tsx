@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from '@/components/suncrisp/Navbar';
 import Hero from '@/components/suncrisp/Hero';
 import Properties from '@/components/suncrisp/Properties';
@@ -34,11 +34,13 @@ const INITIAL_CONTACT: ContactData = {
 
 const Index = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isLoaded, setIsLoaded] = useState(false);
-  const [currentPage, setCurrentPage] = useState('home');
   const [selectedItem, setSelectedItem] = useState<Property | null>(null);
   const [selectedSection, setSelectedSection] = useState<string>('');
-
+  
+  // Get current page from URL params, default to 'home'
+  const currentPage = searchParams.get('page') || 'home';
   // Data state - separate for each section
   const [portfolioData, setPortfolioData] = useState<Property[]>([]);
   const [rentalsData, setRentalsData] = useState<Property[]>([]);
@@ -157,7 +159,12 @@ const Index = () => {
       navigate('/our-brand-story');
       return;
     }
-    setCurrentPage(page);
+    // Update URL query param instead of local state
+    if (page === 'home') {
+      setSearchParams({});
+    } else {
+      setSearchParams({ page });
+    }
     setSelectedItem(null);
     setSelectedSection('');
   };
