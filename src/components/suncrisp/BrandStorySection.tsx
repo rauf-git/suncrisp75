@@ -53,11 +53,11 @@ const BrandStorySection = () => {
           </h2>
         </Reveal>
 
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+        <div className="flex flex-col md:grid md:grid-cols-[1fr,auto] gap-6 md:gap-8 lg:gap-12 items-center">
           {/* Left Side - Paragraph with Know More Button */}
           <Reveal delay={200}>
-            <div className="space-y-6">
-              <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
+            <div className="space-y-6 order-1">
+              <p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-xl">
                 {data.paragraph}
               </p>
               <Button
@@ -69,11 +69,11 @@ const BrandStorySection = () => {
             </div>
           </Reveal>
 
-          {/* Right Side - Image */}
+          {/* Right Side - Image (smaller, right side on md+, below on mobile) */}
           <Reveal delay={400}>
-            <div className="relative">
+            <div className="relative order-2 w-full md:w-[340px] lg:w-[400px] xl:w-[480px]">
               <div className="absolute -inset-3 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-2xl blur-sm" />
-              <div className="relative h-[52vh] md:h-[56vh] lg:h-[62vh] rounded-xl overflow-hidden shadow-2xl border border-primary/20">
+              <div className="relative h-[280px] md:h-[320px] lg:h-[380px] rounded-xl overflow-hidden shadow-2xl border border-primary/20">
                 <img
                   src={data.image}
                   alt="Our Brand Story"
