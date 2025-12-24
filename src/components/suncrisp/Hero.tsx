@@ -110,8 +110,8 @@ const Hero = ({ onNavigate }: HeroProps) => {
           </div>
 
           {/* Right Column - Image Carousel */}
-          <Reveal delay={600}>
-            <div className="relative mt-8 lg:mt-0">
+          <Reveal delay={600} width="100%">
+            <div className="relative mt-8 lg:mt-0 w-full">
               <HeroImageCarousel key={heroImages.length} images={heroImages} interval={5000} />
             </div>
           </Reveal>
