@@ -305,18 +305,10 @@ export function ViewDetailModal({
                   placeholder="https://example.com"
                   className="bg-background/50 border-border/50 focus:border-primary/50" 
                 />
-              ) : getValue("visit_url") ? (
-                <a 
-                  href={String(getValue("visit_url"))}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-sm"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  Visit
-                </a>
               ) : (
-                <span className="text-sm text-muted-foreground">No link set</span>
+                <span className="text-sm text-muted-foreground">
+                  {getValue("visit_url") ? String(getValue("visit_url")) : "No link set"}
+                </span>
               )}
             </div>
 
