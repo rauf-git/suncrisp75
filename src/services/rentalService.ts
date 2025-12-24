@@ -24,6 +24,7 @@ export interface RentalLocation {
   name: string;
   description: string | null;
   image_url: string | null;
+  images: string[];
   display_order: number;
   content_sections: LocationContentSection[] | null;
   created_at: string;
