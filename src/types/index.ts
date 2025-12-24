@@ -2,6 +2,11 @@ import { LucideIcon } from 'lucide-react';
 
 export type SectionType = 'portfolio' | 'construction' | 'rentals' | 'hospitality' | 'about' | 'contact';
 
+export interface ContentSection {
+  heading: string;
+  content: string;
+}
+
 export interface Property {
   id: string;
   title: string;
@@ -14,6 +19,7 @@ export interface Property {
   gallery?: string[];
   features: string[];
   is_featured?: boolean;
+  content_sections?: ContentSection[];
 }
 
 export interface Experience {
