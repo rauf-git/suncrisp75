@@ -1,7 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, MapPin, Tag, Camera, Maximize2, Check } from 'lucide-react';
 import Reveal from './Reveal';
 import { Property } from '@/types';
+import { projectService } from '@/services/projectService';
+import { constructionService } from '@/services/constructionService';
+import { rentalService } from '@/services/rentalService';
 
 interface PropertyDetailProps {
   item: Property;
@@ -10,14 +13,79 @@ interface PropertyDetailProps {
 }
 
 const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailProps) => {
+  const [resolvedItem, setResolvedItem] = useState<Property>(item);
+
   // Scroll to top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [item.id]);
 
-  if (!item) return null;
+  useEffect(() => {
+    let isMounted = true;
 
-  const contentSections = item.content_sections || [];
+    const fetchLatest = async () => {
+      // portfolio + hospitality both come from projects
+      if (section === 'portfolio' || section === 'hospitality') {
+        const { data } = await projectService.getById(item.id);
+        if (!isMounted || !data) return;
+        setResolvedItem({
+          ...item,
+          title: data.title,
+          type: data.category || item.type,
+          location: data.location || item.location,
+          price: data.short_description || item.price,
+          image: data.image_url || item.image,
+          description: data.short_description || data.description || item.description,
+          detailedDescription: data.long_description || data.description || item.detailedDescription,
+          gallery: data.images || [],
+          content_sections: (data.content_sections as { heading: string; content: string }[] | null) || [],
+        });
+        return;
+      }
+
+      if (section === 'construction') {
+        const { data } = await constructionService.getById(item.id);
+        if (!isMounted || !data) return;
+        setResolvedItem({
+          ...item,
+          title: data.title,
+          type: data.status || item.type,
+          location: data.address || item.location,
+          price: data.status || item.price,
+          image: data.thumbnail_url || item.image,
+          description: data.description || item.description,
+          detailedDescription: data.description || item.detailedDescription,
+          gallery: data.images || [],
+          content_sections: (data.content_sections as { heading: string; content: string }[] | null) || [],
+        });
+        return;
+      }
+
+      if (section === 'rentals') {
+        const { data } = await rentalService.getById(item.id);
+        if (!isMounted || !data) return;
+        setResolvedItem({
+          ...item,
+          title: data.title,
+          type: 'Rental',
+          location: data.address || item.location,
+          price: data.price || item.price,
+          image: data.thumbnail_url || item.image,
+          description: data.short_description || item.description,
+          detailedDescription: data.long_description || data.short_description || item.detailedDescription,
+          gallery: data.images || [],
+          content_sections: (data.content_sections as { heading: string; content: string }[] | null) || [],
+        });
+      }
+    };
+
+    fetchLatest();
+    return () => {
+      isMounted = false;
+    };
+  }, [item.id, section]);
+
+  const contentSections = useMemo(() => resolvedItem.content_sections || [], [resolvedItem.content_sections]);
 
   return (
     <div className="bg-background min-h-screen pb-24 relative">
@@ -27,8 +95,8 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
         <div className="absolute inset-0 bg-foreground z-0" />
         {/* Main Image with Zoom-Out Animation */}
         <img 
-          src={item.image} 
-          alt={item.title} 
+          src={resolvedItem.image} 
+          alt={resolvedItem.title} 
           className="w-full h-full object-cover animate-zoom-out opacity-90"
         />
         
@@ -62,23 +130,23 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
               </div>
             </Reveal>
             <Reveal delay={100}>
-              <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight tracking-tight text-primary-foreground">
-                {item.title}
-              </h1>
+                <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight tracking-tight text-primary-foreground">
+                  {resolvedItem.title}
+                </h1>
             </Reveal>
             <Reveal delay={200}>
               <div className="flex flex-col sm:flex-row sm:items-center gap-6 text-primary-foreground/80 font-sans border-t border-primary-foreground/10 pt-6 mt-6">
-                {item.location && (
+                {resolvedItem.location && (
                   <div className="flex items-center gap-2">
                     <MapPin size={20} className="text-primary" />
-                    <span className="text-lg">{item.location}</span>
+                    <span className="text-lg">{resolvedItem.location}</span>
                   </div>
                 )}
-                {item.price && (
+                {resolvedItem.price && (
                   <>
                     <div className="hidden sm:block w-1 h-1 bg-primary-foreground/50 rounded-full" />
                     <div className="text-xl font-serif text-primary-foreground">
-                      {item.price}
+                      {resolvedItem.price}
                     </div>
                   </>
                 )}
@@ -153,7 +221,7 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
       </div>
 
       {/* 3. Gallery Section */}
-      {item.gallery && item.gallery.length > 0 && (
+      {resolvedItem.gallery && resolvedItem.gallery.length > 0 && (
         <div className="max-w-7xl mx-auto px-6 pb-24">
           <Reveal delay={500}>
             <div className="flex items-center justify-center gap-4 mb-16">
@@ -166,7 +234,7 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
           </Reveal>
           
           <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
-            {item.gallery.map((img: string, index: number) => (
+            {resolvedItem.gallery.map((img: string, index: number) => (
               <Reveal key={index} delay={index * 100}>
                 <div className="group relative break-inside-avoid rounded-2xl overflow-hidden shadow-md hover:shadow-elevated hover:-translate-y-1 transition-all duration-500 ease-in-out cursor-zoom-in">
                   <img 

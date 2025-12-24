@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -255,244 +256,239 @@ export function ConstructionFormModal({ open, onOpenChange, construction, onSucc
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
+        <DialogHeader className="px-6 py-4 border-b border-border shrink-0">
           <DialogTitle className="font-serif text-xl">
             {isEditMode ? "Edit Construction Project" : "Add Construction Project"}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Title */}
-          <div className="space-y-2">
-            <Label htmlFor="title">Title *</Label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter project title"
-              className={errors.title ? "border-destructive" : ""}
-              disabled={isLoading}
-            />
-            {errors.title && (
-              <p className="text-sm text-destructive">{errors.title}</p>
-            )}
-          </div>
-
-          {/* Status */}
-          <div className="space-y-2">
-            <Label>Status</Label>
-            <Select value={status} onValueChange={setStatus} disabled={isLoading}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                {STATUS_OPTIONS.map((opt) => (
-                  <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter project description"
-              rows={3}
-              disabled={isLoading}
-            />
-          </div>
-
-          {/* Address */}
-          <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
-            <Input
-              id="address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="Enter project address"
-              disabled={isLoading}
-            />
-          </div>
-
-          {/* Coordinates */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="latitude">Latitude</Label>
-              <Input
-                id="latitude"
-                type="number"
-                step="any"
-                value={latitude}
-                onChange={(e) => setLatitude(e.target.value)}
-                placeholder="e.g., 17.7275"
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="longitude">Longitude</Label>
-              <Input
-                id="longitude"
-                type="number"
-                step="any"
-                value={longitude}
-                onChange={(e) => setLongitude(e.target.value)}
-                placeholder="e.g., 83.2956"
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="displayOrder">Display Order</Label>
-              <Input
-                id="displayOrder"
-                type="number"
-                value={displayOrder}
-                onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
-                placeholder="0"
-                disabled={isLoading}
-              />
-            </div>
-          </div>
-
-          {/* Thumbnail */}
-          <div className="space-y-2">
-            <Label>Thumbnail Image</Label>
-            
-            {thumbnailPreview ? (
-              <div className="relative group">
-                <img
-                  src={thumbnailPreview}
-                  alt="Preview"
-                  className="w-full h-40 object-cover rounded-lg border border-border"
-                />
-                <button
-                  type="button"
-                  onClick={handleRemoveThumbnail}
-                  className="absolute top-2 right-2 p-1.5 bg-background/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground"
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="px-6 py-6 space-y-5">
+              {/* Title */}
+              <div className="space-y-2">
+                <Label htmlFor="title">Title *</Label>
+                <Input
+                  id="title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Enter project title"
+                  className={errors.title ? "border-destructive" : ""}
                   disabled={isLoading}
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                />
+                {errors.title && (
+                  <p className="text-sm text-destructive">{errors.title}</p>
+                )}
               </div>
-            ) : (
-              <div
-                onClick={() => thumbnailInputRef.current?.click()}
-                className={`w-full h-40 border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors hover:border-primary hover:bg-primary/5 ${
-                  errors.thumbnail ? "border-destructive" : "border-border"
-                }`}
-              >
-                <ImageIcon className="w-8 h-8 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">Click to upload thumbnail</p>
+
+              {/* Status */}
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <Select value={status} onValueChange={setStatus} disabled={isLoading}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-            )}
 
-            <input
-              ref={thumbnailInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleThumbnailSelect}
-              className="hidden"
-              disabled={isLoading}
-            />
+              {/* Description */}
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Enter project description"
+                  rows={3}
+                  disabled={isLoading}
+                />
+              </div>
 
-            {thumbnailPreview && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => thumbnailInputRef.current?.click()}
-                disabled={isLoading}
-              >
-                <Upload className="w-4 h-4 mr-2" />
-                Replace Thumbnail
-              </Button>
-            )}
+              {/* Address */}
+              <div className="space-y-2">
+                <Label htmlFor="address">Address</Label>
+                <Input
+                  id="address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Enter project address"
+                  disabled={isLoading}
+                />
+              </div>
 
-            {errors.thumbnail && (
-              <p className="text-sm text-destructive">{errors.thumbnail}</p>
-            )}
-          </div>
-
-          {/* Gallery Images */}
-          <div className="space-y-2">
-            <Label>Gallery Images</Label>
-            <div className="grid grid-cols-4 gap-2">
-              {/* Existing images */}
-              {images.map((img, index) => (
-                <div key={`existing-${index}`} className="relative group aspect-square">
-                  <img
-                    src={img}
-                    alt={`Gallery ${index + 1}`}
-                    className="w-full h-full object-cover rounded-lg border border-border"
+              {/* Coordinates */}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="latitude">Latitude</Label>
+                  <Input
+                    id="latitude"
+                    type="number"
+                    step="any"
+                    value={latitude}
+                    onChange={(e) => setLatitude(e.target.value)}
+                    placeholder="e.g., 17.7275"
+                    disabled={isLoading}
                   />
-                  <button
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="longitude">Longitude</Label>
+                  <Input
+                    id="longitude"
+                    type="number"
+                    step="any"
+                    value={longitude}
+                    onChange={(e) => setLongitude(e.target.value)}
+                    placeholder="e.g., 83.2956"
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="displayOrder">Display Order</Label>
+                  <Input
+                    id="displayOrder"
+                    type="number"
+                    value={displayOrder}
+                    onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
+                    placeholder="0"
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+
+              {/* Thumbnail */}
+              <div className="space-y-2">
+                <Label>Thumbnail Image</Label>
+
+                {thumbnailPreview ? (
+                  <div className="relative group">
+                    <img
+                      src={thumbnailPreview}
+                      alt="Thumbnail preview"
+                      className="w-full h-40 object-cover rounded-lg border border-border"
+                      loading="lazy"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveThumbnail}
+                      className="absolute top-2 right-2 p-1.5 bg-background/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground"
+                      disabled={isLoading}
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => thumbnailInputRef.current?.click()}
+                    className={`w-full h-40 border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors hover:border-primary hover:bg-primary/5 ${
+                      errors.thumbnail ? "border-destructive" : "border-border"
+                    }`}
+                  >
+                    <ImageIcon className="w-8 h-8 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">Click to upload thumbnail</p>
+                  </div>
+                )}
+
+                <input
+                  ref={thumbnailInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleThumbnailSelect}
+                  className="hidden"
+                  disabled={isLoading}
+                />
+
+                {thumbnailPreview && (
+                  <Button
                     type="button"
-                    onClick={() => handleRemoveExistingImage(index)}
-                    className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => thumbnailInputRef.current?.click()}
                     disabled={isLoading}
                   >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
-              {/* New images preview */}
-              {newImageFiles.map((file, index) => (
-                <div key={`new-${index}`} className="relative group aspect-square">
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt={`New ${index + 1}`}
-                    className="w-full h-full object-cover rounded-lg border-2 border-primary border-dashed"
-                  />
+                    <Upload className="w-4 h-4 mr-2" />
+                    Replace Thumbnail
+                  </Button>
+                )}
+
+                {errors.thumbnail && (
+                  <p className="text-sm text-destructive">{errors.thumbnail}</p>
+                )}
+              </div>
+
+              {/* Gallery Images */}
+              <div className="space-y-2">
+                <Label>Gallery Images</Label>
+                <div className="grid grid-cols-4 gap-2">
+                  {images.map((img, index) => (
+                    <div key={`existing-${index}`} className="relative group aspect-square">
+                      <img
+                        src={img}
+                        alt={`Gallery image ${index + 1}`}
+                        className="w-full h-full object-cover rounded-lg border border-border"
+                        loading="lazy"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveExistingImage(index)}
+                        className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        disabled={isLoading}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+
+                  {newImageFiles.map((file, index) => (
+                    <div key={`new-${index}`} className="relative group aspect-square">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`New gallery image ${index + 1}`}
+                        className="w-full h-full object-cover rounded-lg border-2 border-primary border-dashed"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveNewImage(index)}
+                        className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        disabled={isLoading}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+
                   <button
                     type="button"
-                    onClick={() => handleRemoveNewImage(index)}
-                    className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => imagesInputRef.current?.click()}
+                    className="aspect-square border-2 border-dashed border-border rounded-lg flex items-center justify-center hover:border-primary hover:bg-primary/5 transition-colors"
                     disabled={isLoading}
                   >
-                    <Trash2 className="w-3 h-3" />
+                    <Plus className="w-6 h-6 text-muted-foreground" />
                   </button>
                 </div>
-              ))}
-              {/* Add button */}
-              <button
-                type="button"
-                onClick={() => imagesInputRef.current?.click()}
-                className="aspect-square border-2 border-dashed border-border rounded-lg flex items-center justify-center hover:border-primary hover:bg-primary/5 transition-colors"
-                disabled={isLoading}
-              >
-                <Plus className="w-6 h-6 text-muted-foreground" />
-              </button>
+                <input
+                  ref={imagesInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleAddImages}
+                  className="hidden"
+                  disabled={isLoading}
+                />
+              </div>
             </div>
-            <input
-              ref={imagesInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleAddImages}
-              className="hidden"
-              disabled={isLoading}
-            />
-          </div>
+          </ScrollArea>
 
-          {/* Actions */}
-          <div className="flex gap-3 justify-end pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={isLoading}
-            >
+          <DialogFooter className="px-6 py-4 border-t border-border shrink-0 bg-background flex flex-row items-center justify-end gap-3">
+            <Button type="button" variant="outline" onClick={handleClose} disabled={isLoading}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              className="bg-primary hover:bg-primary/90"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="bg-primary hover:bg-primary/90" disabled={isLoading}>
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
               ) : isEditMode ? (
@@ -501,7 +497,7 @@ export function ConstructionFormModal({ open, onOpenChange, construction, onSucc
                 "Create Project"
               )}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
