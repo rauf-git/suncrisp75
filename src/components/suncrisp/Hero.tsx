@@ -58,55 +58,57 @@ const Hero = ({
   }
   return <section className="relative min-h-[85vh] flex items-center overflow-hidden">
       {/* Background Image */}
-      <div className="absolute inset-0 z-0">
-        <img 
-          src={heroData.backgroundImage || "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1920&q=80"} 
-          alt="" 
-          className="w-full h-full object-cover"
-        />
-      </div>
+      {heroData.backgroundImage && (
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={heroData.backgroundImage} 
+            alt="" 
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
       {/* Background gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/80 to-background/60" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-background/80" />
       {/* Dark gradient overlay - stronger on left side */}
-      <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-background/40" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/30" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-background/30" />
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-20">
-        <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-center">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8">
+        <div className="flex flex-col md:grid md:grid-cols-[1fr,auto] gap-6 md:gap-8 lg:gap-12 items-center">
           {/* Left Column - Text Content */}
-          <div className="flex-1 max-w-xl order-1 text-center md:text-left">
+          <div className="max-w-xl order-1">
             <Reveal delay={200}>
-              <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight tracking-tight">
-                <span className="text-primary">Sun</span>
+              <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight tracking-tight">
+                <span className="text-primary">​Sun</span>
                 <span className="text-primary">Crisp</span>
               </h1>
             </Reveal>
 
             <Reveal>
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-primary/30 rounded-full bg-background/50 mb-5 backdrop-blur-sm">
-                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                <span className="text-[10px] uppercase tracking-widest text-primary font-bold">
+              <div className="inline-flex items-center gap-2 px-3 py-1 border border-primary/30 rounded-full bg-background/50 mb-4 backdrop-blur-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                <span className="text-[9px] uppercase tracking-widest text-primary font-bold">
                   Constructions | Rentals | Hospitality
                 </span>
               </div>
             </Reveal>
 
             <Reveal delay={400}>
-              <p className="font-sans text-muted-foreground text-base md:text-lg tracking-wide max-w-lg mb-8 leading-relaxed mx-auto md:mx-0">
+              <p className="font-sans text-muted-foreground text-sm md:text-base tracking-wide max-w-md mb-6 leading-relaxed">
                 {heroData.description || 'From groundbreaking construction to exquisite rentals and world-class experiences. We build the future and curate the present.'}
               </p>
             </Reveal>
 
             <Reveal delay={500}>
-              <Button onClick={() => navigate('/about-us')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-base font-medium">
+              <Button onClick={() => navigate('/about-us')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 text-sm font-medium">
                 More About Us
               </Button>
             </Reveal>
           </div>
 
-          {/* Right Column - Image Carousel */}
+          {/* Right Column - Image Carousel (smaller, right side on md+, below on mobile) */}
           <Reveal delay={600} width="100%">
-            <div className="flex-1 w-full max-w-md md:max-w-lg xl:max-w-xl order-2">
+            <div className="relative w-full md:w-[380px] lg:w-[460px] xl:w-[540px] order-2">
               <HeroImageCarousel key={heroImages.length} images={heroImages} interval={5000} />
             </div>
           </Reveal>
