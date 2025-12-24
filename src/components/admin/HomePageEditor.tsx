@@ -29,14 +29,31 @@ interface HeroContent {
   video_url?: string;
 }
 
-const isValidYouTubeUrl = (url: string): boolean => {
-  if (!url) return true; // Empty is valid (optional field)
+const extractYouTubeId = (url: string): string | null => {
+  const input = (url || "").trim();
+  if (!input) return null;
+
+  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
+
   const patterns = [
-    /^https?:\/\/(www\.)?youtube\.com\/watch\?v=[a-zA-Z0-9_-]{11}([&#?].*)?$/,
-    /^https?:\/\/youtu\.be\/[a-zA-Z0-9_-]{11}([&#?].*)?$/,
-    /^https?:\/\/(www\.)?youtube\.com\/embed\/[a-zA-Z0-9_-]{11}([&#?].*)?$/,
+    /[?&]v=([a-zA-Z0-9_-]{11})/,
+    /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/live\/([a-zA-Z0-9_-]{11})/,
   ];
-  return patterns.some((pattern) => pattern.test(url.trim()));
+
+  for (const p of patterns) {
+    const m = input.match(p);
+    if (m?.[1]) return m[1];
+  }
+  return null;
+};
+
+const isValidYouTubeUrl = (url: string): boolean => {
+  const input = (url || "").trim();
+  if (!input) return true;
+  return !!extractYouTubeId(input);
 };
 
 export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
@@ -98,7 +115,9 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
 
   const handleVideoUrlChange = (url: string) => {
     setHeroVideoUrl(url);
-    if (url && !isValidYouTubeUrl(url)) {
+    const input = url.trim();
+
+    if (input && !extractYouTubeId(input)) {
       setVideoUrlError("Please enter a valid YouTube URL");
     } else {
       setVideoUrlError("");
@@ -106,7 +125,8 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
   };
 
   const handleSave = async () => {
-    if (heroVideoUrl && !isValidYouTubeUrl(heroVideoUrl)) {
+    const videoId = extractYouTubeId(heroVideoUrl);
+    if (heroVideoUrl.trim() && !videoId) {
       toast({ title: "Error", description: "Invalid YouTube URL", variant: "destructive" });
       return;
     }
@@ -194,9 +214,11 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
     setTrustedByLogos(trustedByLogos.filter((_, i) => i !== index));
   };
 
+  const previewVideoId = extractYouTubeId(heroVideoUrl);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
+      <DialogContent className="w-[95vw] max-w-3xl h-[90vh] max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
         <DialogHeader className="px-6 py-4 border-b border-border shrink-0">
           <DialogTitle className="font-serif text-2xl">Edit Home Page</DialogTitle>
         </DialogHeader>
@@ -234,10 +256,10 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
                       Leave empty to show only the background image. Video will appear on the right side of the hero section.
                     </p>
 
-                    {!videoUrlError && heroVideoUrl.trim() && (
+                     {!videoUrlError && previewVideoId && (
                       <div className="mt-3 aspect-video w-full rounded-lg overflow-hidden border border-border bg-muted">
                         <iframe
-                          src={`https://www.youtube.com/embed/${heroVideoUrl.trim().replace(/^.*(?:v=|youtu\.be\/|embed\/|shorts\/|live\/)([a-zA-Z0-9_-]{11}).*$/,'$1')}?rel=0&modestbranding=1`}
+                          src={`https://www.youtube.com/embed/${previewVideoId}?rel=0&modestbranding=1`}
                           title="Hero video preview"
                           className="w-full h-full"
                           loading="lazy"
