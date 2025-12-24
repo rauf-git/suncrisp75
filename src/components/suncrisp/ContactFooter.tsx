@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin, Linkedin, Globe } from 'lucide-react';
+import { Mail, Phone, MapPin, Globe } from 'lucide-react';
 import Reveal from './Reveal';
 import { ContactData } from '@/types';
 
@@ -89,17 +89,6 @@ const ContactFooter = ({ data }: ContactFooterProps) => {
           </Reveal>
         </div>
 
-        {/* Social / Connect */}
-        <div className="text-center py-12">
-          <Reveal delay={300}>
-            <a 
-              href="#" 
-              className="inline-flex items-center gap-3 btn-primary rounded-xl shadow-lg hover:shadow-elevated hover:-translate-y-1"
-            >
-              <Linkedin size={24} /> Connect on LinkedIn
-            </a>
-          </Reveal>
-        </div>
       </div>
       
       {/* Copyright Footer */}
