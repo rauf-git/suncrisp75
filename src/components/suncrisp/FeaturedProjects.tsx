@@ -36,6 +36,47 @@ const FeaturedProjects = ({
     }
   }, [featuredItems.length, variant]);
 
+  // Auto-scroll effect for continuous scrolling
+  useEffect(() => {
+    if (variant !== 'scroll' || !scrollRef.current) return;
+    
+    const container = scrollRef.current;
+    const itemWidth = 280;
+    const singleSetWidth = featuredItems.length * itemWidth;
+    let animationId: number;
+    let isPaused = false;
+    
+    const autoScroll = () => {
+      if (!isPaused && container) {
+        container.scrollLeft += 1;
+        
+        // Reset to middle when we've scrolled through one set
+        if (container.scrollLeft >= singleSetWidth * 2) {
+          container.scrollLeft = singleSetWidth;
+        }
+      }
+      animationId = requestAnimationFrame(autoScroll);
+    };
+    
+    animationId = requestAnimationFrame(autoScroll);
+    
+    const handleMouseEnter = () => { isPaused = true; };
+    const handleMouseLeave = () => { isPaused = false; };
+    
+    container.addEventListener('mouseenter', handleMouseEnter);
+    container.addEventListener('mouseleave', handleMouseLeave);
+    container.addEventListener('touchstart', handleMouseEnter);
+    container.addEventListener('touchend', handleMouseLeave);
+    
+    return () => {
+      cancelAnimationFrame(animationId);
+      container.removeEventListener('mouseenter', handleMouseEnter);
+      container.removeEventListener('mouseleave', handleMouseLeave);
+      container.removeEventListener('touchstart', handleMouseEnter);
+      container.removeEventListener('touchend', handleMouseLeave);
+    };
+  }, [variant, featuredItems.length]);
+
   const scroll = useCallback((direction: 'left' | 'right') => {
     if (scrollRef.current) {
       const scrollAmount = 300;
@@ -157,13 +198,9 @@ const FeaturedProjects = ({
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
           {featuredItems.map((item, index) => <Reveal key={item.id} delay={index * 0.15}>
               <article 
-                className="group cursor-pointer focus:outline-none" 
+                className="group cursor-pointer outline-none focus:outline-none focus-visible:outline-none" 
                 onClick={() => onItemClick?.(item)}
-                onTouchEnd={(e) => {
-                  // Remove focus on touch end to prevent stuck focus state
-                  (e.currentTarget as HTMLElement).blur();
-                }}
-                tabIndex={0}
+                tabIndex={-1}
               >
                 <div className="relative mb-5 overflow-hidden rounded-xl">
                   <div className="aspect-[4/3] overflow-hidden bg-muted rounded-xl">
