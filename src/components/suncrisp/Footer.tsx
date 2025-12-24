@@ -64,7 +64,7 @@ const Footer = ({ onNavigate }: FooterProps) => {
             <img 
               src={suncrespLogo} 
               alt="SunCrisp Hospitality" 
-              className="h-12 w-auto mb-2"
+              className="h-20 w-auto mb-2"
             />
             <p className="font-serif text-foreground font-bold text-sm mb-4">
               SUNCRISP HOSPITALITY LLP
