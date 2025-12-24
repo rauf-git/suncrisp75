@@ -57,11 +57,20 @@ const Hero = ({
     console.warn('[Hero] No hero images configured. Upload images via Admin → Pages → Home.');
   }
   return <section className="relative min-h-screen flex items-center overflow-hidden ml-[70px]">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: heroData.backgroundImage 
+            ? `url(${heroData.backgroundImage})` 
+            : `url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80')`
+        }}
+      />
       {/* Background gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-background/80" />
-      {/* Dark gradient overlay - stronger on left side */}
-      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/30 px-0 py-[4px] mx-0 my-[130px]" />
-      <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-background/30" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/85 to-background/60" />
+      {/* Dark gradient overlay - stronger on left side for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-background/40" />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12">
         <div className="flex flex-col md:grid md:grid-cols-[1fr,auto] gap-6 md:gap-8 lg:gap-12 items-center">
