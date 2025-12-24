@@ -9,7 +9,7 @@ export const NAV_LINKS: NavLink[] = [
   { label: 'CONSTRUCTION', id: 'construction' },
   { label: 'RENTALS', id: 'rentals' },
   { label: 'HOSPITALITY', id: 'hospitality' },
-  { label: 'ABOUT US', id: 'about' },
+  { label: 'ABOUT US', id: 'brand-story' },
   { label: 'CONTACT', id: 'contact' },
 ];
 

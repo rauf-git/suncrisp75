@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { projectService, Project, CreateProjectInput, UpdateProjectInput } from "@/services/projectService";
-import { Upload, X, Image as ImageIcon } from "lucide-react";
+import { Upload, X, Image as ImageIcon, Plus, Trash2 } from "lucide-react";
 
 interface ProjectFormModalProps {
   open: boolean;
@@ -31,10 +31,13 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
   const [displayOrder, setDisplayOrder] = useState(project?.display_order || 0);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(project?.image_url || null);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [newGalleryFiles, setNewGalleryFiles] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ title?: string; image?: string }>({});
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const isEditMode = !!project;
@@ -47,6 +50,8 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
     setDisplayOrder(0);
     setImageFile(null);
     setImagePreview(null);
+    setGalleryImages([]);
+    setNewGalleryFiles([]);
     setErrors({});
   };
 
@@ -84,6 +89,26 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+  };
+
+  const handleAddGalleryImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const validFiles = files.filter(file => {
+      const validation = projectService.validateFile(file);
+      return validation.valid;
+    });
+    setNewGalleryFiles(prev => [...prev, ...validFiles]);
+    if (galleryInputRef.current) {
+      galleryInputRef.current.value = "";
+    }
+  };
+
+  const handleRemoveExistingGalleryImage = (index: number) => {
+    setGalleryImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleRemoveNewGalleryImage = (index: number) => {
+    setNewGalleryFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const validateForm = (): boolean => {
@@ -131,6 +156,23 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
         }
       }
 
+      // Upload new gallery images
+      const uploadedGalleryUrls: string[] = [];
+      for (const file of newGalleryFiles) {
+        const { url, error } = await projectService.uploadImage(file);
+        if (error || !url) {
+          toast({
+            title: "Upload failed",
+            description: `Failed to upload ${file.name}`,
+            variant: "destructive",
+          });
+          continue;
+        }
+        uploadedGalleryUrls.push(url);
+      }
+
+      const allGalleryImages = [...galleryImages, ...uploadedGalleryUrls];
+
       if (isEditMode && project) {
         const updates: UpdateProjectInput = {
           title: title.trim(),
@@ -138,6 +180,7 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
           location: location.trim() || undefined,
           category: category.trim() || undefined,
           display_order: displayOrder,
+          images: allGalleryImages,
         };
         
         if (imageFile) {
@@ -159,6 +202,7 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
           category: category.trim() || undefined,
           display_order: displayOrder,
           image_url: imageUrl,
+          images: allGalleryImages,
         };
 
         const { error } = await projectService.create(newProject);
@@ -193,7 +237,9 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
       setCategory(project.category || "");
       setDisplayOrder(project.display_order || 0);
       setImagePreview(project.image_url);
+      setGalleryImages(project.images || []);
       setImageFile(null);
+      setNewGalleryFiles([]);
       setErrors({});
     } else if (open && !project) {
       resetForm();
@@ -280,9 +326,9 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
                 <p className="text-xs text-muted-foreground">Lower numbers appear first</p>
               </div>
 
-              {/* Image Upload */}
+              {/* Main Image Upload */}
               <div className="space-y-2">
-                <Label>Image {!isEditMode && "*"}</Label>
+                <Label>Main Image {!isEditMode && "*"}</Label>
 
                 {imagePreview ? (
                   <div className="relative group">
@@ -336,6 +382,73 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
                 )}
 
                 {errors.image && <p className="text-sm text-destructive">{errors.image}</p>}
+              </div>
+
+              {/* Gallery Images */}
+              <div className="space-y-2">
+                <Label>Gallery Images</Label>
+                <p className="text-xs text-muted-foreground mb-2">Add additional images for the project gallery</p>
+                
+                <div className="grid grid-cols-4 gap-2">
+                  {/* Existing gallery images */}
+                  {galleryImages.map((img, index) => (
+                    <div key={`existing-${index}`} className="relative group aspect-square">
+                      <img
+                        src={img}
+                        alt={`Gallery image ${index + 1}`}
+                        className="w-full h-full object-cover rounded-lg border border-border"
+                        loading="lazy"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveExistingGalleryImage(index)}
+                        className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        disabled={isLoading}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+
+                  {/* New gallery images (not yet uploaded) */}
+                  {newGalleryFiles.map((file, index) => (
+                    <div key={`new-${index}`} className="relative group aspect-square">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`New gallery image ${index + 1}`}
+                        className="w-full h-full object-cover rounded-lg border-2 border-primary border-dashed"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveNewGalleryImage(index)}
+                        className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        disabled={isLoading}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+
+                  {/* Add more button */}
+                  <button
+                    type="button"
+                    onClick={() => galleryInputRef.current?.click()}
+                    className="aspect-square border-2 border-dashed border-border rounded-lg flex items-center justify-center hover:border-primary hover:bg-primary/5 transition-colors"
+                    disabled={isLoading}
+                  >
+                    <Plus className="w-6 h-6 text-muted-foreground" />
+                  </button>
+                </div>
+
+                <input
+                  ref={galleryInputRef}
+                  type="file"
+                  accept={projectService.getAcceptedFileTypes()}
+                  onChange={handleAddGalleryImages}
+                  className="hidden"
+                  multiple
+                  disabled={isLoading}
+                />
               </div>
             </div>
           </ScrollArea>
