@@ -19,6 +19,7 @@ export const sanitizeText = (text: string | undefined | null, maxLength: number)
 const contentSectionSchema = z.object({
   heading: z.string().trim().max(MAX_TITLE_LENGTH).optional(),
   content: z.string().trim().max(MAX_LONG_DESCRIPTION_LENGTH).optional(),
+  image: z.string().trim().url().max(MAX_URL_LENGTH).optional(),
 });
 
 export const createProjectSchema = z.object({
