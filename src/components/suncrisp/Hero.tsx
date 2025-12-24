@@ -56,24 +56,14 @@ const Hero = ({
   if (heroImages.length === 0) {
     console.warn('[Hero] No hero images configured. Upload images via Admin → Pages → Home.');
   }
-  return <section className="relative min-h-[85vh] flex items-center overflow-hidden">
-      {/* Background Image */}
-      {heroData.backgroundImage && (
-        <div className="absolute inset-0 z-0">
-          <img 
-            src={heroData.backgroundImage} 
-            alt="" 
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
+  return <section className="relative min-h-screen flex items-center overflow-hidden ml-[70px]">
       {/* Background gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-background/80" />
       {/* Dark gradient overlay - stronger on left side */}
-      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/30" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/30 px-0 py-[4px] mx-0 my-[130px]" />
       <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-background/30" />
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12">
         <div className="flex flex-col md:grid md:grid-cols-[1fr,auto] gap-6 md:gap-8 lg:gap-12 items-center">
           {/* Left Column - Text Content */}
           <div className="max-w-xl order-1">
@@ -108,7 +98,7 @@ const Hero = ({
 
           {/* Right Column - Image Carousel (smaller, right side on md+, below on mobile) */}
           <Reveal delay={600} width="100%">
-            <div className="relative w-full md:w-[380px] lg:w-[460px] xl:w-[540px] order-2">
+            <div className="relative w-full md:w-[340px] lg:w-[400px] xl:w-[480px] order-2">
               <HeroImageCarousel key={heroImages.length} images={heroImages} interval={5000} />
             </div>
           </Reveal>
