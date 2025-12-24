@@ -7,6 +7,7 @@ import { rentalService, Rental, RentalLocation } from "@/services/rentalService"
 import { ProjectFormModal } from "@/components/admin/ProjectFormModal";
 import { ConstructionFormModal } from "@/components/admin/ConstructionFormModal";
 import { RentalFormModal } from "@/components/admin/RentalFormModal";
+import { LocationFormModal } from "@/components/admin/LocationFormModal";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
 import { DraggableList } from "@/components/admin/DraggableList";
 import { ViewDetailModal } from "@/components/admin/ViewDetailModal";
@@ -36,8 +37,9 @@ import {
 import { format } from "date-fns";
 
 type ContentType = "portfolio" | "construction" | "rentals" | "pages";
-type DeleteTarget = { type: "project"; item: Project } | { type: "construction"; item: ConstructionProject } | { type: "rental"; item: Rental };
+type DeleteTarget = { type: "project"; item: Project } | { type: "construction"; item: ConstructionProject } | { type: "rental"; item: Rental } | { type: "location"; item: RentalLocation };
 type ViewTarget = { type: "project"; item: Project } | { type: "construction"; item: ConstructionProject } | { type: "rental"; item: Rental };
+type RentalsSubTab = "properties" | "locations";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<ContentType>("portfolio");
@@ -60,6 +62,9 @@ export default function AdminDashboard() {
   const [isLoadingRentals, setIsLoadingRentals] = useState(true);
   const [isRentalFormOpen, setIsRentalFormOpen] = useState(false);
   const [editingRental, setEditingRental] = useState<Rental | null>(null);
+  const [rentalsSubTab, setRentalsSubTab] = useState<RentalsSubTab>("properties");
+  const [isLocationFormOpen, setIsLocationFormOpen] = useState(false);
+  const [editingLocation, setEditingLocation] = useState<RentalLocation | null>(null);
   
   
   // Delete state
@@ -170,7 +175,16 @@ export default function AdminDashboard() {
     setEditingRental(null);
   };
 
+  // Location handlers
+  const handleEditLocation = (location: RentalLocation) => {
+    setEditingLocation(location);
+    setIsLocationFormOpen(true);
+  };
 
+  const handleLocationFormClose = () => {
+    setIsLocationFormOpen(false);
+    setEditingLocation(null);
+  };
   // Reorder handlers
   const handleReorderProjects = useCallback(async (reordered: Project[]) => {
     setProjects(reordered);
@@ -254,6 +268,14 @@ export default function AdminDashboard() {
         if (error) throw error;
         toast({ title: "Rental deleted", description: "The rental property has been deleted successfully." });
         fetchRentals();
+      } else if (deleteTarget.type === "location") {
+        if (deleteTarget.item.image_url) {
+          await rentalService.deleteImage(deleteTarget.item.image_url);
+        }
+        const { error } = await rentalService.deleteLocation(deleteTarget.item.id);
+        if (error) throw error;
+        toast({ title: "Location deleted", description: "The rental location has been deleted successfully." });
+        fetchRentals();
       }
     } catch {
       toast({ title: "Error", description: "Failed to delete item", variant: "destructive" });
@@ -271,8 +293,13 @@ export default function AdminDashboard() {
       setEditingConstruction(null);
       setIsConstructionFormOpen(true);
     } else if (activeTab === "rentals") {
-      setEditingRental(null);
-      setIsRentalFormOpen(true);
+      if (rentalsSubTab === "properties") {
+        setEditingRental(null);
+        setIsRentalFormOpen(true);
+      } else {
+        setEditingLocation(null);
+        setIsLocationFormOpen(true);
+      }
     }
   };
 
@@ -342,7 +369,8 @@ export default function AdminDashboard() {
               <span className="text-sm text-muted-foreground">
                 {activeTab === "portfolio" && `${projects.length} projects`}
                 {activeTab === "construction" && `${constructions.length} projects`}
-                {activeTab === "rentals" && `${rentals.length} rentals`}
+                {activeTab === "rentals" && rentalsSubTab === "properties" && `${rentals.length} rentals`}
+                {activeTab === "rentals" && rentalsSubTab === "locations" && `${rentalLocations.length} locations`}
               </span>
               {activeTab !== "pages" && (
                 <span className="text-xs text-primary bg-primary/10 px-2 py-1 rounded">
@@ -358,7 +386,7 @@ export default function AdminDashboard() {
               {activeTab !== "pages" && (
                 <Button onClick={handleAddClick} className="bg-primary hover:bg-primary/90">
                   <Plus className="w-4 h-4 mr-2" />
-                  Add {activeTab === "portfolio" ? "Project" : activeTab === "construction" ? "Construction" : "Rental"}
+                  Add {activeTab === "portfolio" ? "Project" : activeTab === "construction" ? "Construction" : activeTab === "rentals" ? (rentalsSubTab === "properties" ? "Rental" : "Location") : ""}
                 </Button>
               )}
             </div>
@@ -424,27 +452,83 @@ export default function AdminDashboard() {
 
           {/* Rentals Tab */}
           <TabsContent value="rentals">
-            {isLoadingRentals ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-              </div>
-            ) : rentals.length === 0 ? (
-              <EmptyState onAdd={handleAddClick} type="rental" />
+            {/* Rentals Sub-tabs */}
+            <div className="flex gap-2 mb-6">
+              <Button
+                variant={rentalsSubTab === "properties" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setRentalsSubTab("properties")}
+              >
+                <Key className="w-4 h-4 mr-2" />
+                Properties
+              </Button>
+              <Button
+                variant={rentalsSubTab === "locations" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setRentalsSubTab("locations")}
+              >
+                <MapPin className="w-4 h-4 mr-2" />
+                Locations
+              </Button>
+            </div>
+
+            {rentalsSubTab === "properties" ? (
+              // Properties list
+              isLoadingRentals ? (
+                <div className="flex items-center justify-center py-20">
+                  <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : rentals.length === 0 ? (
+                <EmptyState onAdd={handleAddClick} type="rental" />
+              ) : (
+                <DraggableList
+                  items={rentals}
+                  onReorder={handleReorderRentals}
+                  keyExtractor={(r) => r.id}
+                  droppableId="rentals-list"
+                  renderItem={(rental) => (
+                    <RentalCard
+                      rental={rental}
+                      onView={() => setViewTarget({ type: "rental", item: rental })}
+                      onEdit={() => handleEditRental(rental)}
+                      onDelete={() => setDeleteTarget({ type: "rental", item: rental })}
+                    />
+                  )}
+                />
+              )
             ) : (
-              <DraggableList
-                items={rentals}
-                onReorder={handleReorderRentals}
-                keyExtractor={(r) => r.id}
-                droppableId="rentals-list"
-                renderItem={(rental) => (
-                  <RentalCard
-                    rental={rental}
-                    onView={() => setViewTarget({ type: "rental", item: rental })}
-                    onEdit={() => handleEditRental(rental)}
-                    onDelete={() => setDeleteTarget({ type: "rental", item: rental })}
-                  />
-                )}
-              />
+              // Locations list
+              isLoadingRentals ? (
+                <div className="flex items-center justify-center py-20">
+                  <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : rentalLocations.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-6">
+                    <MapPin className="w-10 h-10 text-muted-foreground" />
+                  </div>
+                  <h3 className="font-serif text-xl text-foreground mb-2">No Locations</h3>
+                  <p className="text-muted-foreground mb-6 max-w-sm">
+                    Add locations to group your rental properties by area.
+                  </p>
+                  <Button onClick={handleAddClick}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Location
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {rentalLocations.map((location) => (
+                    <LocationCard
+                      key={location.id}
+                      location={location}
+                      rentalCount={rentals.filter(r => r.location_id === location.id).length}
+                      onEdit={() => handleEditLocation(location)}
+                      onDelete={() => setDeleteTarget({ type: "location", item: location })}
+                    />
+                  ))}
+                </div>
+              )
             )}
           </TabsContent>
 
@@ -530,6 +614,13 @@ export default function AdminDashboard() {
         onOpenChange={handleRentalFormClose}
         rental={editingRental}
         locations={rentalLocations}
+        onSuccess={fetchRentals}
+      />
+
+      <LocationFormModal
+        open={isLocationFormOpen}
+        onOpenChange={handleLocationFormClose}
+        location={editingLocation}
         onSuccess={fetchRentals}
       />
 
@@ -825,6 +916,44 @@ function RentalCard({ rental, onView, onEdit, onDelete }: { rental: Rental; onVi
             <Trash2 className="w-4 h-4" />
           </Button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function LocationCard({ location, rentalCount, onEdit, onDelete }: { location: RentalLocation; rentalCount: number; onEdit: () => void; onDelete: () => void }) {
+  return (
+    <div className="bg-card border border-border rounded-xl p-5 hover:shadow-elevated transition-all">
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <MapPin className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h3 className="font-serif text-lg font-semibold text-foreground">{location.name}</h3>
+            <span className="text-sm text-muted-foreground">{rentalCount} properties</span>
+          </div>
+        </div>
+      </div>
+      {location.description && (
+        <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{location.description}</p>
+      )}
+      {location.content_sections && location.content_sections.length > 0 && (
+        <p className="text-xs text-primary mb-4">{location.content_sections.length} content section(s)</p>
+      )}
+      <div className="flex gap-2">
+        <Button variant="outline" size="sm" className="flex-1" onClick={onEdit}>
+          <Edit className="w-4 h-4 mr-1" />
+          Edit
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+          onClick={onDelete}
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
       </div>
     </div>
   );

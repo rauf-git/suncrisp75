@@ -225,6 +225,7 @@ export const createLocationSchema = z.object({
     .max(MAX_URL_LENGTH, `Image URL must be less than ${MAX_URL_LENGTH} characters`)
     .optional(),
   display_order: z.number().int().min(0).max(9999).optional(),
+  content_sections: z.array(contentSectionSchema).optional(),
 });
 
 export const updateLocationSchema = createLocationSchema.partial();
