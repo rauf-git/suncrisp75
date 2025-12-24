@@ -11,6 +11,7 @@ import Footer from '@/components/suncrisp/Footer';
 import PropertyDetail from '@/components/suncrisp/PropertyDetail';
 import FloatingCTA from '@/components/suncrisp/FloatingCTA';
 import FeaturedProjects from '@/components/suncrisp/FeaturedProjects';
+import BrandStorySection from '@/components/suncrisp/BrandStorySection';
 import { CONSTRUCTION_SERVICES } from '@/constants';
 import { Property, Service, Experience, AboutData, ContactData } from '@/types';
 import { projectService } from '@/services/projectService';
@@ -227,6 +228,8 @@ const Index = () => {
                 variant="grid"
               />
             )}
+            {/* Brand Story Section */}
+            <BrandStorySection />
             <Testimonials />
           </>
         );

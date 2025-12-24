@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Reveal from './Reveal';
+import HeroImageCarousel from './HeroImageCarousel';
 import { pageBlockService } from '@/services/pageBlockService';
 
 interface HeroProps {
@@ -14,30 +15,8 @@ interface HeroData {
   description?: string;
   background_image?: string;
   video_url?: string;
+  hero_images?: string[];
 }
-
-const extractYouTubeId = (url: string): string | null => {
-  const input = (url || "").trim();
-  if (!input) return null;
-
-  // Allow a raw YouTube ID
-  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
-
-  // Support common formats: watch?v=, youtu.be/, embed/, shorts/, live/
-  const patterns = [
-    /[?&]v=([a-zA-Z0-9_-]{11})/,
-    /youtu\.be\/([a-zA-Z0-9_-]{11})/,
-    /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
-    /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
-    /youtube\.com\/live\/([a-zA-Z0-9_-]{11})/,
-  ];
-
-  for (const p of patterns) {
-    const m = input.match(p);
-    if (m?.[1]) return m[1];
-  }
-  return null;
-};
 
 const Hero = ({ onNavigate }: HeroProps) => {
   const navigate = useNavigate();
@@ -64,8 +43,8 @@ const Hero = ({ onNavigate }: HeroProps) => {
     return () => window.removeEventListener("page-block-updated", onUpdated);
   }, []);
 
-  const videoId = extractYouTubeId(heroData.video_url || "");
-  const hasVideo = !!videoId;
+  const heroImages = heroData.hero_images || [];
+  const hasImages = heroImages.length > 0;
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
@@ -81,7 +60,7 @@ const Hero = ({ onNavigate }: HeroProps) => {
       <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-background/30" />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12">
-        <div className={`grid ${hasVideo ? 'lg:grid-cols-2 gap-8 lg:gap-12' : 'grid-cols-1'} items-center`}>
+        <div className={`grid ${hasImages ? 'lg:grid-cols-2 gap-8 lg:gap-12' : 'grid-cols-1'} items-center`}>
           {/* Left Column - Text Content */}
           <div className="max-w-xl">
             <Reveal delay={200}>
@@ -114,35 +93,15 @@ const Hero = ({ onNavigate }: HeroProps) => {
                 >
                   More About Us
                 </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => navigate('/our-brand-story')}
-                  className="border-primary/50 hover:bg-primary/10 text-foreground px-6 py-2 text-sm font-medium"
-                >
-                  Our Brand Story
-                </Button>
               </div>
             </Reveal>
           </div>
 
-          {/* Right Column - Video Player */}
-          {hasVideo && (
+          {/* Right Column - Image Carousel */}
+          {hasImages && (
             <Reveal delay={600}>
               <div className="relative mt-8 lg:mt-0">
-                {/* Decorative frame */}
-                <div className="absolute -inset-2 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-2xl blur-sm" />
-                <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl shadow-black/20 bg-muted/50 backdrop-blur-sm border border-primary/20">
-                  <iframe
-                    src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`}
-                    title="Hero Video"
-                    className="absolute inset-0 w-full h-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    loading="lazy"
-                  />
-                </div>
-                {/* Subtle glow effect */}
-                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-3/4 h-4 bg-primary/20 blur-xl rounded-full" />
+                <HeroImageCarousel images={heroImages} interval={5000} />
               </div>
             </Reveal>
           )}

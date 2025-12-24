@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { pageBlockService, PageBlock } from "@/services/pageBlockService";
-import { Loader2, Plus, Trash2, Video, AlertCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2, Plus, Trash2, Image, Upload, X } from "lucide-react";
 
 interface HomePageEditorProps {
   open: boolean;
@@ -27,43 +28,29 @@ interface HeroContent {
   description?: string;
   background_image?: string;
   video_url?: string;
+  hero_images?: string[];
 }
 
-const extractYouTubeId = (url: string): string | null => {
-  const input = (url || "").trim();
-  if (!input) return null;
-
-  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
-
-  const patterns = [
-    /[?&]v=([a-zA-Z0-9_-]{11})/,
-    /youtu\.be\/([a-zA-Z0-9_-]{11})/,
-    /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
-    /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
-    /youtube\.com\/live\/([a-zA-Z0-9_-]{11})/,
-  ];
-
-  for (const p of patterns) {
-    const m = input.match(p);
-    if (m?.[1]) return m[1];
-  }
-  return null;
-};
-
-const isValidYouTubeUrl = (url: string): boolean => {
-  const input = (url || "").trim();
-  if (!input) return true;
-  return !!extractYouTubeId(input);
-};
+interface BrandStorySectionContent {
+  heading?: string;
+  paragraph?: string;
+  image?: string;
+}
 
 export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   
   // Hero state
-  const [heroVideoUrl, setHeroVideoUrl] = useState("");
+  const [heroImages, setHeroImages] = useState<string[]>([]);
   const [heroBlock, setHeroBlock] = useState<PageBlock | null>(null);
-  const [videoUrlError, setVideoUrlError] = useState("");
+  
+  // Brand Story Section state
+  const [brandStoryHeading, setBrandStoryHeading] = useState("Our Brand Story");
+  const [brandStoryParagraph, setBrandStoryParagraph] = useState("");
+  const [brandStoryImage, setBrandStoryImage] = useState("");
+  const [brandStoryBlock, setBrandStoryBlock] = useState<PageBlock | null>(null);
   
   // Testimonials state
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
@@ -73,6 +60,9 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
   const [trustedByTitle, setTrustedByTitle] = useState("Trusted By");
   const [trustedByLogos, setTrustedByLogos] = useState<string[]>([]);
   const [trustedByBlock, setTrustedByBlock] = useState<PageBlock | null>(null);
+  
+  const heroImageInputRef = useRef<HTMLInputElement>(null);
+  const brandStoryImageInputRef = useRef<HTMLInputElement>(null);
   
   const { toast } = useToast();
 
@@ -85,8 +75,9 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
   const fetchData = async () => {
     setIsLoading(true);
     
-    const [heroResult, testimonialsResult, trustedByResult] = await Promise.all([
+    const [heroResult, brandStoryResult, testimonialsResult, trustedByResult] = await Promise.all([
       pageBlockService.getByKey("home", "hero"),
+      pageBlockService.getByKey("home", "brand_story_section"),
       pageBlockService.getByKey("home", "testimonials"),
       pageBlockService.getByKey("home", "trusted_by"),
     ]);
@@ -94,7 +85,15 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
     if (heroResult.data) {
       setHeroBlock(heroResult.data);
       const content = heroResult.data.content as HeroContent;
-      setHeroVideoUrl(content.video_url || "");
+      setHeroImages(content.hero_images || []);
+    }
+
+    if (brandStoryResult.data) {
+      setBrandStoryBlock(brandStoryResult.data);
+      const content = brandStoryResult.data.content as BrandStorySectionContent;
+      setBrandStoryHeading(content.heading || "Our Brand Story");
+      setBrandStoryParagraph(content.paragraph || "");
+      setBrandStoryImage(content.image || "");
     }
 
     if (testimonialsResult.data) {
@@ -113,24 +112,67 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
     setIsLoading(false);
   };
 
-  const handleVideoUrlChange = (url: string) => {
-    setHeroVideoUrl(url);
-    const input = url.trim();
+  const uploadImage = async (file: File): Promise<string | null> => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `hero-images/${fileName}`;
+    
+    const { error } = await supabase.storage.from('images').upload(filePath, file);
+    
+    if (error) {
+      console.error('Upload error:', error);
+      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+      return null;
+    }
+    
+    const { data: urlData } = supabase.storage.from('images').getPublicUrl(filePath);
+    return urlData.publicUrl;
+  };
 
-    if (input && !extractYouTubeId(input)) {
-      setVideoUrlError("Please enter a valid YouTube URL");
-    } else {
-      setVideoUrlError("");
+  const handleHeroImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    
+    setIsUploading(true);
+    
+    const uploadPromises = Array.from(files).map(file => uploadImage(file));
+    const urls = await Promise.all(uploadPromises);
+    const validUrls = urls.filter(Boolean) as string[];
+    
+    if (validUrls.length > 0) {
+      setHeroImages(prev => [...prev, ...validUrls]);
+      toast({ title: "Success", description: `${validUrls.length} image(s) uploaded` });
+    }
+    
+    setIsUploading(false);
+    if (heroImageInputRef.current) {
+      heroImageInputRef.current.value = '';
     }
   };
 
-  const handleSave = async () => {
-    const videoId = extractYouTubeId(heroVideoUrl);
-    if (heroVideoUrl.trim() && !videoId) {
-      toast({ title: "Error", description: "Invalid YouTube URL", variant: "destructive" });
-      return;
+  const handleBrandStoryImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setIsUploading(true);
+    const url = await uploadImage(file);
+    
+    if (url) {
+      setBrandStoryImage(url);
+      toast({ title: "Success", description: "Image uploaded" });
     }
+    
+    setIsUploading(false);
+    if (brandStoryImageInputRef.current) {
+      brandStoryImageInputRef.current.value = '';
+    }
+  };
 
+  const removeHeroImage = (index: number) => {
+    setHeroImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSave = async () => {
     setIsSaving(true);
 
     try {
@@ -138,19 +180,43 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
       if (heroBlock) {
         const existingContent = heroBlock.content as HeroContent;
         await pageBlockService.update(heroBlock.id, {
-          content: { ...existingContent, video_url: heroVideoUrl.trim() || null },
+          content: { ...existingContent, hero_images: heroImages },
         });
       } else {
         const { data: createdHero, error: createError } = await pageBlockService.create({
           page_key: "home",
           block_key: "hero",
           block_type: "hero",
-          content: { video_url: heroVideoUrl.trim() || null } as unknown as Record<string, unknown>,
+          content: { hero_images: heroImages } as unknown as Record<string, unknown>,
           display_order: 1,
           is_active: true,
         });
         if (createError) throw createError;
         setHeroBlock(createdHero);
+      }
+
+      // Save / create brand story section
+      const brandStoryContent = {
+        heading: brandStoryHeading,
+        paragraph: brandStoryParagraph,
+        image: brandStoryImage,
+      };
+      
+      if (brandStoryBlock) {
+        await pageBlockService.update(brandStoryBlock.id, {
+          content: brandStoryContent as unknown as Record<string, unknown>,
+        });
+      } else {
+        const { data: createdBrandStory, error: brandStoryError } = await pageBlockService.create({
+          page_key: "home",
+          block_key: "brand_story_section",
+          block_type: "content",
+          content: brandStoryContent as unknown as Record<string, unknown>,
+          display_order: 2,
+          is_active: true,
+        });
+        if (brandStoryError) throw brandStoryError;
+        setBrandStoryBlock(createdBrandStory);
       }
 
       // Save testimonials
@@ -167,10 +233,15 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
         });
       }
 
-      // Notify the site to re-fetch latest blocks (hero video, etc.)
+      // Notify the site to re-fetch latest blocks
       window.dispatchEvent(
         new CustomEvent("page-block-updated", {
           detail: { page_key: "home", block_key: "hero" },
+        })
+      );
+      window.dispatchEvent(
+        new CustomEvent("page-block-updated", {
+          detail: { page_key: "home", block_key: "brand_story_section" },
         })
       );
 
@@ -214,8 +285,6 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
     setTrustedByLogos(trustedByLogos.filter((_, i) => i !== index));
   };
 
-  const previewVideoId = extractYouTubeId(heroVideoUrl);
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[95vw] max-w-3xl h-[90vh] max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
@@ -230,44 +299,127 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
         ) : (
           <ScrollArea className="flex-1 min-h-0">
             <div className="px-6 py-6 space-y-8">
-              {/* Hero Video Section */}
+              {/* Hero Images Section */}
               <div className="p-4 rounded-lg border border-primary/20 bg-primary/5">
                 <h3 className="font-serif text-lg font-semibold mb-4 flex items-center gap-2">
-                  <Video className="w-5 h-5 text-primary" />
-                  Hero Video
+                  <Image className="w-5 h-5 text-primary" />
+                  Hero Images (Rotating)
                 </h3>
-                <div className="space-y-3">
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Upload images to display on the right side of the hero section. Images will rotate automatically.
+                  </p>
+                  
+                  {/* Image Grid */}
+                  {heroImages.length > 0 && (
+                    <div className="grid grid-cols-3 gap-3">
+                      {heroImages.map((img, index) => (
+                        <div key={index} className="relative group aspect-video rounded-lg overflow-hidden border border-border">
+                          <img src={img} alt={`Hero ${index + 1}`} className="w-full h-full object-cover" />
+                          <button
+                            onClick={() => removeHeroImage(index)}
+                            className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Upload Button */}
                   <div>
-                    <Label htmlFor="heroVideoUrl">YouTube Video URL</Label>
-                    <Input
-                      id="heroVideoUrl"
-                      value={heroVideoUrl}
-                      onChange={(e) => handleVideoUrlChange(e.target.value)}
-                      placeholder="https://www.youtube.com/watch?v=VIDEO_ID or https://youtu.be/VIDEO_ID"
-                      className={videoUrlError ? "border-destructive" : ""}
+                    <input
+                      ref={heroImageInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleHeroImageUpload}
+                      className="hidden"
                     />
-                    {videoUrlError && (
-                      <p className="text-sm text-destructive mt-1 flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />
-                        {videoUrlError}
-                      </p>
-                    )}
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Leave empty to show only the background image. Video will appear on the right side of the hero section.
-                    </p>
+                    <Button
+                      variant="outline"
+                      onClick={() => heroImageInputRef.current?.click()}
+                      disabled={isUploading}
+                      className="w-full"
+                    >
+                      {isUploading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-4 h-4 mr-2" />
+                          Upload Images
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
 
-                     {!videoUrlError && previewVideoId && (
-                      <div className="mt-3 aspect-video w-full rounded-lg overflow-hidden border border-border bg-muted">
-                        <iframe
-                          src={`https://www.youtube.com/embed/${previewVideoId}?rel=0&modestbranding=1`}
-                          title="Hero video preview"
-                          className="w-full h-full"
-                          loading="lazy"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        />
+              {/* Brand Story Section */}
+              <div className="p-4 rounded-lg border border-primary/20 bg-primary/5">
+                <h3 className="font-serif text-lg font-semibold mb-4">Brand Story Section</h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="brandStoryHeading">Section Heading</Label>
+                    <Input
+                      id="brandStoryHeading"
+                      value={brandStoryHeading}
+                      onChange={(e) => setBrandStoryHeading(e.target.value)}
+                      placeholder="Our Brand Story"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="brandStoryParagraph">Paragraph</Label>
+                    <Textarea
+                      id="brandStoryParagraph"
+                      value={brandStoryParagraph}
+                      onChange={(e) => setBrandStoryParagraph(e.target.value)}
+                      placeholder="Write a brief description about your brand story..."
+                      rows={4}
+                    />
+                  </div>
+                  <div>
+                    <Label>Section Image</Label>
+                    {brandStoryImage && (
+                      <div className="relative mt-2 mb-3 aspect-video max-w-xs rounded-lg overflow-hidden border border-border">
+                        <img src={brandStoryImage} alt="Brand Story" className="w-full h-full object-cover" />
+                        <button
+                          onClick={() => setBrandStoryImage("")}
+                          className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
                       </div>
                     )}
+                    <input
+                      ref={brandStoryImageInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleBrandStoryImageUpload}
+                      className="hidden"
+                    />
+                    <Button
+                      variant="outline"
+                      onClick={() => brandStoryImageInputRef.current?.click()}
+                      disabled={isUploading}
+                      size="sm"
+                    >
+                      {isUploading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-4 h-4 mr-2" />
+                          {brandStoryImage ? "Change Image" : "Upload Image"}
+                        </>
+                      )}
+                    </Button>
                   </div>
                 </div>
               </div>
