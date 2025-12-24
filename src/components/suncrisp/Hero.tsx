@@ -4,11 +4,9 @@ import { Button } from '@/components/ui/button';
 import Reveal from './Reveal';
 import HeroImageCarousel from './HeroImageCarousel';
 import { pageBlockService } from '@/services/pageBlockService';
-
 interface HeroProps {
   onNavigate?: (page: string) => void;
 }
-
 interface HeroData {
   title?: string;
   subtitle?: string;
@@ -17,51 +15,52 @@ interface HeroData {
   videoUrl?: string;
   heroImages?: string[];
 }
-
-const Hero = ({ onNavigate }: HeroProps) => {
+const Hero = ({
+  onNavigate
+}: HeroProps) => {
   const navigate = useNavigate();
   const [heroData, setHeroData] = useState<HeroData>({});
-
   const fetchHeroData = async () => {
-    const { data } = await pageBlockService.getByKey("home", "hero");
+    const {
+      data
+    } = await pageBlockService.getByKey("home", "hero");
     if (data?.content) {
-      const content = data.content as HeroData & { hero_images?: string[] };
+      const content = data.content as HeroData & {
+        hero_images?: string[];
+      };
       // Support both heroImages and hero_images for backwards compatibility
       const normalizedData: HeroData = {
         ...content,
-        heroImages: content.heroImages || content.hero_images || [],
+        heroImages: content.heroImages || content.hero_images || []
       };
       setHeroData(normalizedData);
     }
   };
-
   useEffect(() => {
     fetchHeroData();
-
     const onUpdated = (e: Event) => {
-      const evt = e as CustomEvent<{ page_key?: string; block_key?: string }>;
+      const evt = e as CustomEvent<{
+        page_key?: string;
+        block_key?: string;
+      }>;
       if (evt.detail?.page_key === "home" && evt.detail?.block_key === "hero") {
         fetchHeroData();
       }
     };
-
     window.addEventListener("page-block-updated", onUpdated);
     return () => window.removeEventListener("page-block-updated", onUpdated);
   }, []);
-
   const heroImages = heroData.heroImages || [];
-  
+
   // Log warning if no images configured
   if (heroImages.length === 0) {
     console.warn('[Hero] No hero images configured. Upload images via Admin → Pages → Home.');
   }
-
-  return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
+  return <section className="relative min-h-screen flex items-center overflow-hidden">
       {/* Background gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-background/80" />
       {/* Dark gradient overlay - stronger on left side */}
-      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/30" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/30 px-0 py-[4px] mx-0 my-[130px]" />
       <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-background/30" />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12">
@@ -70,7 +69,7 @@ const Hero = ({ onNavigate }: HeroProps) => {
           <div className="max-w-xl order-1">
             <Reveal delay={200}>
               <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight tracking-tight">
-                <span className="text-primary">Sun</span>
+                <span className="text-primary">​Sun</span>
                 <span className="text-primary">Crisp</span>
               </h1>
             </Reveal>
@@ -91,10 +90,7 @@ const Hero = ({ onNavigate }: HeroProps) => {
             </Reveal>
 
             <Reveal delay={500}>
-              <Button 
-                onClick={() => navigate('/about-us')}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 text-sm font-medium"
-              >
+              <Button onClick={() => navigate('/about-us')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 text-sm font-medium">
                 More About Us
               </Button>
             </Reveal>
@@ -113,8 +109,6 @@ const Hero = ({ onNavigate }: HeroProps) => {
       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-muted-foreground/30">
         <div className="w-[1px] h-20 bg-gradient-to-b from-transparent via-primary/50 to-transparent" />
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default Hero;
