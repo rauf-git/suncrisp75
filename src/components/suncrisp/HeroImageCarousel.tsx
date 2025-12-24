@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface HeroImageCarouselProps {
   images: string[];
@@ -7,30 +7,38 @@ interface HeroImageCarouselProps {
 
 const HeroImageCarousel = ({ images, interval = 4000 }: HeroImageCarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  const nextSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+  }, [images.length]);
 
   useEffect(() => {
-    if (images.length <= 1) return;
+    if (images.length <= 1 || isPaused) return;
 
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % images.length);
-    }, interval);
-
+    const timer = setInterval(nextSlide, interval);
     return () => clearInterval(timer);
-  }, [images.length, interval]);
+  }, [images.length, interval, isPaused, nextSlide]);
 
+  // Log warning if no images
   if (!images || images.length === 0) {
+    console.warn('[HeroImageCarousel] No images provided. heroImages[] is empty.');
     return (
       <div className="relative w-full h-full">
         <div className="absolute -inset-2 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-2xl blur-sm" />
         <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-2xl shadow-black/20 bg-muted/50 backdrop-blur-sm border border-primary/20 flex items-center justify-center">
-          <span className="text-muted-foreground text-sm">No images</span>
+          <span className="text-muted-foreground text-sm">No images uploaded</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="relative w-full h-full">
+    <div 
+      className="relative w-full h-full"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       {/* Decorative frame */}
       <div className="absolute -inset-2 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-2xl blur-sm" />
       
@@ -38,7 +46,7 @@ const HeroImageCarousel = ({ images, interval = 4000 }: HeroImageCarouselProps) 
         {images.map((image, index) => (
           <div
             key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
               index === currentIndex ? 'opacity-100' : 'opacity-0'
             }`}
           >
@@ -46,6 +54,7 @@ const HeroImageCarousel = ({ images, interval = 4000 }: HeroImageCarouselProps) 
               src={image}
               alt={`Hero image ${index + 1}`}
               className="w-full h-full object-cover"
+              loading={index === 0 ? 'eager' : 'lazy'}
             />
           </div>
         ))}

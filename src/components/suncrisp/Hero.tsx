@@ -13,9 +13,9 @@ interface HeroData {
   title?: string;
   subtitle?: string;
   description?: string;
-  background_image?: string;
-  video_url?: string;
-  hero_images?: string[];
+  backgroundImage?: string;
+  videoUrl?: string;
+  heroImages?: string[];
 }
 
 const Hero = ({ onNavigate }: HeroProps) => {
@@ -25,7 +25,13 @@ const Hero = ({ onNavigate }: HeroProps) => {
   const fetchHeroData = async () => {
     const { data } = await pageBlockService.getByKey("home", "hero");
     if (data?.content) {
-      setHeroData(data.content as HeroData);
+      const content = data.content as HeroData & { hero_images?: string[] };
+      // Support both heroImages and hero_images for backwards compatibility
+      const normalizedData: HeroData = {
+        ...content,
+        heroImages: content.heroImages || content.hero_images || [],
+      };
+      setHeroData(normalizedData);
     }
   };
 
@@ -43,17 +49,17 @@ const Hero = ({ onNavigate }: HeroProps) => {
     return () => window.removeEventListener("page-block-updated", onUpdated);
   }, []);
 
-  const heroImages = heroData.hero_images || [];
+  const heroImages = heroData.heroImages || [];
+  
+  // Log warning if no images configured
+  if (heroImages.length === 0) {
+    console.warn('[Hero] No hero images configured. Upload images via Admin → Pages → Home.');
+  }
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Background Image with dark gradient */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url('${heroData.background_image || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80'}')`
-        }}
-      />
+      {/* Background gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-background/80" />
       {/* Dark gradient overlay - stronger on left side */}
       <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/30" />
       <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-background/30" />
@@ -91,6 +97,13 @@ const Hero = ({ onNavigate }: HeroProps) => {
                   className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 text-sm font-medium"
                 >
                   More About Us
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => navigate('/our-brand-story')}
+                  className="border-primary/30 text-foreground hover:bg-primary/10 px-6 py-2 text-sm font-medium"
+                >
+                  Our Brand Story
                 </Button>
               </div>
             </Reveal>
