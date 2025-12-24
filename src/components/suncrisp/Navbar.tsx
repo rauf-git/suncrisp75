@@ -61,7 +61,7 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
               <img 
                 src={suncrespLogo} 
                 alt="SunCrisp Hospitality" 
-                className={`w-auto transition-all duration-300 ${isScrolled ? 'h-8 md:h-10' : 'h-10 md:h-12'}`}
+                className={`w-auto transition-all duration-300 ${isScrolled ? 'h-12 md:h-14' : 'h-14 md:h-16'}`}
               />
             </button>
 
