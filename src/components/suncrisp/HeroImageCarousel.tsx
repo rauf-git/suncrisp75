@@ -19,7 +19,14 @@ const HeroImageCarousel = ({ images, interval = 4000 }: HeroImageCarouselProps) 
   }, [images.length, interval]);
 
   if (!images || images.length === 0) {
-    return null;
+    return (
+      <div className="relative w-full h-full">
+        <div className="absolute -inset-2 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-2xl blur-sm" />
+        <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-2xl shadow-black/20 bg-muted/50 backdrop-blur-sm border border-primary/20 flex items-center justify-center">
+          <span className="text-muted-foreground text-sm">No images</span>
+        </div>
+      </div>
+    );
   }
 
   return (
