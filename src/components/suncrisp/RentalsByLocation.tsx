@@ -411,12 +411,14 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
             )}
 
             {/* Location Cards - Side by Side (even on mobile) */}
-            <div className="grid grid-cols-3 gap-4 overflow-x-auto">
+            <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
               {topLocations.map((location, index) => (
                 <Reveal key={location.id} delay={150 + index * 50}>
-                  <LocationCardSmall
-                    location={location}
-                  />
+                  <div className="min-w-[280px] sm:min-w-0 sm:flex-1">
+                    <LocationCardSmall
+                      location={location}
+                    />
+                  </div>
                 </Reveal>
               ))}
 
