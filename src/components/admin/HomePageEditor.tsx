@@ -32,11 +32,11 @@ interface HeroContent {
 const isValidYouTubeUrl = (url: string): boolean => {
   if (!url) return true; // Empty is valid (optional field)
   const patterns = [
-    /^https?:\/\/(www\.)?youtube\.com\/watch\?v=[a-zA-Z0-9_-]{11}/,
-    /^https?:\/\/youtu\.be\/[a-zA-Z0-9_-]{11}/,
-    /^https?:\/\/(www\.)?youtube\.com\/embed\/[a-zA-Z0-9_-]{11}/,
+    /^https?:\/\/(www\.)?youtube\.com\/watch\?v=[a-zA-Z0-9_-]{11}([&#?].*)?$/,
+    /^https?:\/\/youtu\.be\/[a-zA-Z0-9_-]{11}([&#?].*)?$/,
+    /^https?:\/\/(www\.)?youtube\.com\/embed\/[a-zA-Z0-9_-]{11}([&#?].*)?$/,
   ];
-  return patterns.some(pattern => pattern.test(url));
+  return patterns.some((pattern) => pattern.test(url.trim()));
 };
 
 export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
@@ -114,25 +114,36 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
     setIsSaving(true);
 
     try {
-      // Save hero block
+      // Save / create hero block
       if (heroBlock) {
         const existingContent = heroBlock.content as HeroContent;
         await pageBlockService.update(heroBlock.id, {
-          content: { ...existingContent, video_url: heroVideoUrl || null }
+          content: { ...existingContent, video_url: heroVideoUrl.trim() || null },
         });
+      } else {
+        const { data: createdHero, error: createError } = await pageBlockService.create({
+          page_key: "home",
+          block_key: "hero",
+          block_type: "hero",
+          content: { video_url: heroVideoUrl.trim() || null } as unknown as Record<string, unknown>,
+          display_order: 1,
+          is_active: true,
+        });
+        if (createError) throw createError;
+        setHeroBlock(createdHero);
       }
 
       // Save testimonials
       if (testimonialsBlock) {
         await pageBlockService.update(testimonialsBlock.id, {
-          content: { items: testimonials }
+          content: { items: testimonials },
         });
       }
 
       // Save trusted by
       if (trustedByBlock) {
         await pageBlockService.update(trustedByBlock.id, {
-          content: { title: trustedByTitle, logos: trustedByLogos }
+          content: { title: trustedByTitle, logos: trustedByLogos },
         });
       }
 
@@ -178,7 +189,7 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0">
+      <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0">
         <DialogHeader className="px-6 py-4 border-b border-border shrink-0">
           <DialogTitle className="font-serif text-2xl">Edit Home Page</DialogTitle>
         </DialogHeader>
@@ -188,8 +199,8 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         ) : (
-          <ScrollArea className="flex-1 px-6">
-            <div className="space-y-8 py-6">
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="px-6 py-6 space-y-8">
               {/* Hero Video Section */}
               <div className="p-4 rounded-lg border border-primary/20 bg-primary/5">
                 <h3 className="font-serif text-lg font-semibold mb-4 flex items-center gap-2">

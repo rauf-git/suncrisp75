@@ -153,11 +153,11 @@ export function ViewDetailModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[90vh] max-h-[90vh] flex flex-col p-0 gap-0 bg-gradient-to-br from-background via-background to-muted/20">
+      <DialogContent className="w-[95vw] max-w-[900px] h-[90vh] max-h-[90vh] flex flex-col p-0 gap-0 bg-gradient-to-br from-background via-background to-muted/20 overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
-        
+
         {/* Fixed Header */}
         <DialogHeader className="px-6 py-4 border-b border-border/50 bg-gradient-to-r from-muted/50 to-transparent relative z-10 shrink-0">
           <div className="flex items-center justify-between">

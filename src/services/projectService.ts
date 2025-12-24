@@ -19,6 +19,8 @@ export interface Project {
   category: string | null;
   image_url: string;
   images: string[];
+  // Dynamic content blocks (stored as JSON)
+  content_sections: unknown | null;
   display_order: number;
   is_featured: boolean;
   visit_url: string | null;
