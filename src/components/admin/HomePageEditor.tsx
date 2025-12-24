@@ -117,7 +117,7 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
     const filePath = `hero-images/${fileName}`;
     
-    const { error } = await supabase.storage.from('images').upload(filePath, file);
+    const { error } = await supabase.storage.from('content-images').upload(filePath, file);
     
     if (error) {
       console.error('Upload error:', error);
@@ -125,7 +125,7 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
       return null;
     }
     
-    const { data: urlData } = supabase.storage.from('images').getPublicUrl(filePath);
+    const { data: urlData } = supabase.storage.from('content-images').getPublicUrl(filePath);
     return urlData.publicUrl;
   };
 
