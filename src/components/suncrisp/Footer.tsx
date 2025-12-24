@@ -9,9 +9,9 @@ const Footer = ({ onNavigate }: FooterProps) => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-secondary pt-16 pb-8 border-t border-border font-sans">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+    <footer className="bg-secondary pt-10 pb-6 border-t border-border font-sans">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
           {/* Column 1: Quick Links */}
           <div>
             <h3 className="font-serif text-foreground font-bold text-lg mb-6">Quick Links</h3>

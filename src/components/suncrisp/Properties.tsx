@@ -12,7 +12,7 @@ interface PropertiesProps {
 const Properties = ({ title, subtitle, items, onItemClick }: PropertiesProps) => {
   if (items.length === 0) {
     return (
-      <section className="section-padding bg-secondary relative pt-8">
+      <section className="py-8 md:py-12 px-4 bg-secondary relative">
         <div className="max-w-7xl mx-auto">
           <Reveal>
             <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-border pb-6">
@@ -31,10 +31,10 @@ const Properties = ({ title, subtitle, items, onItemClick }: PropertiesProps) =>
   }
 
   return (
-    <section className="section-padding bg-secondary relative pt-8">
+    <section className="py-8 md:py-12 px-4 bg-secondary relative">
       <div className="max-w-7xl mx-auto">
         <Reveal>
-          <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-border pb-6">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-border pb-4">
             <div>
               <h2 className="font-serif text-3xl md:text-4xl text-foreground mb-2">{title}</h2>
               <p className="text-muted-foreground font-sans text-base">{subtitle}</p>

@@ -9,13 +9,13 @@ interface ServicesProps {
 
 const Services = ({ title, items, onItemClick }: ServicesProps) => {
   return (
-    <section className="section-padding bg-secondary relative overflow-hidden">
+    <section className="py-10 md:py-14 px-4 bg-secondary relative overflow-hidden">
       {/* Background Decor */}
       <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-border/50 to-transparent opacity-50 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
         <Reveal>
-          <div className="flex items-center gap-4 mb-16">
+          <div className="flex items-center gap-4 mb-10">
             <div className="w-2 h-12 bg-primary rounded-full" />
             <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground">
               {title}

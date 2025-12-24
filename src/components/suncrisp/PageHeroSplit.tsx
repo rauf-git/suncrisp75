@@ -24,11 +24,11 @@ const PageHeroSplit = ({
   const images = [heroImage, ...secondaryImages].filter(Boolean) as string[];
 
   return (
-    <section className="relative py-16 md:py-24 overflow-hidden">
+    <section className="relative py-10 md:py-14 overflow-hidden">
       {/* Subtle background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
       
-      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
         <div className="flex flex-col md:grid md:grid-cols-[1fr,auto] gap-6 md:gap-8 lg:gap-12 items-center">
           {/* Left Column - Text Content */}
           <div className="order-1">

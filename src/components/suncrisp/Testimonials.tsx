@@ -40,10 +40,10 @@ const Testimonials = () => {
   }, []);
 
   return (
-    <section className="py-20 bg-background border-y border-border overflow-hidden">
+    <section className="py-12 md:py-16 bg-background border-y border-border overflow-hidden">
       
       {/* Testimonials Marquee */}
-      <div className="mb-20">
+      <div className="mb-12">
         <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
           {[...testimonials, ...testimonials].map((item, index) => (
             <div 
