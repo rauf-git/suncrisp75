@@ -36,47 +36,6 @@ const FeaturedProjects = ({
     }
   }, [featuredItems.length, variant]);
 
-  // Auto-scroll effect for continuous scrolling
-  useEffect(() => {
-    if (variant !== 'scroll' || !scrollRef.current) return;
-    
-    const container = scrollRef.current;
-    const itemWidth = 280;
-    const singleSetWidth = featuredItems.length * itemWidth;
-    let animationId: number;
-    let isPaused = false;
-    
-    const autoScroll = () => {
-      if (!isPaused && container) {
-        container.scrollLeft += 1;
-        
-        // Reset to middle when we've scrolled through one set
-        if (container.scrollLeft >= singleSetWidth * 2) {
-          container.scrollLeft = singleSetWidth;
-        }
-      }
-      animationId = requestAnimationFrame(autoScroll);
-    };
-    
-    animationId = requestAnimationFrame(autoScroll);
-    
-    const handleMouseEnter = () => { isPaused = true; };
-    const handleMouseLeave = () => { isPaused = false; };
-    
-    container.addEventListener('mouseenter', handleMouseEnter);
-    container.addEventListener('mouseleave', handleMouseLeave);
-    container.addEventListener('touchstart', handleMouseEnter);
-    container.addEventListener('touchend', handleMouseLeave);
-    
-    return () => {
-      cancelAnimationFrame(animationId);
-      container.removeEventListener('mouseenter', handleMouseEnter);
-      container.removeEventListener('mouseleave', handleMouseLeave);
-      container.removeEventListener('touchstart', handleMouseEnter);
-      container.removeEventListener('touchend', handleMouseLeave);
-    };
-  }, [variant, featuredItems.length]);
-
   const scroll = useCallback((direction: 'left' | 'right') => {
     if (scrollRef.current) {
       const scrollAmount = 300;
@@ -198,16 +157,14 @@ const FeaturedProjects = ({
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
           {featuredItems.map((item, index) => <Reveal key={item.id} delay={index * 0.15}>
               <article 
-                className="group cursor-pointer outline-none focus:outline-none focus-visible:outline-none" 
+                className="cursor-pointer outline-none focus:outline-none focus-visible:outline-none" 
                 onClick={() => onItemClick?.(item)}
                 tabIndex={-1}
               >
                 <div className="relative mb-5 overflow-hidden rounded-xl">
                   <div className="aspect-[4/3] overflow-hidden bg-muted rounded-xl">
-                    <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
                   </div>
-                  <div className="absolute bottom-0 left-0 w-16 h-1 bg-primary transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-full" />
                 </div>
 
                 <div className="space-y-2">
@@ -223,11 +180,11 @@ const FeaturedProjects = ({
                       </>}
                   </div>
                   
-                  <h3 className="font-serif text-lg md:text-xl text-foreground group-hover:text-primary transition-colors duration-300">
+                  <h3 className="font-serif text-lg md:text-xl text-foreground">
                     {item.title}
                   </h3>
 
-                  <div className="flex items-center gap-2 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                  <div className="flex items-center gap-2 text-sm font-medium text-primary">
                     <span>View Project</span>
                     <ArrowRight className="w-4 h-4" />
                   </div>
