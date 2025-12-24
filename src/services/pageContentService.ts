@@ -4,6 +4,7 @@ import { Json } from "@/integrations/supabase/types";
 export interface ContentSection {
   heading: string;
   content: string;
+  image?: string;
 }
 
 export interface PageContent {
@@ -31,6 +32,7 @@ const parseContentSections = (data: Json | null | undefined): ContentSection[] =
     return data.map((item) => ({
       heading: String((item as Record<string, unknown>)?.heading || ''),
       content: String((item as Record<string, unknown>)?.content || ''),
+      image: (item as Record<string, unknown>)?.image ? String((item as Record<string, unknown>).image) : undefined,
     }));
   }
   return [];

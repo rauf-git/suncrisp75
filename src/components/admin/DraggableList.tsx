@@ -51,7 +51,7 @@ export function DraggableList<T>({
                     {/* Drag handle */}
                     <div
                       {...provided.dragHandleProps}
-                      className="absolute top-3 left-3 z-10 p-1.5 bg-background/90 backdrop-blur-sm rounded-lg cursor-grab active:cursor-grabbing shadow-md hover:bg-primary/10 transition-colors group"
+                      className="absolute top-3 right-3 z-20 p-1.5 bg-background/95 backdrop-blur-sm rounded-lg cursor-grab active:cursor-grabbing shadow-md hover:bg-primary/10 transition-colors group border border-border/50"
                       title="Drag to reorder"
                     >
                       <GripVertical className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />

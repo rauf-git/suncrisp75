@@ -443,44 +443,61 @@ export function ViewDetailModal({
         </ScrollArea>
 
         {/* Sticky Footer with Actions */}
-        <DialogFooter className="px-6 py-4 border-t border-border/50 bg-background shrink-0 flex flex-row items-center justify-end gap-3">
-          {isEditing ? (
-            <>
+        <DialogFooter className="px-6 py-4 border-t border-border/50 bg-background shrink-0 flex flex-row items-center justify-between gap-3">
+          {/* Left side - Visit Link button */}
+          <div>
+            {getValue("visit_url") && (
+              <Button
+                variant="outline"
+                onClick={() => window.open(String(getValue("visit_url")), '_blank', 'noopener,noreferrer')}
+                className="border-primary/30 hover:border-primary hover:bg-primary/5"
+              >
+                <ExternalLink className="w-4 h-4 mr-1.5" />
+                Visit Link
+              </Button>
+            )}
+          </div>
+          
+          {/* Right side - Edit/Save actions */}
+          <div className="flex items-center gap-3">
+            {isEditing ? (
+              <>
+                <Button 
+                  variant="outline" 
+                  onClick={() => { 
+                    setIsEditing(false); 
+                    setEditedValues({}); 
+                    setGalleryImages([]); 
+                    // Reset content sections to original
+                    if (item?.content_sections) {
+                      setContentSections(item.content_sections as ContentSection[]);
+                    }
+                  }} 
+                  disabled={isSaving}
+                >
+                  <X className="w-4 h-4 mr-1.5" />
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleSave} 
+                  disabled={isSaving}
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  <Save className="w-4 h-4 mr-1.5" />
+                  {isSaving ? "Saving..." : "Save Changes"}
+                </Button>
+              </>
+            ) : (
               <Button 
                 variant="outline" 
-                onClick={() => { 
-                  setIsEditing(false); 
-                  setEditedValues({}); 
-                  setGalleryImages([]); 
-                  // Reset content sections to original
-                  if (item?.content_sections) {
-                    setContentSections(item.content_sections as ContentSection[]);
-                  }
-                }} 
-                disabled={isSaving}
+                onClick={() => setIsEditing(true)}
+                className="border-primary/30 hover:border-primary hover:bg-primary/5"
               >
-                <X className="w-4 h-4 mr-1.5" />
-                Cancel
+                <Edit className="w-4 h-4 mr-1.5" />
+                Edit
               </Button>
-              <Button 
-                onClick={handleSave} 
-                disabled={isSaving}
-                className="bg-primary hover:bg-primary/90"
-              >
-                <Save className="w-4 h-4 mr-1.5" />
-                {isSaving ? "Saving..." : "Save Changes"}
-              </Button>
-            </>
-          ) : (
-            <Button 
-              variant="outline" 
-              onClick={() => setIsEditing(true)}
-              className="border-primary/30 hover:border-primary hover:bg-primary/5"
-            >
-              <Edit className="w-4 h-4 mr-1.5" />
-              Edit
-            </Button>
-          )}
+            )}
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

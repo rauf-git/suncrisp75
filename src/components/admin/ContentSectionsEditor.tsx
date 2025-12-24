@@ -1,30 +1,40 @@
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash2, GripVertical } from "lucide-react";
+import { Plus, Trash2, GripVertical, Upload, Image as ImageIcon, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { validateFile } from "@/lib/validation";
+import { toast } from "sonner";
 
 export interface ContentSection {
   heading: string;
   content: string;
+  image?: string;
 }
 
 interface ContentSectionsEditorProps {
   sections: ContentSection[];
   onChange: (sections: ContentSection[]) => void;
   title?: string;
+  pageKey?: string;
 }
 
 export function ContentSectionsEditor({ 
   sections, 
   onChange, 
-  title = "Content Sections" 
+  title = "Content Sections",
+  pageKey = "general"
 }: ContentSectionsEditorProps) {
+  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const fileInputRefs = useRef<Map<number, HTMLInputElement>>(new Map());
+
   const addSection = () => {
-    onChange([...sections, { heading: "", content: "" }]);
+    onChange([...sections, { heading: "", content: "", image: undefined }]);
   };
 
-  const updateSection = (index: number, field: keyof ContentSection, value: string) => {
+  const updateSection = (index: number, field: keyof ContentSection, value: string | undefined) => {
     const updated = [...sections];
     updated[index] = { ...updated[index], [field]: value };
     onChange(updated);
@@ -40,6 +50,41 @@ export function ContentSectionsEditor({
     const [removed] = updated.splice(fromIndex, 1);
     updated.splice(toIndex, 0, removed);
     onChange(updated);
+  };
+
+  const handleImageUpload = async (index: number, file: File) => {
+    const fileValidation = validateFile(file);
+    if (!fileValidation.valid) {
+      toast.error(fileValidation.error);
+      return;
+    }
+
+    setUploadingIndex(index);
+    try {
+      const fileExt = file.name.split(".").pop()?.toLowerCase();
+      const filePath = `pages/${pageKey}/sections/${crypto.randomUUID()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("content-images")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from("content-images")
+        .getPublicUrl(filePath);
+
+      updateSection(index, "image", urlData.publicUrl);
+      toast.success("Image uploaded successfully");
+    } catch {
+      toast.error("Failed to upload image");
+    } finally {
+      setUploadingIndex(null);
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    updateSection(index, "image", undefined);
   };
 
   return (
@@ -122,6 +167,73 @@ export function ContentSectionsEditor({
                   rows={4}
                   className="mt-1 resize-none"
                 />
+              </div>
+
+              {/* Section Image Upload */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Label className="text-xs flex items-center gap-1">
+                    <ImageIcon className="w-3 h-3" />
+                    Section Image (Optional)
+                  </Label>
+                  {!section.image && (
+                    <div>
+                      <input
+                        ref={(el) => {
+                          if (el) fileInputRefs.current.set(index, el);
+                        }}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleImageUpload(index, file);
+                          e.target.value = "";
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => fileInputRefs.current.get(index)?.click()}
+                        disabled={uploadingIndex === index}
+                        className="h-7 text-xs"
+                      >
+                        <Upload className="w-3 h-3 mr-1" />
+                        {uploadingIndex === index ? "Uploading..." : "Upload"}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {section.image ? (
+                  <div className="relative group w-full max-w-xs">
+                    <div className="aspect-video rounded-lg overflow-hidden border border-border">
+                      <img
+                        src={section.image}
+                        alt={`Section ${index + 1} image`}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "/placeholder.svg";
+                        }}
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => handleRemoveImage(index)}
+                      className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center py-4 border-2 border-dashed border-muted-foreground/20 rounded-lg bg-muted/20">
+                    <p className="text-xs text-muted-foreground">No image added</p>
+                  </div>
+                )}
               </div>
             </div>
           ))}

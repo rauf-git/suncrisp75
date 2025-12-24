@@ -214,7 +214,7 @@ export function PageContentEditor({
               </div>
 
               {/* Dynamic Content Sections */}
-              <ContentSectionsEditor sections={contentSections} onChange={setContentSections} />
+              <ContentSectionsEditor sections={contentSections} onChange={setContentSections} pageKey={pageKey} />
             </div>
           </ScrollArea>
         )}
