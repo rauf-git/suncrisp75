@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 import { Property } from '@/types';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import Reveal from './Reveal';
@@ -21,7 +21,37 @@ const FeaturedProjects = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const featuredItems = variant === 'scroll' ? items.slice(0, 6) : items.slice(0, 2);
   
+  // Triple items for seamless infinite loop
+  const loopedItems = variant === 'scroll' 
+    ? [...featuredItems, ...featuredItems, ...featuredItems] 
+    : featuredItems;
+  
   if (featuredItems.length === 0) return null;
+
+  // Initialize scroll to middle set
+  useEffect(() => {
+    if (scrollRef.current && variant === 'scroll' && featuredItems.length > 0) {
+      const container = scrollRef.current;
+      const itemWidth = container.scrollWidth / 3;
+      container.scrollLeft = itemWidth;
+    }
+  }, [featuredItems.length, variant]);
+
+  // Handle seamless loop on scroll
+  const handleScroll = useCallback(() => {
+    if (!scrollRef.current || variant !== 'scroll') return;
+    
+    const container = scrollRef.current;
+    const scrollWidth = container.scrollWidth;
+    const singleSetWidth = scrollWidth / 3;
+    
+    // Jump to middle set when reaching edges
+    if (container.scrollLeft <= 10) {
+      container.scrollLeft = singleSetWidth + container.scrollLeft;
+    } else if (container.scrollLeft >= singleSetWidth * 2 - 10) {
+      container.scrollLeft = container.scrollLeft - singleSetWidth;
+    }
+  }, [variant]);
 
   const scroll = useCallback((direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -77,9 +107,9 @@ const FeaturedProjects = ({
               <span className="absolute inset-0 rounded-full bg-primary/10 animate-ping opacity-0 group-hover:opacity-75" />
             </button>
 
-            <div ref={scrollRef} className="overflow-x-auto pb-4 px-8 scrollbar-hide scroll-smooth">
+            <div ref={scrollRef} onScroll={handleScroll} className="overflow-x-auto pb-4 px-8 scrollbar-hide scroll-smooth">
               <div className="flex gap-4" style={{ minWidth: 'max-content' }}>
-                {featuredItems.map((item, index) => <Reveal key={item.id} delay={index * 0.1}>
+                {loopedItems.map((item, index) => <Reveal key={`${item.id}-${index}`} delay={(index % featuredItems.length) * 0.1}>
                     <article className="group cursor-pointer w-64 md:w-72 flex-shrink-0" onClick={() => onItemClick?.(item)}>
                       <div className="relative mb-3 overflow-hidden rounded-lg">
                         <div className="aspect-[4/3] overflow-hidden bg-muted rounded-lg">
