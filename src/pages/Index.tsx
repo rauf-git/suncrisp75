@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/suncrisp/Navbar';
 import Hero from '@/components/suncrisp/Hero';
 import Properties from '@/components/suncrisp/Properties';
@@ -30,6 +31,7 @@ const INITIAL_CONTACT: ContactData = {
 };
 
 const Index = () => {
+  const navigate = useNavigate();
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
   const [selectedItem, setSelectedItem] = useState<Property | null>(null);
@@ -148,6 +150,11 @@ const Index = () => {
   }, [currentPage, selectedItem]);
 
   const handleNavigation = (page: string) => {
+    // Navigate to brand-story page
+    if (page === 'brand-story') {
+      navigate('/our-brand-story');
+      return;
+    }
     setCurrentPage(page);
     setSelectedItem(null);
     setSelectedSection('');
