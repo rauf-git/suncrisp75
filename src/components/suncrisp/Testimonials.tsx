@@ -42,6 +42,11 @@ const Testimonials = () => {
   return (
     <section className="py-12 md:py-16 bg-background border-y border-border overflow-hidden">
       
+      {/* Section Heading */}
+      <div className="text-center mb-10">
+        <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-foreground">Testimonials</h2>
+      </div>
+
       {/* Testimonials Marquee */}
       <div className="mb-12 touch-pan-x">
         <div className="flex w-max animate-marquee" style={{ touchAction: 'pan-x' }}>
