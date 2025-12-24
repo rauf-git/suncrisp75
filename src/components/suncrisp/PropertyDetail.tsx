@@ -41,7 +41,7 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
           description: data.short_description || data.description || item.description,
           detailedDescription: data.long_description || data.description || item.detailedDescription,
           gallery: data.images || [],
-          content_sections: (data.content_sections as { heading: string; content: string }[] | null) || [],
+          content_sections: (data.content_sections as { heading: string; content: string; image?: string }[] | null) || [],
         });
         setVisitUrl(data.visit_url || null);
         return;
@@ -60,7 +60,7 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
           description: data.description || item.description,
           detailedDescription: data.description || item.detailedDescription,
           gallery: data.images || [],
-          content_sections: (data.content_sections as { heading: string; content: string }[] | null) || [],
+          content_sections: (data.content_sections as { heading: string; content: string; image?: string }[] | null) || [],
         });
         setVisitUrl(data.visit_url || null);
         return;
@@ -79,7 +79,7 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
           description: data.short_description || item.description,
           detailedDescription: data.long_description || data.short_description || item.detailedDescription,
           gallery: data.images || [],
-          content_sections: (data.content_sections as { heading: string; content: string }[] | null) || [],
+          content_sections: (data.content_sections as { heading: string; content: string; image?: string }[] | null) || [],
         });
         setVisitUrl(data.visit_url || null);
       }
@@ -184,17 +184,29 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
         <div className="lg:col-span-7">
           {/* Dynamic Content Sections */}
           {contentSections.length > 0 ? (
-            <div className="space-y-12">
+            <div className="space-y-16">
               {contentSections.map((section, index) => (
                 <Reveal key={index} delay={300 + index * 100}>
-                  <div>
-                    {section.heading && (
-                      <h3 className="font-serif text-3xl text-foreground mb-6 border-l-4 border-primary pl-6">
-                        {section.heading}
-                      </h3>
+                  <div className={`${section.image ? 'flex flex-col md:flex-row gap-8 items-start' : ''}`}>
+                    {section.image && (
+                      <div className="w-full md:w-1/2 rounded-xl overflow-hidden shadow-elevated flex-shrink-0">
+                        <img 
+                          src={section.image} 
+                          alt={section.heading || `Section ${index + 1}`} 
+                          className="w-full h-auto object-cover aspect-video"
+                          loading="lazy"
+                        />
+                      </div>
                     )}
-                    <div className="prose prose-lg text-muted-foreground font-sans leading-loose whitespace-pre-line text-lg pl-6">
-                      {section.content}
+                    <div className={section.image ? 'md:w-1/2' : ''}>
+                      {section.heading && (
+                        <h3 className="font-serif text-3xl text-foreground mb-6 border-l-4 border-primary pl-6">
+                          {section.heading}
+                        </h3>
+                      )}
+                      <div className="prose prose-lg text-muted-foreground font-sans leading-loose whitespace-pre-line text-lg pl-6">
+                        {section.content}
+                      </div>
                     </div>
                   </div>
                 </Reveal>

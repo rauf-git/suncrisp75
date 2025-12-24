@@ -73,7 +73,7 @@ const Index = () => {
         features: [],
         gallery: p.images || [],
         is_featured: p.is_featured,
-        content_sections: ((p as unknown as Record<string, unknown>).content_sections as { heading: string; content: string }[]) || [],
+        content_sections: ((p as unknown as Record<string, unknown>).content_sections as { heading: string; content: string; image?: string }[]) || [],
       }));
       setPortfolioData(mappedPortfolio);
 
@@ -91,7 +91,7 @@ const Index = () => {
           detailedDescription: h.long_description || h.description || '',
           features: [],
           gallery: h.images || [],
-          content_sections: ((h as unknown as Record<string, unknown>).content_sections as { heading: string; content: string }[]) || [],
+          content_sections: ((h as unknown as Record<string, unknown>).content_sections as { heading: string; content: string; image?: string }[]) || [],
         }));
       setHospitalityData(hospitalityProperties);
 
@@ -110,7 +110,7 @@ const Index = () => {
           detailedDescription: c.description || '',
           features: [c.status || 'Under Construction'],
           gallery: c.images || [],
-          content_sections: ((c as unknown as Record<string, unknown>).content_sections as { heading: string; content: string }[]) || [],
+          content_sections: ((c as unknown as Record<string, unknown>).content_sections as { heading: string; content: string; image?: string }[]) || [],
         }));
         console.log("[Index] Mapped construction:", mappedConstruction);
         setConstructionData(mappedConstruction);
@@ -136,7 +136,7 @@ const Index = () => {
             ...(r.amenities || [])
           ].filter(Boolean),
           gallery: r.images || [],
-          content_sections: ((r as unknown as Record<string, unknown>).content_sections as { heading: string; content: string }[]) || [],
+          content_sections: ((r as unknown as Record<string, unknown>).content_sections as { heading: string; content: string; image?: string }[]) || [],
         }));
         console.log("[Index] Mapped rentals:", mappedRentals);
         setRentalsData(mappedRentals);

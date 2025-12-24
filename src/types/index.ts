@@ -5,6 +5,7 @@ export type SectionType = 'portfolio' | 'construction' | 'rentals' | 'hospitalit
 export interface ContentSection {
   heading: string;
   content: string;
+  image?: string;
 }
 
 export interface Property {
