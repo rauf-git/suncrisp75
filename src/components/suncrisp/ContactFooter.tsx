@@ -44,7 +44,7 @@ const ContactFooter = ({ data }: ContactFooterProps) => {
                   <div className="p-2 bg-background rounded-lg group-hover/link:bg-primary group-hover/link:text-primary-foreground transition-colors">
                     <Mail size={20} />
                   </div>
-                  <span className="uppercase tracking-widest text-sm font-bold">{data.email}</span>
+                  <span className="lowercase tracking-wide text-sm font-bold">{data.email}</span>
                 </a>
                 <a 
                   href={`tel:${data.phone}`}
