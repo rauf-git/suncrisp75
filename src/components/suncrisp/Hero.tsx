@@ -65,9 +65,9 @@ const Hero = ({ onNavigate }: HeroProps) => {
       <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-background/30" />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Column - Text Content */}
-          <div className="max-w-xl">
+          <div className="max-w-xl order-1">
             <Reveal delay={200}>
               <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight tracking-tight">
                 <span className="text-primary">Sun</span>
@@ -91,27 +91,18 @@ const Hero = ({ onNavigate }: HeroProps) => {
             </Reveal>
 
             <Reveal delay={500}>
-              <div className="flex flex-wrap gap-3">
-                <Button 
-                  onClick={() => navigate('/about-us')}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 text-sm font-medium"
-                >
-                  More About Us
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => navigate('/our-brand-story')}
-                  className="border-primary/30 text-foreground hover:bg-primary/10 px-6 py-2 text-sm font-medium"
-                >
-                  Our Brand Story
-                </Button>
-              </div>
+              <Button 
+                onClick={() => navigate('/about-us')}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 text-sm font-medium"
+              >
+                More About Us
+              </Button>
             </Reveal>
           </div>
 
-          {/* Right Column - Image Carousel */}
+          {/* Right Column - Image Carousel (below text on mobile) */}
           <Reveal delay={600} width="100%">
-            <div className="relative mt-8 lg:mt-0 w-full">
+            <div className="relative w-full order-2">
               <HeroImageCarousel key={heroImages.length} images={heroImages} interval={5000} />
             </div>
           </Reveal>
