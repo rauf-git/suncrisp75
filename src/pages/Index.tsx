@@ -214,7 +214,7 @@ const Index = () => {
                 items={featuredProjects}
                 onItemClick={(item) => handleItemClick('portfolio', item)}
                 onViewAll={() => handleNavigation('portfolio')}
-                title="Featured Projects"
+                title="Our Portfolio"
               />
             )}
             {/* Featured Construction Projects - grid layout */}
@@ -223,7 +223,7 @@ const Index = () => {
                 items={constructionData.slice(0, 2)}
                 onItemClick={(item) => handleItemClick('construction', item)}
                 onViewAll={() => handleNavigation('construction')}
-                title="Latest Construction"
+                title="Commercial Property"
                 variant="grid"
               />
             )}

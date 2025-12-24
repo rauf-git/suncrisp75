@@ -38,55 +38,63 @@ const FeaturedProjects = ({
           <Reveal>
             <div className="flex items-end justify-between mb-6">
               <div>
-                
                 <h2 className="font-serif text-xl md:text-2xl text-foreground leading-tight">
                   {title}
                 </h2>
               </div>
-              <div className="flex items-center gap-2">
-                {/* Scroll buttons */}
-                <button onClick={() => scroll('left')} className="p-2 rounded-full bg-muted hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors" aria-label="Scroll left">
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <button onClick={() => scroll('right')} className="p-2 rounded-full bg-muted hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors" aria-label="Scroll right">
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-                {onViewAll && <button onClick={onViewAll} className="ml-2 group flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-primary transition-colors">
-                    View All
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                  </button>}
-              </div>
+              {onViewAll && <button onClick={onViewAll} className="group flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-primary transition-colors">
+                  View All
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </button>}
             </div>
           </Reveal>
 
-          {/* Horizontal scrolling container */}
-          <div ref={scrollRef} className="overflow-x-auto pb-4 -mx-6 px-6 scrollbar-hide scroll-smooth">
-            <div className="flex gap-4" style={{
-            minWidth: 'max-content'
-          }}>
-              {featuredItems.map((item, index) => <Reveal key={item.id} delay={index * 0.1}>
-                  <article className="group cursor-pointer w-64 md:w-72 flex-shrink-0" onClick={() => onItemClick?.(item)}>
-                    <div className="relative mb-3 overflow-hidden rounded-lg">
-                      <div className="aspect-[4/3] overflow-hidden bg-muted rounded-lg">
-                        <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      </div>
-                      <div className="absolute bottom-0 left-0 w-12 h-0.5 bg-primary transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 rounded-full" />
-                    </div>
+          {/* Horizontal scrolling container with side buttons */}
+          <div className="relative">
+            {/* Left scroll button */}
+            <button 
+              onClick={() => scroll('left')} 
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-background/90 backdrop-blur-sm shadow-lg hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all duration-300 -ml-4 md:ml-0" 
+              aria-label="Scroll left"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            
+            {/* Right scroll button */}
+            <button 
+              onClick={() => scroll('right')} 
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-background/90 backdrop-blur-sm shadow-lg hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all duration-300 -mr-4 md:mr-0" 
+              aria-label="Scroll right"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
 
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-medium tracking-widest text-primary uppercase">
-                        {item.type || 'Project'}
-                      </span>
-                      <h3 className="font-serif text-sm md:text-base text-foreground group-hover:text-primary transition-colors duration-200 line-clamp-1">
-                        {item.title}
-                      </h3>
-                      {item.location && <p className="text-xs text-muted-foreground line-clamp-1">
-                          {item.location}
-                        </p>}
-                    </div>
-                  </article>
-                </Reveal>)}
+            <div ref={scrollRef} className="overflow-x-auto pb-4 px-8 scrollbar-hide scroll-smooth">
+              <div className="flex gap-4" style={{ minWidth: 'max-content' }}>
+                {featuredItems.map((item, index) => <Reveal key={item.id} delay={index * 0.1}>
+                    <article className="group cursor-pointer w-64 md:w-72 flex-shrink-0" onClick={() => onItemClick?.(item)}>
+                      <div className="relative mb-3 overflow-hidden rounded-lg">
+                        <div className="aspect-[4/3] overflow-hidden bg-muted rounded-lg">
+                          <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        </div>
+                        <div className="absolute bottom-0 left-0 w-12 h-0.5 bg-primary transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 rounded-full" />
+                      </div>
+
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-medium tracking-widest text-primary uppercase">
+                          {item.type || 'Project'}
+                        </span>
+                        <h3 className="font-serif text-sm md:text-base text-foreground group-hover:text-primary transition-colors duration-200 line-clamp-1">
+                          {item.title}
+                        </h3>
+                        {item.location && <p className="text-xs text-muted-foreground line-clamp-1">
+                            {item.location}
+                          </p>}
+                      </div>
+                    </article>
+                  </Reveal>)}
+              </div>
             </div>
           </div>
         </div>
