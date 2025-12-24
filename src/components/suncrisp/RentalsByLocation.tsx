@@ -120,18 +120,15 @@ const FeaturedPropertyCard = ({
 
 // Location Card (Right Side Small Cards) with Auto-Rotating Carousel
 const LocationCardSmall = ({ 
-  location, 
-  onClick 
+  location
 }: { 
-  location: LocationWithRentals; 
-  onClick: () => void;
+  location: LocationWithRentals;
 }) => {
   const images = location.images?.length ? location.images : (location.image_url ? [location.image_url] : []);
   
   return (
     <div 
-      className="group cursor-pointer bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated hover:border-primary/30 transition-all duration-300 h-full flex flex-col"
-      onClick={onClick}
+      className="group bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated hover:border-primary/30 transition-all duration-300 h-full flex flex-col"
     >
       {/* Image Carousel - auto-rotating */}
       <div className="relative aspect-[16/9] overflow-hidden">
@@ -145,37 +142,24 @@ const LocationCardSmall = ({
           pauseOnHover={true}
         />
         
-        {/* Property count badge */}
-        {location.rentals.length > 0 && (
-          <div className="absolute top-3 left-3">
-            <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded-md shadow-sm">
-              {location.rentals.length} {location.rentals.length === 1 ? 'Property' : 'Properties'}
-            </span>
-          </div>
-        )}
+        {/* Location tag */}
+        <div className="absolute top-3 left-3">
+          <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded-md shadow-sm">
+            Location
+          </span>
+        </div>
       </div>
       
       {/* Location Info */}
-      <div className="p-4 flex-1 flex flex-col justify-between">
-        <div>
-          <h4 className="font-serif text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
-            {location.name}
-          </h4>
-          {location.description && (
-            <p className="text-muted-foreground text-sm mt-1 line-clamp-2">
-              {location.description}
-            </p>
-          )}
-        </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="mt-3 w-full group/btn"
-          onClick={(e) => { e.stopPropagation(); onClick(); }}
-        >
-          Explore
-          <ArrowRight className="w-3.5 h-3.5 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-        </Button>
+      <div className="p-4 flex-1 flex flex-col">
+        <h4 className="font-serif text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+          {location.name}
+        </h4>
+        {location.description && (
+          <p className="text-muted-foreground text-sm mt-1 line-clamp-2">
+            {location.description}
+          </p>
+        )}
       </div>
     </div>
   );
@@ -432,7 +416,6 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
                 <Reveal key={location.id} delay={150 + index * 50}>
                   <LocationCardSmall
                     location={location}
-                    onClick={() => setSelectedLocation(location)}
                   />
                 </Reveal>
               ))}
