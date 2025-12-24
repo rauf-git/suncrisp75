@@ -5,6 +5,7 @@ import { Property } from '@/types';
 import { projectService } from '@/services/projectService';
 import { constructionService } from '@/services/constructionService';
 import { rentalService } from '@/services/rentalService';
+import EmailModal from './EmailModal';
 
 interface PropertyDetailProps {
   item: Property;
@@ -15,6 +16,7 @@ interface PropertyDetailProps {
 const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailProps) => {
   const [resolvedItem, setResolvedItem] = useState<Property>(item);
   const [visitUrl, setVisitUrl] = useState<string | null>(null);
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
 
   // Scroll to top on mount
   useEffect(() => {
@@ -227,7 +229,10 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
                   ))}
                 </div>
                 
-                <button className="w-full btn-primary rounded-xl mt-8">
+                <button 
+                  onClick={() => setIsEmailModalOpen(true)}
+                  className="w-full btn-primary rounded-xl mt-8"
+                >
                   Schedule a Viewing
                 </button>
               </div>
@@ -271,6 +276,8 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
           </div>
         </div>
       )}
+
+      <EmailModal isOpen={isEmailModalOpen} onClose={() => setIsEmailModalOpen(false)} />
     </div>
   );
 };
