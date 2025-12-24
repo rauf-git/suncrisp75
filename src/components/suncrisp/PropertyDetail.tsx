@@ -17,6 +17,8 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
 
   if (!item) return null;
 
+  const contentSections = item.content_sections || [];
+
   return (
     <div className="bg-background min-h-screen pb-24 relative">
       
@@ -91,14 +93,34 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
         
         {/* Main Text */}
         <div className="lg:col-span-7">
-          <Reveal delay={300}>
-            <h3 className="font-serif text-3xl text-foreground mb-8 border-l-4 border-primary pl-6">
-              Project Overview
-            </h3>
-            <div className="prose prose-lg text-muted-foreground font-sans leading-loose whitespace-pre-line text-lg">
-              {item.detailedDescription || item.description || "No detailed description available."}
+          {/* Dynamic Content Sections */}
+          {contentSections.length > 0 ? (
+            <div className="space-y-12">
+              {contentSections.map((section, index) => (
+                <Reveal key={index} delay={300 + index * 100}>
+                  <div>
+                    {section.heading && (
+                      <h3 className="font-serif text-3xl text-foreground mb-6 border-l-4 border-primary pl-6">
+                        {section.heading}
+                      </h3>
+                    )}
+                    <div className="prose prose-lg text-muted-foreground font-sans leading-loose whitespace-pre-line text-lg pl-6">
+                      {section.content}
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
             </div>
-          </Reveal>
+          ) : (
+            <Reveal delay={300}>
+              <h3 className="font-serif text-3xl text-foreground mb-8 border-l-4 border-primary pl-6">
+                Project Overview
+              </h3>
+              <div className="prose prose-lg text-muted-foreground font-sans leading-loose whitespace-pre-line text-lg pl-6">
+                {item.detailedDescription || item.description || "No detailed description available."}
+              </div>
+            </Reveal>
+          )}
         </div>
 
         {/* Features Sidebar */}

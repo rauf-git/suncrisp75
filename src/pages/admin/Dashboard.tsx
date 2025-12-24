@@ -11,6 +11,7 @@ import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
 import { DraggableList } from "@/components/admin/DraggableList";
 import { ViewDetailModal } from "@/components/admin/ViewDetailModal";
 import { HomePageEditor } from "@/components/admin/HomePageEditor";
+import { PageContentEditor } from "@/components/admin/PageContentEditor";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
@@ -28,7 +29,9 @@ import {
   Key,
   FileText,
   MapPin,
-  Eye
+  Eye,
+  BookOpen,
+  Info
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -68,6 +71,10 @@ export default function AdminDashboard() {
   
   // Home page editor state
   const [isHomeEditorOpen, setIsHomeEditorOpen] = useState(false);
+  
+  // Page content editors state
+  const [isAboutEditorOpen, setIsAboutEditorOpen] = useState(false);
+  const [isBrandStoryEditorOpen, setIsBrandStoryEditorOpen] = useState(false);
   
   const { signOut, user } = useAuth();
   const navigate = useNavigate();
@@ -444,31 +451,58 @@ export default function AdminDashboard() {
 
           {/* Pages Tab */}
           <TabsContent value="pages">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div
                 className="bg-card border border-border rounded-xl p-6 hover:shadow-elevated transition-all cursor-pointer group"
                 onClick={() => setIsHomeEditorOpen(true)}
               >
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-serif text-lg">Home Page</h3>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Home className="w-5 h-5 text-primary" />
+                    </div>
+                    <h3 className="font-serif text-lg">Home Page</h3>
+                  </div>
                   <Edit className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Edit testimonials and trusted brands text.
+                  Edit hero video, testimonials and trusted brands.
                 </p>
               </div>
+              
               <div
                 className="bg-card border border-border rounded-xl p-6 hover:shadow-elevated transition-all cursor-pointer group"
-                onClick={() => {
-                  toast({ title: "Coming soon", description: "Page editor for About Us is under development." });
-                }}
+                onClick={() => setIsAboutEditorOpen(true)}
               >
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-serif text-lg">About Us</h3>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                      <Info className="w-5 h-5 text-blue-500" />
+                    </div>
+                    <h3 className="font-serif text-lg">About Us</h3>
+                  </div>
                   <Edit className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Edit about us text content and images.
+                  Edit about us content sections.
+                </p>
+              </div>
+              
+              <div
+                className="bg-card border border-border rounded-xl p-6 hover:shadow-elevated transition-all cursor-pointer group"
+                onClick={() => setIsBrandStoryEditorOpen(true)}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                      <BookOpen className="w-5 h-5 text-amber-500" />
+                    </div>
+                    <h3 className="font-serif text-lg">Our Brand Story</h3>
+                  </div>
+                  <Edit className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Edit brand story content sections.
                 </p>
               </div>
             </div>
@@ -502,6 +536,20 @@ export default function AdminDashboard() {
       <HomePageEditor
         open={isHomeEditorOpen}
         onOpenChange={setIsHomeEditorOpen}
+      />
+
+      <PageContentEditor
+        open={isAboutEditorOpen}
+        onOpenChange={setIsAboutEditorOpen}
+        pageKey="about-us"
+        pageTitle="About Us"
+      />
+
+      <PageContentEditor
+        open={isBrandStoryEditorOpen}
+        onOpenChange={setIsBrandStoryEditorOpen}
+        pageKey="brand-story"
+        pageTitle="Our Brand Story"
       />
 
       <DeleteConfirmDialog
