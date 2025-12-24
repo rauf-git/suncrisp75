@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { rentalService, Rental, RentalLocation, CreateRentalInput, UpdateRentalInput } from "@/services/rentalService";
@@ -23,7 +23,7 @@ export function RentalFormModal({ open, onOpenChange, rental, locations, onSucce
   const [title, setTitle] = useState("");
   const [shortDescription, setShortDescription] = useState("");
   const [longDescription, setLongDescription] = useState("");
-  const [locationId, setLocationId] = useState("");
+  const [selectedLocationIds, setSelectedLocationIds] = useState<string[]>([]);
   const [address, setAddress] = useState("");
   const [price, setPrice] = useState("");
   const [bedrooms, setBedrooms] = useState("");
@@ -49,7 +49,7 @@ export function RentalFormModal({ open, onOpenChange, rental, locations, onSucce
     setTitle("");
     setShortDescription("");
     setLongDescription("");
-    setLocationId("");
+    setSelectedLocationIds([]);
     setAddress("");
     setPrice("");
     setBedrooms("");
@@ -186,7 +186,7 @@ export function RentalFormModal({ open, onOpenChange, rental, locations, onSucce
           title: title.trim(),
           short_description: shortDescription.trim() || undefined,
           long_description: longDescription.trim() || undefined,
-          location_id: locationId || undefined,
+          location_ids: selectedLocationIds,
           address: address.trim() || undefined,
           price: price.trim() || undefined,
           bedrooms: bedrooms ? parseInt(bedrooms) : undefined,
@@ -214,7 +214,7 @@ export function RentalFormModal({ open, onOpenChange, rental, locations, onSucce
           title: title.trim(),
           short_description: shortDescription.trim() || undefined,
           long_description: longDescription.trim() || undefined,
-          location_id: locationId || undefined,
+          location_ids: selectedLocationIds,
           address: address.trim() || undefined,
           price: price.trim() || undefined,
           bedrooms: bedrooms ? parseInt(bedrooms) : undefined,
@@ -255,7 +255,7 @@ export function RentalFormModal({ open, onOpenChange, rental, locations, onSucce
       setTitle(rental.title);
       setShortDescription(rental.short_description || "");
       setLongDescription(rental.long_description || "");
-      setLocationId(rental.location_id || "");
+      setSelectedLocationIds(rental.location_ids || []);
       setAddress(rental.address || "");
       setPrice(rental.price || "");
       setBedrooms(rental.bedrooms?.toString() || "");
@@ -302,20 +302,38 @@ export function RentalFormModal({ open, onOpenChange, rental, locations, onSucce
                 )}
               </div>
 
-              {/* Location & Featured */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* Locations (Checkboxes) & Featured */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Location</Label>
-                  <Select value={locationId} onValueChange={setLocationId} disabled={isLoading}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select location" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {locations.map((loc) => (
-                        <SelectItem key={loc.id} value={loc.id}>{loc.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label>Locations</Label>
+                  <div className="border border-border rounded-lg p-3 space-y-2 max-h-40 overflow-y-auto bg-background">
+                    {locations.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">No locations available</p>
+                    ) : (
+                      locations.map((loc) => (
+                        <div key={loc.id} className="flex items-center gap-2">
+                          <Checkbox
+                            id={`location-${loc.id}`}
+                            checked={selectedLocationIds.includes(loc.id)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setSelectedLocationIds(prev => [...prev, loc.id]);
+                              } else {
+                                setSelectedLocationIds(prev => prev.filter(id => id !== loc.id));
+                              }
+                            }}
+                            disabled={isLoading}
+                          />
+                          <label 
+                            htmlFor={`location-${loc.id}`} 
+                            className="text-sm cursor-pointer select-none"
+                          >
+                            {loc.name}
+                          </label>
+                        </div>
+                      ))
+                    )}
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label>Featured</Label>

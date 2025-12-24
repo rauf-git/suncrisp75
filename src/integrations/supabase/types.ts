@@ -309,6 +309,7 @@ export type Database = {
           images: string[] | null
           is_featured: boolean | null
           location_id: string | null
+          location_ids: string[] | null
           long_description: string | null
           price: string | null
           short_description: string | null
@@ -332,6 +333,7 @@ export type Database = {
           images?: string[] | null
           is_featured?: boolean | null
           location_id?: string | null
+          location_ids?: string[] | null
           long_description?: string | null
           price?: string | null
           short_description?: string | null
@@ -355,6 +357,7 @@ export type Database = {
           images?: string[] | null
           is_featured?: boolean | null
           location_id?: string | null
+          location_ids?: string[] | null
           long_description?: string | null
           price?: string | null
           short_description?: string | null

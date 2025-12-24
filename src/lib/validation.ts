@@ -177,6 +177,7 @@ export const createRentalSchema = z.object({
     .max(MAX_LONG_DESCRIPTION_LENGTH, `Long description must be less than ${MAX_LONG_DESCRIPTION_LENGTH} characters`)
     .optional(),
   location_id: z.string().uuid("Invalid location ID").optional().nullable(),
+  location_ids: z.array(z.string().uuid("Invalid location ID")).optional(),
   address: z.string()
     .trim()
     .max(MAX_ADDRESS_LENGTH, `Address must be less than ${MAX_ADDRESS_LENGTH} characters`)
