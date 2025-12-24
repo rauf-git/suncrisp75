@@ -24,6 +24,7 @@
 
     /* Primary: Warm Orange */
     --primary: 25 95% 53%;
+    --primary-rgb: 249, 115, 22;
     --primary-foreground: 0 0% 100%;
     --primary-hover: 25 95% 45%;
     --primary-light: 33 100% 96%;
@@ -78,6 +79,7 @@
     --popover-foreground: 220 14% 96%;
 
     --primary: 25 95% 53%;
+    --primary-rgb: 249, 115, 22;
     --primary-foreground: 0 0% 100%;
     --primary-hover: 25 95% 60%;
     --primary-light: 220 13% 12%;
@@ -284,13 +286,13 @@
     transform: translateX(0%);
   }
   100% {
-    transform: translateX(-100%);
+    transform: translateX(-50%);
   }
 }
 
 @keyframes marqueeReverse {
   0% {
-    transform: translateX(-100%);
+    transform: translateX(-50%);
   }
   100% {
     transform: translateX(0%);

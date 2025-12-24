@@ -1,7 +1,8 @@
-import { useRef } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import { Property } from '@/types';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import Reveal from './Reveal';
+
 interface FeaturedProjectsProps {
   items: Property[];
   onItemClick?: (item: Property) => void;
@@ -9,6 +10,7 @@ interface FeaturedProjectsProps {
   title?: string;
   variant?: 'scroll' | 'grid';
 }
+
 const FeaturedProjects = ({
   items,
   onItemClick,
@@ -18,16 +20,44 @@ const FeaturedProjects = ({
 }: FeaturedProjectsProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const featuredItems = variant === 'scroll' ? items.slice(0, 6) : items.slice(0, 2);
+  
+  // Create duplicated items for infinite scroll effect
+  const infiniteItems = variant === 'scroll' 
+    ? [...featuredItems, ...featuredItems, ...featuredItems] 
+    : featuredItems;
+  
   if (featuredItems.length === 0) return null;
-  const scroll = (direction: 'left' | 'right') => {
+
+  // Initialize scroll position to middle set for infinite loop
+  useEffect(() => {
+    if (scrollRef.current && variant === 'scroll') {
+      const itemWidth = 280; // approximate card width + gap
+      scrollRef.current.scrollLeft = featuredItems.length * itemWidth;
+    }
+  }, [featuredItems.length, variant]);
+
+  const scroll = useCallback((direction: 'left' | 'right') => {
     if (scrollRef.current) {
       const scrollAmount = 300;
-      scrollRef.current.scrollBy({
+      const container = scrollRef.current;
+      const itemWidth = 280;
+      const singleSetWidth = featuredItems.length * itemWidth;
+      
+      container.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth'
       });
+
+      // Handle infinite loop - check after scroll completes
+      setTimeout(() => {
+        if (container.scrollLeft <= itemWidth) {
+          container.scrollLeft = singleSetWidth + container.scrollLeft;
+        } else if (container.scrollLeft >= singleSetWidth * 2) {
+          container.scrollLeft = container.scrollLeft - singleSetWidth;
+        }
+      }, 350);
     }
-  };
+  }, [featuredItems.length]);
 
   // Scrolling variant (compact cards)
   if (variant === 'scroll') {
@@ -51,27 +81,29 @@ const FeaturedProjects = ({
 
           {/* Horizontal scrolling container with side buttons */}
           <div className="relative">
-            {/* Left scroll button */}
+            {/* Left scroll button - Futuristic */}
             <button 
               onClick={() => scroll('left')} 
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-background/90 backdrop-blur-sm shadow-lg hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all duration-300 -ml-4 md:ml-0" 
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 backdrop-blur-md border border-primary/30 shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)] hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.5)] hover:bg-primary hover:border-primary text-primary hover:text-primary-foreground transition-all duration-300 -ml-4 md:ml-0 group flex items-center justify-center" 
               aria-label="Scroll left"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
+              <span className="absolute inset-0 rounded-full bg-primary/10 animate-ping opacity-0 group-hover:opacity-75" />
             </button>
             
-            {/* Right scroll button */}
+            {/* Right scroll button - Futuristic */}
             <button 
               onClick={() => scroll('right')} 
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-background/90 backdrop-blur-sm shadow-lg hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all duration-300 -mr-4 md:mr-0" 
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 backdrop-blur-md border border-primary/30 shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)] hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.5)] hover:bg-primary hover:border-primary text-primary hover:text-primary-foreground transition-all duration-300 -mr-4 md:mr-0 group flex items-center justify-center" 
               aria-label="Scroll right"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+              <span className="absolute inset-0 rounded-full bg-primary/10 animate-ping opacity-0 group-hover:opacity-75" />
             </button>
 
             <div ref={scrollRef} className="overflow-x-auto pb-4 px-8 scrollbar-hide scroll-smooth">
               <div className="flex gap-4" style={{ minWidth: 'max-content' }}>
-                {featuredItems.map((item, index) => <Reveal key={item.id} delay={index * 0.1}>
+                {infiniteItems.map((item, index) => <Reveal key={`${item.id}-${index}`} delay={(index % featuredItems.length) * 0.1}>
                     <article className="group cursor-pointer w-64 md:w-72 flex-shrink-0" onClick={() => onItemClick?.(item)}>
                       <div className="relative mb-3 overflow-hidden rounded-lg">
                         <div className="aspect-[4/3] overflow-hidden bg-muted rounded-lg">
@@ -124,7 +156,15 @@ const FeaturedProjects = ({
 
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
           {featuredItems.map((item, index) => <Reveal key={item.id} delay={index * 0.15}>
-              <article className="group cursor-pointer" onClick={() => onItemClick?.(item)}>
+              <article 
+                className="group cursor-pointer focus:outline-none" 
+                onClick={() => onItemClick?.(item)}
+                onTouchEnd={(e) => {
+                  // Remove focus on touch end to prevent stuck focus state
+                  (e.currentTarget as HTMLElement).blur();
+                }}
+                tabIndex={0}
+              >
                 <div className="relative mb-5 overflow-hidden rounded-xl">
                   <div className="aspect-[4/3] overflow-hidden bg-muted rounded-xl">
                     <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
