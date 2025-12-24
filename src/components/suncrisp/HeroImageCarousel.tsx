@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from "react";
 
 interface HeroImageCarouselProps {
   images: string[];
@@ -18,11 +18,11 @@ const HeroImageCarousel = ({ images, interval = 4000 }: HeroImageCarouselProps) 
 
     const timer = setInterval(nextSlide, interval);
     return () => clearInterval(timer);
-  }, [images.length, interval, isPaused, nextSlide]);
+  }, [images.length, interval, nextSlide]);
 
   // Log warning if no images
   if (!images || images.length === 0) {
-    console.warn('[HeroImageCarousel] No images provided. heroImages[] is empty.');
+    console.warn("[HeroImageCarousel] No images provided. heroImages[] is empty.");
     return (
       <div className="relative w-full h-full">
         <div className="absolute -inset-2 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-2xl blur-sm" />
@@ -34,31 +34,31 @@ const HeroImageCarousel = ({ images, interval = 4000 }: HeroImageCarouselProps) 
   }
 
   return (
-    <div 
+    <div
       className="relative w-full h-full"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* Decorative frame */}
       <div className="absolute -inset-2 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-2xl blur-sm" />
-      
+
       <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-2xl shadow-black/20 bg-muted/50 backdrop-blur-sm border border-primary/20">
         {images.map((image, index) => (
           <div
             key={index}
             className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              index === currentIndex ? 'opacity-100' : 'opacity-0'
+              index === currentIndex ? "opacity-100" : "opacity-0"
             }`}
           >
             <img
               src={image}
               alt={`Hero image ${index + 1}`}
               className="w-full h-full object-cover"
-              loading={index === 0 ? 'eager' : 'lazy'}
+              loading={index === 0 ? "eager" : "lazy"}
             />
           </div>
         ))}
-        
+
         {/* Image indicators */}
         {images.length > 1 && (
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
@@ -67,9 +67,7 @@ const HeroImageCarousel = ({ images, interval = 4000 }: HeroImageCarouselProps) 
                 key={index}
                 onClick={() => setCurrentIndex(index)}
                 className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === currentIndex 
-                    ? 'bg-primary w-6' 
-                    : 'bg-background/50 hover:bg-background/80'
+                  index === currentIndex ? "bg-primary w-6" : "bg-background/50 hover:bg-background/80"
                 }`}
                 aria-label={`Go to image ${index + 1}`}
               />
@@ -77,7 +75,7 @@ const HeroImageCarousel = ({ images, interval = 4000 }: HeroImageCarouselProps) 
           </div>
         )}
       </div>
-      
+
       {/* Subtle glow effect */}
       <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-3/4 h-4 bg-primary/20 blur-xl rounded-full" />
     </div>
