@@ -65,7 +65,7 @@ const Hero = ({ onNavigate }: HeroProps) => {
       <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-background/30" />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12">
-        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <div className="flex flex-col md:grid md:grid-cols-[1fr,auto] gap-6 md:gap-8 lg:gap-12 items-center">
           {/* Left Column - Text Content */}
           <div className="max-w-xl order-1">
             <Reveal delay={200}>
@@ -100,9 +100,9 @@ const Hero = ({ onNavigate }: HeroProps) => {
             </Reveal>
           </div>
 
-          {/* Right Column - Image Carousel (below text on mobile) */}
+          {/* Right Column - Image Carousel (smaller, right side on md+, below on mobile) */}
           <Reveal delay={600} width="100%">
-            <div className="relative w-full order-2">
+            <div className="relative w-full md:w-[280px] lg:w-[320px] xl:w-[380px] order-2">
               <HeroImageCarousel key={heroImages.length} images={heroImages} interval={5000} />
             </div>
           </Reveal>
