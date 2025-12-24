@@ -224,16 +224,20 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
       const locations = locationsResult.data || [];
       const rentals = rentalsResult.data || [];
 
-      // Group rentals by location
+      // Group rentals by location using location_ids array
       const locationMap = new Map<string, LocationWithRentals>();
       locations.forEach(loc => {
         locationMap.set(loc.id, { ...loc, rentals: [] });
       });
 
       rentals.forEach(rental => {
-        if (rental.location_id && locationMap.has(rental.location_id)) {
-          locationMap.get(rental.location_id)!.rentals.push(rental);
-        }
+        // Check location_ids array first, fallback to location_id for backward compatibility
+        const rentalLocationIds = rental.location_ids?.length ? rental.location_ids : (rental.location_id ? [rental.location_id] : []);
+        rentalLocationIds.forEach(locId => {
+          if (locationMap.has(locId)) {
+            locationMap.get(locId)!.rentals.push(rental);
+          }
+        });
       });
 
       const allLocations = Array.from(locationMap.values())
