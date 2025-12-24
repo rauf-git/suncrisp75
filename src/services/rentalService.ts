@@ -37,6 +37,8 @@ export interface Rental {
   amenities: string[];
   thumbnail_url: string | null;
   images: string[];
+  // Dynamic content blocks (stored as JSON)
+  content_sections: unknown | null;
   is_featured: boolean;
   display_order: number;
   visit_url: string | null;

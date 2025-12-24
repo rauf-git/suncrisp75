@@ -16,6 +16,11 @@ export const sanitizeText = (text: string | undefined | null, maxLength: number)
 };
 
 // Project validation schemas
+const contentSectionSchema = z.object({
+  heading: z.string().trim().max(MAX_TITLE_LENGTH).optional(),
+  content: z.string().trim().max(MAX_LONG_DESCRIPTION_LENGTH).optional(),
+});
+
 export const createProjectSchema = z.object({
   title: z.string()
     .trim()
@@ -46,6 +51,8 @@ export const createProjectSchema = z.object({
     .url("Invalid image URL")
     .max(MAX_URL_LENGTH, `Image URL must be less than ${MAX_URL_LENGTH} characters`),
   images: z.array(z.string().url().max(MAX_URL_LENGTH)).optional(),
+  // Dynamic content blocks
+  content_sections: z.array(contentSectionSchema).optional(),
   display_order: z.number().int().min(0).max(9999).optional(),
 });
 
@@ -81,6 +88,8 @@ export const updateProjectSchema = z.object({
     .max(MAX_URL_LENGTH, `Image URL must be less than ${MAX_URL_LENGTH} characters`)
     .optional(),
   images: z.array(z.string().url().max(MAX_URL_LENGTH)).nullish(),
+  // Dynamic content blocks
+  content_sections: z.array(contentSectionSchema).nullish(),
   display_order: z.number().int().min(0).max(9999).nullish(),
   is_featured: z.boolean().nullish(),
   visit_url: z.string().trim().url().max(MAX_URL_LENGTH).nullish(),
@@ -114,6 +123,8 @@ export const createConstructionSchema = z.object({
     .max(MAX_URL_LENGTH, `Thumbnail URL must be less than ${MAX_URL_LENGTH} characters`)
     .optional(),
   images: z.array(z.string().url().max(MAX_URL_LENGTH)).optional(),
+  // Dynamic content blocks
+  content_sections: z.array(contentSectionSchema).optional(),
   display_order: z.number().int().min(0).max(9999).optional(),
 });
 
@@ -143,6 +154,8 @@ export const updateConstructionSchema = z.object({
     .max(MAX_URL_LENGTH, `Thumbnail URL must be less than ${MAX_URL_LENGTH} characters`)
     .nullish(),
   images: z.array(z.string().url().max(MAX_URL_LENGTH)).nullish(),
+  // Dynamic content blocks
+  content_sections: z.array(contentSectionSchema).nullish(),
   display_order: z.number().int().min(0).max(9999).nullish(),
   visit_url: z.string().trim().url().max(MAX_URL_LENGTH).nullish(),
   heading: z.string().trim().max(MAX_TITLE_LENGTH).nullish(),
@@ -185,6 +198,8 @@ export const createRentalSchema = z.object({
     .max(MAX_URL_LENGTH, `Thumbnail URL must be less than ${MAX_URL_LENGTH} characters`)
     .optional(),
   images: z.array(z.string().url().max(MAX_URL_LENGTH)).optional(),
+  // Dynamic content blocks
+  content_sections: z.array(contentSectionSchema).optional(),
   is_featured: z.boolean().optional(),
   display_order: z.number().int().min(0).max(9999).optional(),
   visit_url: z.string().trim().url().max(MAX_URL_LENGTH).nullish(),

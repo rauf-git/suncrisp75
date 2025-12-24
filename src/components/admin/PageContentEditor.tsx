@@ -85,7 +85,7 @@ export function PageContentEditor({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0">
+      <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0">
         <DialogHeader className="px-6 py-4 border-b border-border shrink-0">
           <DialogTitle className="font-serif text-2xl">Edit {pageTitle}</DialogTitle>
         </DialogHeader>
@@ -95,8 +95,8 @@ export function PageContentEditor({
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         ) : (
-          <ScrollArea className="flex-1 px-6">
-            <div className="space-y-6 py-6">
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="px-6 py-6 space-y-6">
               {/* Page Title & Subtitle */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -130,12 +130,12 @@ export function PageContentEditor({
                 />
                 {heroImage && (
                   <div className="mt-2 aspect-video w-full max-w-sm rounded-lg overflow-hidden border border-border">
-                    <img 
-                      src={heroImage} 
-                      alt="Hero preview" 
+                    <img
+                      src={heroImage}
+                      alt="Hero preview"
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/placeholder.svg';
+                        (e.target as HTMLImageElement).src = "/placeholder.svg";
                       }}
                     />
                   </div>
@@ -143,10 +143,7 @@ export function PageContentEditor({
               </div>
 
               {/* Dynamic Content Sections */}
-              <ContentSectionsEditor
-                sections={contentSections}
-                onChange={setContentSections}
-              />
+              <ContentSectionsEditor sections={contentSections} onChange={setContentSections} />
             </div>
           </ScrollArea>
         )}
