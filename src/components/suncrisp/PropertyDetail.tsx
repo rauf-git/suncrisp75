@@ -165,7 +165,7 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
 
       {/* Visit Link Below Hero */}
       {visitUrl && (
-        <div className="max-w-7xl mx-auto px-6 pt-8">
+        <div className="max-w-7xl mx-auto px-6 pt-8 flex justify-end">
           <a
             href={visitUrl}
             target="_blank"
