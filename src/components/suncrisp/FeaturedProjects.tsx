@@ -2,6 +2,7 @@ import { useRef, useEffect, useCallback } from 'react';
 import { Property } from '@/types';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import Reveal from './Reveal';
+import ImageSkeleton from './ImageSkeleton';
 
 interface FeaturedProjectsProps {
   items: Property[];
@@ -106,10 +107,13 @@ const FeaturedProjects = ({
                 {infiniteItems.map((item, index) => <Reveal key={`${item.id}-${index}`} delay={(index % featuredItems.length) * 0.1}>
                     <article className="group cursor-pointer w-64 md:w-72 flex-shrink-0" onClick={() => onItemClick?.(item)}>
                       <div className="relative mb-3 overflow-hidden rounded-lg">
-                        <div className="aspect-[4/3] overflow-hidden bg-muted rounded-lg">
-                          <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        </div>
+                        <ImageSkeleton 
+                          src={item.image} 
+                          alt={item.title} 
+                          className="transition-transform duration-500 group-hover:scale-105"
+                          aspectRatio="aspect-[4/3]"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                         <div className="absolute bottom-0 left-0 w-12 h-0.5 bg-primary transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 rounded-full" />
                       </div>
 
@@ -162,9 +166,11 @@ const FeaturedProjects = ({
                 tabIndex={-1}
               >
                 <div className="relative mb-5 overflow-hidden rounded-xl">
-                  <div className="aspect-[4/3] overflow-hidden bg-muted rounded-xl">
-                    <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
-                  </div>
+                  <ImageSkeleton 
+                    src={item.image} 
+                    alt={item.title} 
+                    aspectRatio="aspect-[4/3]"
+                  />
                 </div>
 
                 <div className="space-y-2">
