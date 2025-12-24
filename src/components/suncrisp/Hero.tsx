@@ -68,16 +68,9 @@ const Hero = ({
       <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-background/40" />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pl-0 pr-[48px] mr-[15px]">
-        <div className="flex flex-col md:grid md:grid-cols-[auto,1fr] gap-6 md:gap-8 lg:gap-12 items-center">
-          {/* Left Column - Image Carousel (left side on md+, below on mobile) */}
-          <Reveal delay={600} width="100%">
-            <div className="relative w-full md:w-[340px] lg:w-[400px] xl:w-[480px] order-2 md:order-1">
-              <HeroImageCarousel key={heroImages.length} images={heroImages} interval={5000} />
-            </div>
-          </Reveal>
-
-          {/* Right Column - Text Content */}
-          <div className="max-w-xl order-1 md:order-2">
+        <div className="flex flex-col md:grid md:grid-cols-[1fr,auto] gap-6 md:gap-8 lg:gap-12 items-center">
+          {/* Left Column - Text Content */}
+          <div className="max-w-xl order-1">
             <Reveal delay={200}>
               <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight tracking-tight">
                 <span className="text-primary">​Sun</span>
@@ -106,6 +99,13 @@ const Hero = ({
               </Button>
             </Reveal>
           </div>
+
+          {/* Right Column - Image Carousel */}
+          <Reveal delay={600} width="100%">
+            <div className="relative w-full md:w-[340px] lg:w-[400px] xl:w-[480px] order-2">
+              <HeroImageCarousel key={heroImages.length} images={heroImages} interval={5000} />
+            </div>
+          </Reveal>
         </div>
       </div>
       
