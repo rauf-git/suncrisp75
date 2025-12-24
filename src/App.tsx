@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Index from "./pages/Index";
+import AboutUs from "./pages/AboutUs";
+import BrandStory from "./pages/BrandStory";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/admin/Login";
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -22,6 +24,8 @@ const App = () => (
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Index />} />
+            <Route path="/about-us" element={<AboutUs />} />
+            <Route path="/our-brand-story" element={<BrandStory />} />
             
             {/* Admin routes - using specific paths to avoid 404 on refresh */}
             <Route path="/admin/login" element={<AdminLogin />} />

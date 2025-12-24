@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           address: string | null
           content_heading: string | null
+          content_sections: Json | null
           created_at: string
           description: string | null
           display_order: number | null
@@ -35,6 +36,7 @@ export type Database = {
         Insert: {
           address?: string | null
           content_heading?: string | null
+          content_sections?: Json | null
           created_at?: string
           description?: string | null
           display_order?: number | null
@@ -52,6 +54,7 @@ export type Database = {
         Update: {
           address?: string | null
           content_heading?: string | null
+          content_sections?: Json | null
           created_at?: string
           description?: string | null
           display_order?: number | null
@@ -71,6 +74,7 @@ export type Database = {
       hospitality_projects: {
         Row: {
           content_heading: string | null
+          content_sections: Json | null
           created_at: string
           description: string | null
           display_order: number | null
@@ -88,6 +92,7 @@ export type Database = {
         }
         Insert: {
           content_heading?: string | null
+          content_sections?: Json | null
           created_at?: string
           description?: string | null
           display_order?: number | null
@@ -105,6 +110,7 @@ export type Database = {
         }
         Update: {
           content_heading?: string | null
+          content_sections?: Json | null
           created_at?: string
           description?: string | null
           display_order?: number | null
@@ -158,10 +164,44 @@ export type Database = {
         }
         Relationships: []
       }
+      page_content: {
+        Row: {
+          content_sections: Json | null
+          created_at: string
+          hero_image: string | null
+          id: string
+          page_key: string
+          subtitle: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          content_sections?: Json | null
+          created_at?: string
+          hero_image?: string | null
+          id?: string
+          page_key: string
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          content_sections?: Json | null
+          created_at?: string
+          hero_image?: string | null
+          id?: string
+          page_key?: string
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           category: string | null
           content_heading: string | null
+          content_sections: Json | null
           created_at: string
           description: string | null
           display_order: number | null
@@ -180,6 +220,7 @@ export type Database = {
         Insert: {
           category?: string | null
           content_heading?: string | null
+          content_sections?: Json | null
           created_at?: string
           description?: string | null
           display_order?: number | null
@@ -198,6 +239,7 @@ export type Database = {
         Update: {
           category?: string | null
           content_heading?: string | null
+          content_sections?: Json | null
           created_at?: string
           description?: string | null
           display_order?: number | null
@@ -253,6 +295,7 @@ export type Database = {
           bathrooms: number | null
           bedrooms: number | null
           content_heading: string | null
+          content_sections: Json | null
           created_at: string
           display_order: number | null
           heading: string | null
@@ -275,6 +318,7 @@ export type Database = {
           bathrooms?: number | null
           bedrooms?: number | null
           content_heading?: string | null
+          content_sections?: Json | null
           created_at?: string
           display_order?: number | null
           heading?: string | null
@@ -297,6 +341,7 @@ export type Database = {
           bathrooms?: number | null
           bedrooms?: number | null
           content_heading?: string | null
+          content_sections?: Json | null
           created_at?: string
           display_order?: number | null
           heading?: string | null

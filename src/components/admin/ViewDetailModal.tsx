@@ -1,18 +1,20 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Edit, Save, X, Calendar, Image as ImageIcon, Upload, Trash2, Plus, Star, ExternalLink, Type } from "lucide-react";
+import { Edit, Save, X, Calendar, Image as ImageIcon, Upload, Trash2, Plus, Star, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { ContentSectionsEditor, ContentSection } from "./ContentSectionsEditor";
 
 interface ViewDetailModalProps {
   open: boolean;
@@ -42,7 +44,18 @@ export function ViewDetailModal({
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [contentSections, setContentSections] = useState<ContentSection[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Initialize content sections from item
+  useEffect(() => {
+    if (item?.content_sections) {
+      const sections = item.content_sections as ContentSection[];
+      setContentSections(Array.isArray(sections) ? sections : []);
+    } else {
+      setContentSections([]);
+    }
+  }, [item]);
 
   if (!item) return null;
 
@@ -61,6 +74,9 @@ export function ViewDetailModal({
     if (galleryImages.length > 0) {
       updates.images = galleryImages;
     }
+    // Include content sections
+    updates.content_sections = contentSections;
+    
     if (Object.keys(updates).length === 0) {
       setIsEditing(false);
       return;
@@ -94,7 +110,7 @@ export function ViewDetailModal({
       }
       setGalleryImages(newImages);
       toast.success(`${files.length} image(s) uploaded successfully`);
-    } catch (error) {
+    } catch {
       toast.error("Failed to upload some images");
     } finally {
       setIsUploading(false);
@@ -130,17 +146,20 @@ export function ViewDetailModal({
   const mainImage = getImageUrl();
   const currentGallery = getGalleryImages();
 
-  // Filter out short_description from fields
-  const filteredFields = fields.filter(f => f.key !== 'short_description');
+  // Filter out fields we handle separately
+  const filteredFields = fields.filter(f => 
+    !['short_description', 'heading', 'content_heading', 'long_description', 'description'].includes(f.key)
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[85vh] p-0 overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
+      <DialogContent className="max-w-4xl h-[90vh] max-h-[90vh] flex flex-col p-0 gap-0 bg-gradient-to-br from-background via-background to-muted/20">
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
         
-        <DialogHeader className="px-6 py-4 border-b border-border/50 bg-gradient-to-r from-muted/50 to-transparent relative z-10">
+        {/* Fixed Header */}
+        <DialogHeader className="px-6 py-4 border-b border-border/50 bg-gradient-to-r from-muted/50 to-transparent relative z-10 shrink-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[10px] font-semibold tracking-[0.25em] text-primary uppercase mb-1.5">
@@ -150,54 +169,17 @@ export function ViewDetailModal({
                 {String(item.title || "Untitled")}
               </DialogTitle>
             </div>
-            <div className="flex items-center gap-3">
-              {isEditing ? (
-                <>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => { setIsEditing(false); setEditedValues({}); setGalleryImages([]); }} 
-                    disabled={isSaving}
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    <X className="w-4 h-4 mr-1.5" />
-                    Cancel
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    onClick={handleSave} 
-                    disabled={isSaving}
-                    className="bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20"
-                  >
-                    <Save className="w-4 h-4 mr-1.5" />
-                    {isSaving ? "Saving..." : "Save Changes"}
-                  </Button>
-                </>
-              ) : (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setIsEditing(true)}
-                  className="border-primary/30 hover:border-primary hover:bg-primary/5"
-                >
-                  <Edit className="w-4 h-4 mr-1.5" />
-                  Edit
-                </Button>
-              )}
-            </div>
           </div>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(85vh-80px)]">
+        {/* Scrollable Content */}
+        <ScrollArea className="flex-1 min-h-0">
           <div className="p-6 space-y-6 relative z-10">
             {/* Hero Image with classy shape */}
             {mainImage && (
               <div className="relative">
                 <div 
-                  className="aspect-[21/9] overflow-hidden bg-muted shadow-2xl shadow-black/10"
-                  style={{
-                    clipPath: 'polygon(0 0, 100% 0, 100% 90%, 95% 100%, 5% 100%, 0 90%)'
-                  }}
+                  className="aspect-[21/9] overflow-hidden bg-muted shadow-2xl shadow-black/10 rounded-xl"
                 >
                   <img 
                     src={mainImage} 
@@ -206,8 +188,6 @@ export function ViewDetailModal({
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent" />
                 </div>
-                {/* Elegant frame accent */}
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-primary to-transparent rounded-full" />
               </div>
             )}
 
@@ -255,13 +235,7 @@ export function ViewDetailModal({
                   {currentGallery.map((img, idx) => (
                     <div 
                       key={idx} 
-                      className="group relative aspect-square overflow-hidden bg-muted shadow-lg"
-                      style={{
-                        clipPath: idx % 4 === 0 ? 'polygon(0 0, 100% 0, 100% 100%, 0 85%)' :
-                                  idx % 4 === 1 ? 'polygon(0 0, 100% 0, 100% 85%, 0 100%)' :
-                                  idx % 4 === 2 ? 'polygon(0 15%, 100% 0, 100% 100%, 0 100%)' :
-                                  'polygon(0 0, 100% 15%, 100% 100%, 0 100%)'
-                      }}
+                      className="group relative aspect-square overflow-hidden bg-muted shadow-lg rounded-lg"
                     >
                       <img 
                         src={img} 
@@ -296,14 +270,9 @@ export function ViewDetailModal({
                   ))}
                 </div>
               ) : (
-                <div 
-                  className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-muted-foreground/20 rounded-2xl bg-muted/30"
-                  style={{
-                    clipPath: 'polygon(2% 0, 98% 0, 100% 5%, 100% 95%, 98% 100%, 2% 100%, 0 95%, 0 5%)'
-                  }}
-                >
-                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                    <ImageIcon className="w-8 h-8 text-muted-foreground/50" />
+                <div className="flex flex-col items-center justify-center py-8 border-2 border-dashed border-muted-foreground/20 rounded-xl bg-muted/30">
+                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                    <ImageIcon className="w-6 h-6 text-muted-foreground/50" />
                   </div>
                   <p className="text-sm text-muted-foreground">No gallery images yet</p>
                   {isEditing && onUploadImage && (
@@ -351,114 +320,96 @@ export function ViewDetailModal({
               )}
             </div>
 
-            {/* Custom Heading Section */}
-            <div className="p-4 rounded-xl bg-accent/10 border border-accent/20">
-              <div className="flex items-center justify-between mb-3">
-                <Label className="text-[10px] font-bold tracking-[0.2em] text-accent-foreground uppercase flex items-center gap-2">
-                  <Type className="w-4 h-4" />
-                  Custom Heading
-                </Label>
+            {/* Dynamic Content Sections */}
+            {isEditing ? (
+              <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
+                <ContentSectionsEditor
+                  sections={contentSections}
+                  onChange={setContentSections}
+                  title="Content Sections"
+                />
               </div>
-              {isEditing ? (
-                <Input 
-                  value={String(getValue("heading") || "")} 
-                  onChange={(e) => setEditedValues(prev => ({ ...prev, heading: e.target.value || null }))} 
-                  placeholder="Enter a custom heading"
-                  className="bg-background/50 border-border/50 focus:border-primary/50" 
-                />
-              ) : getValue("heading") ? (
-                <p className="text-foreground font-serif text-lg">
-                  {String(getValue("heading"))}
-                </p>
-              ) : (
-                <span className="text-sm text-muted-foreground">No heading set</span>
-              )}
-            </div>
-
-            {/* Section Heading Field for descriptions */}
-            <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
-              <Label className="text-[10px] font-bold tracking-[0.2em] text-muted-foreground uppercase block mb-3">
-                Section Heading
-              </Label>
-              {isEditing ? (
-                <Input 
-                  value={String(getValue("content_heading") || "")} 
-                  onChange={(e) => setEditedValues(prev => ({ ...prev, content_heading: e.target.value || null }))} 
-                  placeholder="Enter a heading for the description section"
-                  className="bg-background/50 border-border/50 focus:border-primary/50" 
-                />
-              ) : getValue("content_heading") ? (
-                <p className="text-foreground font-serif text-lg">
-                  {String(getValue("content_heading"))}
-                </p>
-              ) : (
-                <span className="text-sm text-muted-foreground">No section heading set</span>
-              )}
-            </div>
-
-            {/* Fields Grid with elegant styling */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredFields.map((field) => {
-                const value = getValue(field.key);
-                return (
-                  <div 
-                    key={field.key} 
-                    className={`${field.type === "textarea" ? "md:col-span-2" : ""} p-4 rounded-xl bg-muted/30 border border-border/50 transition-all duration-300 hover:border-primary/20 hover:bg-muted/50`}
-                  >
-                    <Label className="text-[10px] font-bold tracking-[0.2em] text-muted-foreground uppercase block mb-3">
-                      {field.label}
-                    </Label>
-                    {isEditing ? (
-                      field.type === "textarea" ? (
-                        <Textarea 
-                          value={String(value || "")} 
-                          onChange={(e) => setEditedValues(prev => ({ ...prev, [field.key]: e.target.value }))} 
-                          className="bg-background/50 border-border/50 focus:border-primary/50 resize-none" 
-                          rows={4} 
-                        />
-                      ) : field.type === "number" ? (
-                        <Input 
-                          type="number" 
-                          value={String(value || "")} 
-                          onChange={(e) => setEditedValues(prev => ({ ...prev, [field.key]: Number(e.target.value) }))} 
-                          className="bg-background/50 border-border/50 focus:border-primary/50" 
-                        />
-                      ) : field.type === "url" ? (
-                        <Input 
-                          type="url" 
-                          value={String(value || "")} 
-                          onChange={(e) => setEditedValues(prev => ({ ...prev, [field.key]: e.target.value }))} 
-                          placeholder="https://"
-                          className="bg-background/50 border-border/50 focus:border-primary/50" 
-                        />
-                      ) : (
-                        <Input 
-                          value={String(value || "")} 
-                          onChange={(e) => setEditedValues(prev => ({ ...prev, [field.key]: e.target.value }))} 
-                          className="bg-background/50 border-border/50 focus:border-primary/50" 
-                        />
-                      )
-                    ) : (
-                      field.type === "url" && value ? (
-                        <a 
-                          href={String(value)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary hover:underline flex items-center gap-1"
-                        >
-                          {String(value)}
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      ) : (
-                        <p className="text-foreground leading-relaxed whitespace-pre-wrap">
-                          {value ? String(value) : <span className="text-muted-foreground/50 italic text-sm">Not set</span>}
-                        </p>
-                      )
+            ) : contentSections.length > 0 ? (
+              <div className="space-y-6">
+                <h4 className="text-xs font-bold tracking-[0.2em] text-muted-foreground uppercase">
+                  Content Sections
+                </h4>
+                {contentSections.map((section, index) => (
+                  <div key={index} className="p-4 rounded-xl bg-muted/30 border border-border/50">
+                    {section.heading && (
+                      <h5 className="font-serif text-lg font-medium mb-2">{section.heading}</h5>
                     )}
+                    <p className="text-muted-foreground whitespace-pre-wrap">{section.content}</p>
                   </div>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            ) : null}
+
+            {/* Basic Fields Grid */}
+            {filteredFields.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {filteredFields.map((field) => {
+                  const value = getValue(field.key);
+                  return (
+                    <div 
+                      key={field.key} 
+                      className={`${field.type === "textarea" ? "md:col-span-2" : ""} p-4 rounded-xl bg-muted/30 border border-border/50 transition-all duration-300 hover:border-primary/20 hover:bg-muted/50`}
+                    >
+                      <Label className="text-[10px] font-bold tracking-[0.2em] text-muted-foreground uppercase block mb-3">
+                        {field.label}
+                      </Label>
+                      {isEditing ? (
+                        field.type === "textarea" ? (
+                          <Textarea 
+                            value={String(value || "")} 
+                            onChange={(e) => setEditedValues(prev => ({ ...prev, [field.key]: e.target.value }))} 
+                            className="bg-background/50 border-border/50 focus:border-primary/50 resize-none" 
+                            rows={4} 
+                          />
+                        ) : field.type === "number" ? (
+                          <Input 
+                            type="number" 
+                            value={String(value || "")} 
+                            onChange={(e) => setEditedValues(prev => ({ ...prev, [field.key]: Number(e.target.value) }))} 
+                            className="bg-background/50 border-border/50 focus:border-primary/50" 
+                          />
+                        ) : field.type === "url" ? (
+                          <Input 
+                            type="url" 
+                            value={String(value || "")} 
+                            onChange={(e) => setEditedValues(prev => ({ ...prev, [field.key]: e.target.value }))} 
+                            placeholder="https://"
+                            className="bg-background/50 border-border/50 focus:border-primary/50" 
+                          />
+                        ) : (
+                          <Input 
+                            value={String(value || "")} 
+                            onChange={(e) => setEditedValues(prev => ({ ...prev, [field.key]: e.target.value }))} 
+                            className="bg-background/50 border-border/50 focus:border-primary/50" 
+                          />
+                        )
+                      ) : (
+                        field.type === "url" && value ? (
+                          <a 
+                            href={String(value)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline flex items-center gap-1"
+                          >
+                            {String(value)}
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        ) : (
+                          <p className="text-foreground leading-relaxed whitespace-pre-wrap">
+                            {value ? String(value) : <span className="text-muted-foreground/50 italic text-sm">Not set</span>}
+                          </p>
+                        )
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Footer with elegant separator */}
             <div className="relative pt-6">
@@ -490,6 +441,47 @@ export function ViewDetailModal({
             </div>
           </div>
         </ScrollArea>
+
+        {/* Sticky Footer with Actions */}
+        <DialogFooter className="px-6 py-4 border-t border-border/50 bg-background shrink-0 flex flex-row items-center justify-end gap-3">
+          {isEditing ? (
+            <>
+              <Button 
+                variant="outline" 
+                onClick={() => { 
+                  setIsEditing(false); 
+                  setEditedValues({}); 
+                  setGalleryImages([]); 
+                  // Reset content sections to original
+                  if (item?.content_sections) {
+                    setContentSections(item.content_sections as ContentSection[]);
+                  }
+                }} 
+                disabled={isSaving}
+              >
+                <X className="w-4 h-4 mr-1.5" />
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleSave} 
+                disabled={isSaving}
+                className="bg-primary hover:bg-primary/90"
+              >
+                <Save className="w-4 h-4 mr-1.5" />
+                {isSaving ? "Saving..." : "Save Changes"}
+              </Button>
+            </>
+          ) : (
+            <Button 
+              variant="outline" 
+              onClick={() => setIsEditing(true)}
+              className="border-primary/30 hover:border-primary hover:bg-primary/5"
+            >
+              <Edit className="w-4 h-4 mr-1.5" />
+              Edit
+            </Button>
+          )}
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
