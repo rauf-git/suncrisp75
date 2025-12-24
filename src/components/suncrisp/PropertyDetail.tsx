@@ -119,19 +119,8 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
             <ArrowLeft size={18} /> 
             <span className="uppercase tracking-widest text-xs font-bold">Back</span>
           </button>
-          
-          {visitUrl && (
-            <a
-              href={visitUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-primary-foreground hover:text-primary bg-foreground/20 hover:bg-foreground/40 px-5 py-2.5 rounded-full transition-all backdrop-blur-md border border-primary-foreground/10"
-            >
-              <ExternalLink size={18} />
-              <span className="uppercase tracking-widest text-xs font-bold">Visit</span>
-            </a>
-          )}
         </div>
+
 
         <div className="absolute bottom-0 left-0 w-full p-8 md:p-16 text-primary-foreground z-20">
           <div className="max-w-7xl mx-auto">
@@ -174,7 +163,21 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
         </div>
       </div>
 
-      {/* 2. Content Section */}
+      {/* Visit Link Below Hero */}
+      {visitUrl && (
+        <div className="max-w-7xl mx-auto px-6 pt-8">
+          <a
+            href={visitUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-primary hover:text-primary/80 bg-primary/10 hover:bg-primary/20 px-6 py-3 rounded-full transition-all border border-primary/20"
+          >
+            <ExternalLink size={18} />
+            <span className="uppercase tracking-widest text-xs font-bold">Visit</span>
+          </a>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-6 py-20 md:py-32 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
         
         {/* Main Text */}
