@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Settings, Menu, X } from 'lucide-react';
 import { NAV_LINKS } from '@/constants';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import suncrespLogo from '@/assets/suncrisp-logo.png';
+import suncrespLogo from '@/assets/suncrisp-logo-new.jpg';
 
 interface NavbarProps {
   currentPage: string;
