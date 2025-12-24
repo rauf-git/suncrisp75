@@ -657,11 +657,6 @@ function ProjectCard({ project, onView, onEdit, onDelete, onToggleFeatured }: { 
             {project.category}
           </span>
         )}
-        {project.is_featured && (
-          <span className="absolute top-3 right-3 bg-amber-500 text-white text-xs px-2 py-1 rounded font-semibold">
-            Featured
-          </span>
-        )}
         {project.location && (
           <span className="absolute bottom-3 right-3 bg-background/90 text-foreground text-xs px-2 py-1 rounded flex items-center gap-1">
             <MapPin className="w-3 h-3" />
