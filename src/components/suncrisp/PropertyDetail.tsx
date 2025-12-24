@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, MapPin, Tag, Camera, Maximize2, Check } from 'lucide-react';
+import { ArrowLeft, MapPin, Tag, Camera, Maximize2, Check, ExternalLink } from 'lucide-react';
 import Reveal from './Reveal';
 import { Property } from '@/types';
 import { projectService } from '@/services/projectService';
@@ -14,6 +14,7 @@ interface PropertyDetailProps {
 
 const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailProps) => {
   const [resolvedItem, setResolvedItem] = useState<Property>(item);
+  const [visitUrl, setVisitUrl] = useState<string | null>(null);
 
   // Scroll to top on mount
   useEffect(() => {
@@ -40,6 +41,7 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
           gallery: data.images || [],
           content_sections: (data.content_sections as { heading: string; content: string }[] | null) || [],
         });
+        setVisitUrl(data.visit_url || null);
         return;
       }
 
@@ -58,6 +60,7 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
           gallery: data.images || [],
           content_sections: (data.content_sections as { heading: string; content: string }[] | null) || [],
         });
+        setVisitUrl(data.visit_url || null);
         return;
       }
 
@@ -76,6 +79,7 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
           gallery: data.images || [],
           content_sections: (data.content_sections as { heading: string; content: string }[] | null) || [],
         });
+        setVisitUrl(data.visit_url || null);
       }
     };
 
@@ -113,6 +117,18 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
             <ArrowLeft size={18} /> 
             <span className="uppercase tracking-widest text-xs font-bold">Back</span>
           </button>
+          
+          {visitUrl && (
+            <a
+              href={visitUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-primary-foreground hover:text-primary bg-foreground/20 hover:bg-foreground/40 px-5 py-2.5 rounded-full transition-all backdrop-blur-md border border-primary-foreground/10"
+            >
+              <ExternalLink size={18} />
+              <span className="uppercase tracking-widest text-xs font-bold">Visit</span>
+            </a>
+          )}
         </div>
 
         <div className="absolute bottom-0 left-0 w-full p-8 md:p-16 text-primary-foreground z-20">

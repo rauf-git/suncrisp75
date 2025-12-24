@@ -29,25 +29,27 @@ const ContentSections = ({ sections }: ContentSectionsProps) => {
           {sections.slice(0, 2).map((section, index) => (
             <Reveal key={index} delay={index * 100}>
               <div className="max-w-4xl mx-auto mb-16">
-                {section.image && (
-                  <div className="mb-6 rounded-xl overflow-hidden shadow-elevated">
-                    <img
-                      src={section.image}
-                      alt={section.heading || `Section ${index + 1}`}
-                      className="w-full h-auto object-cover aspect-video"
-                      loading="lazy"
-                    />
-                  </div>
-                )}
-                <div className="prose prose-lg max-w-none">
-                  {section.heading && (
-                    <h2 className="font-serif text-2xl md:text-3xl font-semibold mb-4 text-foreground">
-                      {section.heading}
-                    </h2>
+                <div className={`flex flex-col ${section.image ? 'md:flex-row md:gap-8 md:items-start' : ''}`}>
+                  {section.image && (
+                    <div className="mb-6 md:mb-0 md:w-1/2 md:flex-shrink-0 rounded-xl overflow-hidden shadow-elevated">
+                      <img
+                        src={section.image}
+                        alt={section.heading || `Section ${index + 1}`}
+                        className="w-full h-auto object-cover aspect-video"
+                        loading="lazy"
+                      />
+                    </div>
                   )}
-                  <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                    {section.content}
-                  </p>
+                  <div className={`prose prose-lg max-w-none ${section.image ? 'md:w-1/2' : ''}`}>
+                    {section.heading && (
+                      <h2 className="font-serif text-2xl md:text-3xl font-semibold mb-4 text-foreground">
+                        {section.heading}
+                      </h2>
+                    )}
+                    <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                      {section.content}
+                    </p>
+                  </div>
                 </div>
                 <div className="mt-12 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
               </div>
@@ -111,25 +113,27 @@ const ContentSections = ({ sections }: ContentSectionsProps) => {
                     : ''
                 }`}
               >
-                {section.image && (
-                  <div className={`mb-6 rounded-xl overflow-hidden shadow-elevated ${index % 2 === 1 ? '-mx-2 md:-mx-4' : ''}`}>
-                    <img
-                      src={section.image}
-                      alt={section.heading || `Section ${index + 1}`}
-                      className="w-full h-auto object-cover aspect-video"
-                      loading="lazy"
-                    />
-                  </div>
-                )}
-                <div className="prose prose-lg max-w-none">
-                  {section.heading && (
-                    <h2 className="font-serif text-2xl md:text-3xl font-semibold mb-4 text-foreground">
-                      {section.heading}
-                    </h2>
+                <div className={`flex flex-col ${section.image ? 'md:flex-row md:gap-8 md:items-start' : ''} ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}>
+                  {section.image && (
+                    <div className={`mb-6 md:mb-0 md:w-1/2 md:flex-shrink-0 rounded-xl overflow-hidden shadow-elevated ${index % 2 === 1 ? '-mx-2 md:mx-0' : ''}`}>
+                      <img
+                        src={section.image}
+                        alt={section.heading || `Section ${index + 1}`}
+                        className="w-full h-auto object-cover aspect-video"
+                        loading="lazy"
+                      />
+                    </div>
                   )}
-                  <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                    {section.content}
-                  </p>
+                  <div className={`prose prose-lg max-w-none ${section.image ? 'md:w-1/2' : ''}`}>
+                    {section.heading && (
+                      <h2 className="font-serif text-2xl md:text-3xl font-semibold mb-4 text-foreground">
+                        {section.heading}
+                      </h2>
+                    )}
+                    <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                      {section.content}
+                    </p>
+                  </div>
                 </div>
               </div>
               {index < sections.length - 1 && index % 2 === 0 && (
