@@ -44,7 +44,6 @@ const Hero = ({ onNavigate }: HeroProps) => {
   }, []);
 
   const heroImages = heroData.hero_images || [];
-  const hasImages = heroImages.length > 0;
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
@@ -60,7 +59,7 @@ const Hero = ({ onNavigate }: HeroProps) => {
       <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-background/30" />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12">
-        <div className={`grid ${hasImages ? 'lg:grid-cols-2 gap-8 lg:gap-12' : 'grid-cols-1'} items-center`}>
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Column - Text Content */}
           <div className="max-w-xl">
             <Reveal delay={200}>
@@ -98,13 +97,11 @@ const Hero = ({ onNavigate }: HeroProps) => {
           </div>
 
           {/* Right Column - Image Carousel */}
-          {hasImages && (
-            <Reveal delay={600}>
-              <div className="relative mt-8 lg:mt-0">
-                <HeroImageCarousel images={heroImages} interval={5000} />
-              </div>
-            </Reveal>
-          )}
+          <Reveal delay={600}>
+            <div className="relative mt-8 lg:mt-0">
+              <HeroImageCarousel key={heroImages.length} images={heroImages} interval={5000} />
+            </div>
+          </Reveal>
         </div>
       </div>
       
