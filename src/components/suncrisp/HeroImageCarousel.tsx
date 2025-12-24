@@ -20,9 +20,8 @@ const HeroImageCarousel = ({ images, interval = 4000 }: HeroImageCarouselProps) 
 
   if (!images || images.length === 0) {
     return (
-      <div className="relative w-full h-full">
-        <div className="absolute -inset-2 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-2xl blur-sm" />
-        <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-2xl shadow-black/20 bg-muted/50 backdrop-blur-sm border border-primary/20 flex items-center justify-center">
+      <div className="relative w-full">
+        <div className="relative h-[50vh] md:h-[60vh] lg:h-[70vh] overflow-hidden bg-muted/30 flex items-center justify-center">
           <span className="text-muted-foreground text-sm">No images</span>
         </div>
       </div>
@@ -30,11 +29,8 @@ const HeroImageCarousel = ({ images, interval = 4000 }: HeroImageCarouselProps) 
   }
 
   return (
-    <div className="relative w-full h-full">
-      {/* Decorative frame */}
-      <div className="absolute -inset-2 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-2xl blur-sm" />
-      
-      <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-2xl shadow-black/20 bg-muted/50 backdrop-blur-sm border border-primary/20">
+    <div className="relative w-full">
+      <div className="relative h-[50vh] md:h-[60vh] lg:h-[70vh] overflow-hidden shadow-xl">
         {images.map((image, index) => (
           <div
             key={index}
@@ -68,9 +64,6 @@ const HeroImageCarousel = ({ images, interval = 4000 }: HeroImageCarouselProps) 
           </div>
         )}
       </div>
-      
-      {/* Subtle glow effect */}
-      <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-3/4 h-4 bg-primary/20 blur-xl rounded-full" />
     </div>
   );
 };
