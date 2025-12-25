@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import type React from 'react';
 import { TESTIMONIALS, PRESS_LOGOS } from '@/constants';
 import { Quote } from 'lucide-react';
 import { pageBlockService } from '@/services/pageBlockService';
@@ -43,6 +44,20 @@ const Testimonials = () => {
   const handleTouchStart = () => setIsPaused(true);
   const handleTouchEnd = () => setIsPaused(false);
 
+  const handlePointerDown: React.PointerEventHandler<HTMLDivElement> = (e) => {
+    // Ensure "hold" works reliably on touch devices
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      // ignore
+    }
+    setIsPaused(true);
+  };
+
+  const handlePointerUpOrCancel: React.PointerEventHandler<HTMLDivElement> = () => {
+    setIsPaused(false);
+  };
+
   return (
     <section className="py-12 md:py-16 bg-background border-y border-border overflow-hidden">
       
@@ -54,6 +69,11 @@ const Testimonials = () => {
       {/* Testimonials Marquee */}
       <div 
         className="mb-12"
+        style={{ touchAction: 'pan-y' }}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUpOrCancel}
+        onPointerCancel={handlePointerUpOrCancel}
+        onPointerLeave={handlePointerUpOrCancel}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onMouseEnter={() => setIsPaused(true)}
@@ -86,6 +106,11 @@ const Testimonials = () => {
 
       {/* Press Marquee (Reverse) */}
       <div
+        style={{ touchAction: 'pan-y' }}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUpOrCancel}
+        onPointerCancel={handlePointerUpOrCancel}
+        onPointerLeave={handlePointerUpOrCancel}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onMouseEnter={() => setIsPaused(true)}
