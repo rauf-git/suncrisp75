@@ -45,32 +45,32 @@ const BrandStorySection = () => {
   }, []);
 
   return (
-    <section className="py-12 md:py-16 bg-muted/30">
-      <div className="w-full max-w-7xl mx-auto px-4 md:px-8">
-        <div className="flex flex-col md:grid md:grid-cols-[1fr,auto] gap-6 md:gap-8 lg:gap-12 items-center">
+    <section className="py-8 sm:py-12 md:py-16 bg-muted/30">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+        <div className="flex flex-col lg:grid lg:grid-cols-[1fr,auto] gap-6 sm:gap-8 lg:gap-12 items-center">
           {/* Left Side - Heading, Paragraph and Know More Button */}
           <Reveal delay={200}>
-            <div className="space-y-6 order-1">
-              <h2 className="font-serif text-3xl md:text-4xl font-bold">
+            <div className="space-y-4 sm:space-y-6 order-2 lg:order-1 text-center lg:text-left">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold">
                 {data.heading}
               </h2>
-              <p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-xl">
+              <p className="text-muted-foreground text-sm sm:text-base md:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
                 {data.paragraph}
               </p>
               <Button
                 onClick={() => navigate('/our-brand-story')}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 sm:px-8 py-2.5 sm:py-3 min-h-[44px]"
               >
                 Know More
               </Button>
             </div>
           </Reveal>
 
-          {/* Right Side - Image (smaller, right side on md+, below on mobile) */}
+          {/* Right Side - Image */}
           <Reveal delay={400}>
-            <div className="relative order-2 w-full md:w-[340px] lg:w-[400px] xl:w-[480px]">
-              <div className="absolute -inset-3 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-2xl blur-sm" />
-              <div className="relative h-[280px] md:h-[320px] lg:h-[380px] rounded-xl overflow-hidden shadow-2xl border border-primary/20">
+            <div className="relative order-1 lg:order-2 w-full max-w-[280px] sm:max-w-[340px] md:max-w-[380px] lg:max-w-[400px] xl:max-w-[480px] mx-auto lg:mx-0">
+              <div className="absolute -inset-2 sm:-inset-3 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-xl sm:rounded-2xl blur-sm" />
+              <div className="relative h-[220px] sm:h-[280px] md:h-[320px] lg:h-[380px] rounded-lg sm:rounded-xl overflow-hidden shadow-2xl border border-primary/20">
                 <img
                   src={data.image}
                   alt="Our Brand Story"
@@ -78,7 +78,7 @@ const BrandStorySection = () => {
                   loading="lazy"
                 />
               </div>
-              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-3/4 h-4 bg-primary/20 blur-xl rounded-full" />
+              <div className="absolute -bottom-3 sm:-bottom-4 left-1/2 -translate-x-1/2 w-3/4 h-4 bg-primary/20 blur-xl rounded-full" />
             </div>
           </Reveal>
         </div>

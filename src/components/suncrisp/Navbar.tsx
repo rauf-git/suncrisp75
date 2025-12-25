@@ -56,27 +56,27 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
           WebkitBackdropFilter: 'blur(16px)',
         }}
       >
-        <div className="max-w-7xl mx-auto px-3 md:px-6">
+        <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <button
               onClick={() => handleNavClick('home')}
-              className="hover:opacity-80 transition-all duration-300 hover:scale-105 active:scale-95 flex-shrink-0"
+              className="hover:opacity-80 transition-all duration-300 hover:scale-105 active:scale-95 flex-shrink-0 min-h-[44px] flex items-center"
             >
               <img 
                 src={suncrespLogo} 
                 alt="SunCrisp Hospitality" 
-                className={`w-auto transition-all duration-300 ${isScrolled ? 'h-12 md:h-14' : 'h-14 md:h-16'}`}
+                className={`w-auto transition-all duration-300 ${isScrolled ? 'h-10 sm:h-12 md:h-14' : 'h-12 sm:h-14 md:h-16'}`}
               />
             </button>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-2 xl:gap-3">
               {NAV_LINKS.map((link) => (
                 <button
                   key={link.id}
                   onClick={() => handleNavClick(link.id)}
-                  className={`relative whitespace-nowrap px-3 py-2 transition-all duration-300 text-xs font-bold uppercase tracking-wider group ${
+                  className={`relative whitespace-nowrap px-2 xl:px-3 py-2 transition-all duration-300 text-xs font-bold uppercase tracking-wider group min-h-[44px] flex items-center ${
                     currentPage === link.id 
                       ? 'text-primary' 
                       : 'text-foreground/80 hover:text-primary'
@@ -93,26 +93,26 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
                 <ThemeToggle />
                 <button
                   onClick={() => navigate('/admin')}
-                  className="p-1.5 rounded-full hover:bg-primary/15 transition-all duration-300 hover:scale-110 active:scale-95"
+                  className="p-2 rounded-full hover:bg-primary/15 transition-all duration-300 hover:scale-110 active:scale-95 min-h-[44px] min-w-[44px] flex items-center justify-center"
                   title="Admin Panel"
                 >
-                  <Settings className="w-3.5 h-3.5 text-foreground/90 hover:text-primary transition-colors" />
+                  <Settings className="w-4 h-4 text-foreground/90 hover:text-primary transition-colors" />
                 </button>
               </div>
             </div>
 
             {/* Mobile/Tablet Menu Button */}
-            <div className="flex lg:hidden items-center gap-2">
+            <div className="flex lg:hidden items-center gap-1 sm:gap-2">
               <ThemeToggle />
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-all duration-300"
+                className="p-2 sm:p-2.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-all duration-300 min-h-[44px] min-w-[44px] flex items-center justify-center"
                 aria-label="Toggle menu"
               >
                 {isMobileMenuOpen ? (
-                  <X className="w-5 h-5 text-foreground" />
+                  <X className="w-5 h-5 sm:w-5 sm:h-5 text-foreground" />
                 ) : (
-                  <Menu className="w-5 h-5 text-foreground" />
+                  <Menu className="w-5 h-5 sm:w-5 sm:h-5 text-foreground" />
                 )}
               </button>
             </div>
@@ -131,7 +131,7 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
           
           {/* Menu Panel */}
           <div 
-            className="absolute top-0 right-0 w-72 h-full bg-background/95 backdrop-blur-xl border-l border-border shadow-2xl animate-slide-in-right"
+            className="absolute top-0 right-0 w-full sm:w-80 h-full bg-background/95 backdrop-blur-xl border-l border-border shadow-2xl animate-slide-in-right overflow-y-auto"
             style={{
               WebkitBackdropFilter: 'blur(20px)',
             }}
@@ -141,7 +141,7 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
               <span className="font-serif text-lg text-foreground">Menu</span>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-2 rounded-lg hover:bg-muted transition-colors"
+                className="p-2 rounded-lg hover:bg-muted transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               >
                 <X className="w-5 h-5 text-foreground" />
               </button>
@@ -153,7 +153,7 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
                 <button
                   key={link.id}
                   onClick={() => handleNavClick(link.id)}
-                  className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 text-sm font-bold uppercase tracking-wider ${
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 text-sm font-bold uppercase tracking-wider min-h-[48px] flex items-center ${
                     currentPage === link.id 
                       ? 'bg-primary text-primary-foreground shadow-md' 
                       : 'text-foreground hover:bg-primary/10 hover:text-primary'
@@ -172,7 +172,7 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
                     navigate('/admin');
                     setIsMobileMenuOpen(false);
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-foreground hover:bg-primary/10 hover:text-primary transition-all duration-300"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-foreground hover:bg-primary/10 hover:text-primary transition-all duration-300 min-h-[48px]"
                 >
                   <Settings className="w-4 h-4" />
                   <span className="text-sm font-bold uppercase tracking-wider">Admin Panel</span>
