@@ -248,36 +248,36 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="w-[95vw] max-w-[900px] max-h-[90vh] flex flex-col p-0 gap-0">
-        <DialogHeader className="px-6 py-4 border-b border-border shrink-0">
-          <DialogTitle className="font-serif text-xl">
+      <DialogContent className="max-w-[95vw] sm:max-w-[90vw] md:max-w-2xl lg:max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0">
+        <DialogHeader className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border shrink-0">
+          <DialogTitle className="font-serif text-lg sm:text-xl">
             {isEditMode ? "Edit Project" : "Add New Project"}
           </DialogTitle>
-          <DialogDescription className="text-sm text-muted-foreground">
+          <DialogDescription className="text-xs sm:text-sm text-muted-foreground">
             {isEditMode ? "Update project details." : "Create a new project."}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
-          <ScrollArea className="flex-1 min-h-0">
-            <div className="px-6 py-6 space-y-5">
+          <ScrollArea className="flex-1 min-h-0 h-[50vh] sm:h-[60vh] md:h-[65vh]">
+            <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-5 md:space-y-6">
               {/* Title */}
               <div className="space-y-2">
-                <Label htmlFor="title">Title *</Label>
+                <Label htmlFor="title" className="text-xs sm:text-sm font-medium">Title *</Label>
                 <Input
                   id="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Enter project title"
-                  className={errors.title ? "border-destructive" : ""}
+                  className={`text-sm sm:text-base h-10 sm:h-11 ${errors.title ? "border-destructive" : ""}`}
                   disabled={isLoading}
                 />
-                {errors.title && <p className="text-sm text-destructive">{errors.title}</p>}
+                {errors.title && <p className="text-xs sm:text-sm text-destructive">{errors.title}</p>}
               </div>
 
               {/* Description */}
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description" className="text-xs sm:text-sm font-medium">Description</Label>
                 <Textarea
                   id="description"
                   value={description}
@@ -285,36 +285,39 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
                   placeholder="Enter project description"
                   rows={3}
                   disabled={isLoading}
+                  className="text-sm sm:text-base min-h-[80px] sm:min-h-[100px]"
                 />
               </div>
 
               {/* Category */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="category">Category</Label>
+                  <Label htmlFor="category" className="text-xs sm:text-sm font-medium">Category</Label>
                   <Input
                     id="category"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     placeholder="e.g., commercial, residential"
                     disabled={isLoading}
+                    className="text-sm sm:text-base h-10 sm:h-11"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
+                  <Label htmlFor="location" className="text-xs sm:text-sm font-medium">Location</Label>
                   <Input
                     id="location"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     placeholder="e.g., Dubai, Abu Dhabi"
                     disabled={isLoading}
+                    className="text-sm sm:text-base h-10 sm:h-11"
                   />
                 </div>
               </div>
 
               {/* Display Order */}
               <div className="space-y-2">
-                <Label htmlFor="displayOrder">Display Order</Label>
+                <Label htmlFor="displayOrder" className="text-xs sm:text-sm font-medium">Display Order</Label>
                 <Input
                   id="displayOrder"
                   type="number"
@@ -322,25 +325,26 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
                   onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
                   placeholder="0"
                   disabled={isLoading}
+                  className="w-24 sm:w-32 text-sm sm:text-base h-10 sm:h-11"
                 />
-                <p className="text-xs text-muted-foreground">Lower numbers appear first</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">Lower numbers appear first</p>
               </div>
 
               {/* Main Image Upload */}
               <div className="space-y-2">
-                <Label>Main Image {!isEditMode && "*"}</Label>
+                <Label className="text-xs sm:text-sm font-medium">Main Image {!isEditMode && "*"}</Label>
 
                 {imagePreview ? (
                   <div className="relative group">
                     <img
                       src={imagePreview}
                       alt="Project image preview"
-                      className="w-full h-48 object-cover rounded-lg border border-border"
+                      className="w-full h-36 sm:h-48 object-cover rounded-lg border border-border"
                     />
                     <button
                       type="button"
                       onClick={handleRemoveImage}
-                      className="absolute top-2 right-2 p-1.5 bg-background/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground"
+                      className="absolute top-2 right-2 p-1.5 bg-background/90 rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground min-w-[36px] min-h-[36px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
                       disabled={isLoading}
                     >
                       <X className="w-4 h-4" />
@@ -349,13 +353,13 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
                 ) : (
                   <div
                     onClick={() => fileInputRef.current?.click()}
-                    className={`w-full h-48 border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors hover:border-primary hover:bg-primary/5 ${
+                    className={`w-full h-36 sm:h-48 border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors hover:border-primary hover:bg-primary/5 ${
                       errors.image ? "border-destructive" : "border-border"
                     }`}
                   >
-                    <ImageIcon className="w-10 h-10 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">Click to upload image</p>
-                    <p className="text-xs text-muted-foreground">JPG, PNG, WEBP (max 5MB)</p>
+                    <ImageIcon className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground" />
+                    <p className="text-xs sm:text-sm text-muted-foreground">Click to upload image</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground">JPG, PNG, WEBP (max 5MB)</p>
                   </div>
                 )}
 
@@ -375,21 +379,22 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
                     size="sm"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isLoading}
+                    className="h-9 sm:h-10 text-sm"
                   >
                     <Upload className="w-4 h-4 mr-2" />
                     Replace Image
                   </Button>
                 )}
 
-                {errors.image && <p className="text-sm text-destructive">{errors.image}</p>}
+                {errors.image && <p className="text-xs sm:text-sm text-destructive">{errors.image}</p>}
               </div>
 
               {/* Gallery Images */}
               <div className="space-y-2">
-                <Label>Gallery Images</Label>
-                <p className="text-xs text-muted-foreground mb-2">Add additional images for the project gallery</p>
+                <Label className="text-xs sm:text-sm font-medium">Gallery Images</Label>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mb-2">Add additional images for the project gallery</p>
                 
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
                   {/* Existing gallery images */}
                   {galleryImages.map((img, index) => (
                     <div key={`existing-${index}`} className="relative group aspect-square">
@@ -402,7 +407,7 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
                       <button
                         type="button"
                         onClick={() => handleRemoveExistingGalleryImage(index)}
-                        className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-1 right-1 p-1.5 sm:p-1 bg-destructive text-destructive-foreground rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity min-w-[28px] min-h-[28px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
                         disabled={isLoading}
                       >
                         <Trash2 className="w-3 h-3" />
@@ -421,7 +426,7 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
                       <button
                         type="button"
                         onClick={() => handleRemoveNewGalleryImage(index)}
-                        className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-1 right-1 p-1.5 sm:p-1 bg-destructive text-destructive-foreground rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity min-w-[28px] min-h-[28px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
                         disabled={isLoading}
                       >
                         <Trash2 className="w-3 h-3" />
@@ -436,7 +441,7 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
                     className="aspect-square border-2 border-dashed border-border rounded-lg flex items-center justify-center hover:border-primary hover:bg-primary/5 transition-colors"
                     disabled={isLoading}
                   >
-                    <Plus className="w-6 h-6 text-muted-foreground" />
+                    <Plus className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
                   </button>
                 </div>
 
@@ -453,13 +458,13 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
             </div>
           </ScrollArea>
 
-          <DialogFooter className="px-6 py-4 border-t border-border shrink-0 bg-background">
-            <Button type="button" variant="outline" onClick={handleClose} disabled={isLoading}>
+          <DialogFooter className="flex-col-reverse sm:flex-row gap-3 sm:gap-4 px-4 py-4 sm:px-6 border-t border-border shrink-0 bg-background">
+            <Button type="button" variant="outline" onClick={handleClose} disabled={isLoading} className="w-full sm:w-auto h-9 sm:h-10 text-sm sm:text-base">
               Cancel
             </Button>
-            <Button type="submit" className="bg-primary hover:bg-primary/90" disabled={isLoading}>
+            <Button type="submit" className="w-full sm:w-auto h-9 sm:h-10 text-sm sm:text-base bg-primary hover:bg-primary/90" disabled={isLoading}>
               {isLoading ? (
-                <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
               ) : isEditMode ? (
                 "Update Project"
               ) : (

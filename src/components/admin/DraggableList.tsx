@@ -34,7 +34,7 @@ export function DraggableList<T>({
           <div
             {...provided.droppableProps}
             ref={provided.innerRef}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6"
           >
             {items.map((item, index) => (
               <Draggable
@@ -51,7 +51,7 @@ export function DraggableList<T>({
                     {/* Drag handle */}
                     <div
                       {...provided.dragHandleProps}
-                      className="absolute top-3 right-3 z-20 p-1.5 bg-background/95 backdrop-blur-sm rounded-lg cursor-grab active:cursor-grabbing shadow-md hover:bg-primary/10 transition-colors group border border-border/50"
+                      className="absolute top-2 right-2 sm:top-3 sm:right-3 z-20 p-2 sm:p-1.5 bg-background/95 backdrop-blur-sm rounded-lg cursor-grab active:cursor-grabbing shadow-md hover:bg-primary/10 transition-colors group border border-border/50 min-w-[40px] min-h-[40px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
                       title="Drag to reorder"
                     >
                       <GripVertical className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
