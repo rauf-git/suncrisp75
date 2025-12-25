@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { pageBlockService, PageBlock } from "@/services/pageBlockService";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/safeClient";
 import { Loader2, Plus, Trash2, Image, Upload, X } from "lucide-react";
 
 interface HomePageEditorProps {

@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { pageContentService, ContentSection } from "@/services/pageContentService";
 import { ContentSectionsEditor } from "./ContentSectionsEditor";
 import { Loader2, Upload } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/safeClient";
 import { validateFile } from "@/lib/validation";
 
 interface PageContentEditorProps {

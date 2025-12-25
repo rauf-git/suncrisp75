@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/safeClient";
 import { validateFile } from "@/lib/validation";
 import { z } from "zod";
 

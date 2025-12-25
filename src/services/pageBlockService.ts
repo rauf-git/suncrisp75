@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/safeClient";
 import { Json, TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
 import {
   createPageBlockSchema,
