@@ -13,6 +13,7 @@ import PropertyDetail from '@/components/suncrisp/PropertyDetail';
 import FloatingCTA from '@/components/suncrisp/FloatingCTA';
 import FeaturedProjects from '@/components/suncrisp/FeaturedProjects';
 import BrandStorySection from '@/components/suncrisp/BrandStorySection';
+import { SectionSkeleton } from '@/components/suncrisp/SectionSkeleton';
 import { CONSTRUCTION_SERVICES } from '@/constants';
 import { Property, Service, Experience, AboutData, ContactData } from '@/types';
 import { projectService } from '@/services/projectService';
@@ -58,27 +59,29 @@ const Index = () => {
   const pageParam = searchParams.get('page');
   const currentPage: AllowedPage = isValidPage(pageParam) ? pageParam : 'home';
   
-  // Data state - separate for each section
+  // Data state with loading flags - separate for each section
   const [portfolioData, setPortfolioData] = useState<Property[]>([]);
+  const [portfolioLoading, setPortfolioLoading] = useState(true);
+  
   const [rentalsData, setRentalsData] = useState<Property[]>([]);
+  const [rentalsLoading, setRentalsLoading] = useState(true);
+  
   const [constructionData, setConstructionData] = useState<Property[]>([]);
+  const [constructionLoading, setConstructionLoading] = useState(true);
+  
   const [hospitalityData, setHospitalityData] = useState<Property[]>([]);
+  
   const [aboutData] = useState<AboutData>(INITIAL_ABOUT);
   const [contactData] = useState<ContactData>(INITIAL_CONTACT);
 
-
-  // Fetch data from database - SEPARATE for each section
+  // Fetch all data in PARALLEL
   useEffect(() => {
-    const fetchData = async () => {
-      if (import.meta.env.DEV) {
-        console.log("[Index] Fetching all data from database...");
-      }
-      
+    // Fetch portfolio projects
+    const fetchPortfolio = async () => {
       try {
-        // Fetch portfolio projects (from projects table)
-        const { data: portfolioProjects, error: portfolioError } = await projectService.getAll();
-        if (portfolioError) {
-          console.error("[Index] Failed to fetch portfolio:", portfolioError);
+        const { data: portfolioProjects, error } = await projectService.getAll();
+        if (error) {
+          console.error("[Index] Failed to fetch portfolio:", error);
         }
         const mappedPortfolio: Property[] = (portfolioProjects || []).map(p => ({
           id: p.id,
@@ -95,8 +98,8 @@ const Index = () => {
           content_sections: safeContentSections(p.content_sections),
         }));
         setPortfolioData(mappedPortfolio);
-
-        // Filter hospitality projects from portfolio (category = Hospitality)
+        
+        // Also set hospitality data from portfolio
         const hospitalityProperties: Property[] = (portfolioProjects || [])
           .filter(p => (p.category || '').toLowerCase().includes('hospitality'))
           .map(h => ({
@@ -113,11 +116,17 @@ const Index = () => {
             content_sections: safeContentSections(h.content_sections),
           }));
         setHospitalityData(hospitalityProperties);
+      } finally {
+        setPortfolioLoading(false);
+      }
+    };
 
-        // Fetch construction projects (from construction_projects table)
-        const { data: constructionProjects, error: constructionError } = await constructionService.getAll();
-        if (constructionError) {
-          console.error("[Index] Failed to fetch construction:", constructionError);
+    // Fetch construction projects
+    const fetchConstruction = async () => {
+      try {
+        const { data: constructionProjects, error } = await constructionService.getAll();
+        if (error) {
+          console.error("[Index] Failed to fetch construction:", error);
         }
         if (constructionProjects && constructionProjects.length > 0) {
           const mappedConstruction: Property[] = constructionProjects.map(c => ({
@@ -135,11 +144,17 @@ const Index = () => {
           }));
           setConstructionData(mappedConstruction);
         }
+      } finally {
+        setConstructionLoading(false);
+      }
+    };
 
-        // Fetch rentals (from rentals table)
-        const { data: rentalItems, error: rentalError } = await rentalService.getAll();
-        if (rentalError) {
-          console.error("[Index] Failed to fetch rentals:", rentalError);
+    // Fetch rentals
+    const fetchRentals = async () => {
+      try {
+        const { data: rentalItems, error } = await rentalService.getAll();
+        if (error) {
+          console.error("[Index] Failed to fetch rentals:", error);
         }
         if (rentalItems && rentalItems.length > 0) {
           const mappedRentals: Property[] = rentalItems.map(r => ({
@@ -162,16 +177,15 @@ const Index = () => {
           }));
           setRentalsData(mappedRentals);
         }
-
-        if (import.meta.env.DEV) {
-          console.log("[Index] Fetch complete.");
-        }
-      } catch (error) {
-        console.error("[Index] Unexpected error fetching data:", error);
+      } finally {
+        setRentalsLoading(false);
       }
     };
 
-    fetchData();
+    // Fire all fetches in parallel
+    fetchPortfolio();
+    fetchConstruction();
+    fetchRentals();
   }, []);
 
   // Scroll to top when page changes
@@ -243,17 +257,21 @@ const Index = () => {
         return (
           <>
             <Hero onNavigate={handleNavigation} />
-            {/* Featured Portfolio Projects - shown first if available */}
-            {featuredProjects.length > 0 && (
+            {/* Featured Portfolio Projects - show skeleton while loading */}
+            {portfolioLoading ? (
+              <SectionSkeleton title="Our Portfolio" cardCount={3} variant="carousel" />
+            ) : featuredProjects.length > 0 ? (
               <FeaturedProjects 
                 items={featuredProjects}
                 onItemClick={(item) => handleItemClick('portfolio', item)}
                 onViewAll={() => handleNavigation('portfolio')}
                 title="Our Portfolio"
               />
-            )}
-            {/* Featured Construction Projects - grid layout */}
-            {constructionData.length > 0 && (
+            ) : null}
+            {/* Featured Construction Projects - show skeleton while loading */}
+            {constructionLoading ? (
+              <SectionSkeleton title="Commercial Property" cardCount={2} variant="grid" />
+            ) : constructionData.length > 0 ? (
               <FeaturedProjects 
                 items={constructionData.slice(0, 2)}
                 onItemClick={(item) => handleItemClick('construction', item)}
@@ -261,7 +279,7 @@ const Index = () => {
                 title="Commercial Property"
                 variant="grid"
               />
-            )}
+            ) : null}
             {/* Brand Story Section */}
             <BrandStorySection />
             <Testimonials />
@@ -270,18 +288,24 @@ const Index = () => {
       case 'portfolio':
         return (
           <div className="pt-20">
-            <Properties
-              title="Our Portfolio"
-              subtitle="Showcasing Excellence in Development & Design"
-              items={portfolioData}
-              onItemClick={(item) => handleItemClick('portfolio', item)}
-            />
+            {portfolioLoading ? (
+              <SectionSkeleton title="Our Portfolio" cardCount={6} variant="grid" />
+            ) : (
+              <Properties
+                title="Our Portfolio"
+                subtitle="Showcasing Excellence in Development & Design"
+                items={portfolioData}
+                onItemClick={(item) => handleItemClick('portfolio', item)}
+              />
+            )}
           </div>
         );
       case 'construction':
         return (
           <div className="pt-20">
-            {constructionData.length > 0 ? (
+            {constructionLoading ? (
+              <SectionSkeleton title="Construction Projects" cardCount={4} variant="grid" />
+            ) : constructionData.length > 0 ? (
               <Properties
                 title="Construction Projects"
                 subtitle="Building Excellence with Precision"
@@ -300,20 +324,28 @@ const Index = () => {
       case 'rentals':
         return (
           <div className="pt-20">
-            <RentalsByLocation
-              onItemClick={(item) => handleItemClick('rentals', item)}
-            />
+            {rentalsLoading ? (
+              <SectionSkeleton title="Rentals" cardCount={4} variant="grid" />
+            ) : (
+              <RentalsByLocation
+                onItemClick={(item) => handleItemClick('rentals', item)}
+              />
+            )}
           </div>
         );
       case 'hospitality':
         return (
           <div className="pt-20">
-            <Properties
-              title="Hospitality"
-              subtitle="Exceptional Hospitality Experiences"
-              items={hospitalityData}
-              onItemClick={(item) => handleItemClick('hospitality', item)}
-            />
+            {portfolioLoading ? (
+              <SectionSkeleton title="Hospitality" cardCount={4} variant="grid" />
+            ) : (
+              <Properties
+                title="Hospitality"
+                subtitle="Exceptional Hospitality Experiences"
+                items={hospitalityData}
+                onItemClick={(item) => handleItemClick('hospitality', item)}
+              />
+            )}
           </div>
         );
       case 'about':
