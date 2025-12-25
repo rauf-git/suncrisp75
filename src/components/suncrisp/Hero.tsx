@@ -90,7 +90,7 @@ const Hero = ({
             </Reveal>
 
             <Reveal delay={400}>
-              <p className="font-sans text-muted-foreground text-sm sm:text-base tracking-wide max-w-md mx-auto lg:mx-0 mb-6 leading-relaxed">
+              <p className="font-sans text-muted-foreground text-sm sm:text-base tracking-wide max-w-md mx-auto lg:mx-0 mb-6 leading-relaxed text-right sm:text-center lg:text-left">
                 {heroData.description || 'From groundbreaking construction to exquisite rentals and world-class experiences. We build the future and curate the present.'}
               </p>
             </Reveal>

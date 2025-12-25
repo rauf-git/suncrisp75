@@ -44,7 +44,7 @@ const HeroImageCarousel = ({
       {/* Decorative frame */}
       <div className="absolute -inset-2 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-2xl blur-sm" />
 
-      <div className="relative aspect-square w-[75%] mx-auto sm:w-full sm:aspect-[4/3] md:aspect-[4/3] rounded-xl overflow-hidden shadow-2xl shadow-black/20 bg-muted/50 backdrop-blur-sm border border-primary/20">
+      <div className="relative aspect-square w-full sm:aspect-[4/3] md:aspect-[4/3] rounded-xl overflow-hidden shadow-2xl shadow-black/20 bg-muted/50 backdrop-blur-sm border border-primary/20">
         {images.map((image, index) => (
           <div 
             key={index} 
