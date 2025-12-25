@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { rentalService, RentalLocation, Rental } from '@/services/rentalService';
 import Reveal from './Reveal';
 import { Property } from '@/types';
-import { ChevronLeft, ChevronRight, ArrowRight, Bed, Bath, Maximize } from 'lucide-react';
+import { ChevronLeft, ArrowRight, Bed, Bath, Maximize } from 'lucide-react';
 import ContentSections from './ContentSections';
 import { AutoCarousel } from '@/components/ui/auto-carousel';
 import { Button } from '@/components/ui/button';
@@ -29,12 +29,12 @@ const FeaturedPropertyCard = ({
 
   return (
     <div 
-      className="group cursor-pointer bg-card border border-border rounded-2xl overflow-hidden hover:shadow-elevated hover:border-primary/30 transition-all duration-300"
+      className="group cursor-pointer bg-card border border-border rounded-xl sm:rounded-2xl overflow-hidden hover:shadow-elevated hover:border-primary/30 transition-all duration-300"
       onClick={onClick}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
         {/* Image Section */}
-        <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[350px] overflow-hidden">
+        <div className="relative aspect-[4/3] sm:aspect-[16/10] md:aspect-auto md:min-h-[300px] lg:min-h-[350px] overflow-hidden">
           {images.length > 0 ? (
             <AutoCarousel
               images={images}
@@ -46,12 +46,12 @@ const FeaturedPropertyCard = ({
             />
           ) : (
             <div className="w-full h-full bg-muted flex items-center justify-center">
-              <span className="text-muted-foreground">No image</span>
+              <span className="text-muted-foreground text-sm">No image</span>
             </div>
           )}
           {rental.price && (
-            <div className="absolute top-4 right-4">
-              <span className="bg-primary text-primary-foreground font-bold px-4 py-2 rounded-lg shadow-md text-sm">
+            <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
+              <span className="bg-primary text-primary-foreground font-bold px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg shadow-md text-xs sm:text-sm">
                 {rental.price}
               </span>
             </div>
@@ -59,34 +59,34 @@ const FeaturedPropertyCard = ({
         </div>
 
         {/* Content Section */}
-        <div className="p-6 md:p-8 flex flex-col justify-center">
-          <div className="space-y-4">
-            <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl font-semibold text-foreground group-hover:text-primary transition-colors">
+        <div className="p-4 sm:p-6 md:p-8 flex flex-col justify-center">
+          <div className="space-y-3 sm:space-y-4">
+            <h3 className="font-serif text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-foreground group-hover:text-primary transition-colors">
               {rental.title}
             </h3>
             {rental.short_description && (
-              <p className="text-muted-foreground text-sm md:text-base lg:text-lg line-clamp-3">
+              <p className="text-muted-foreground text-sm sm:text-base lg:text-lg line-clamp-2 sm:line-clamp-3">
                 {rental.short_description}
               </p>
             )}
             
             {/* Property features */}
-            <div className="flex flex-wrap gap-4 pt-2">
+            <div className="flex flex-wrap gap-3 sm:gap-4 pt-1 sm:pt-2">
               {rental.bedrooms && (
-                <div className="flex items-center gap-2 text-sm md:text-base text-muted-foreground">
-                  <Bed className="w-5 h-5" />
+                <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm md:text-base text-muted-foreground">
+                  <Bed className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span>{rental.bedrooms} Beds</span>
                 </div>
               )}
               {rental.bathrooms && (
-                <div className="flex items-center gap-2 text-sm md:text-base text-muted-foreground">
-                  <Bath className="w-5 h-5" />
+                <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm md:text-base text-muted-foreground">
+                  <Bath className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span>{rental.bathrooms} Baths</span>
                 </div>
               )}
               {rental.area && (
-                <div className="flex items-center gap-2 text-sm md:text-base text-muted-foreground">
-                  <Maximize className="w-5 h-5" />
+                <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm md:text-base text-muted-foreground">
+                  <Maximize className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span>{rental.area}</span>
                 </div>
               )}
@@ -94,17 +94,22 @@ const FeaturedPropertyCard = ({
 
             {/* Amenities */}
             {amenities.length > 0 && (
-              <div className="flex flex-wrap gap-2 pt-2">
-                {amenities.map((amenity, index) => (
-                  <span key={index} className="text-xs md:text-sm bg-muted px-3 py-1.5 rounded-full">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 pt-1 sm:pt-2">
+                {amenities.slice(0, 4).map((amenity, index) => (
+                  <span key={index} className="text-[10px] sm:text-xs md:text-sm bg-muted px-2 py-1 sm:px-3 sm:py-1.5 rounded-full">
                     {amenity}
                   </span>
                 ))}
+                {amenities.length > 4 && (
+                  <span className="text-[10px] sm:text-xs md:text-sm bg-muted px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-muted-foreground">
+                    +{amenities.length - 4} more
+                  </span>
+                )}
               </div>
             )}
 
             <Button 
-              className="w-full md:w-auto mt-4 group/btn"
+              className="w-full sm:w-auto mt-3 sm:mt-4 group/btn min-h-[44px]"
               size="lg"
               onClick={(e) => { e.stopPropagation(); onClick(); }}
             >
@@ -131,7 +136,7 @@ const LocationCardSmall = ({
       className="group bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated hover:border-primary/30 transition-all duration-300 h-full flex flex-col"
     >
       {/* Image Carousel - auto-rotating */}
-      <div className="relative aspect-[16/9] overflow-hidden">
+      <div className="relative aspect-[16/10] sm:aspect-[16/9] overflow-hidden">
         <AutoCarousel
           images={images}
           alt={location.name}
@@ -143,20 +148,20 @@ const LocationCardSmall = ({
         />
         
         {/* Location tag */}
-        <div className="absolute top-3 left-3">
-          <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded-md shadow-sm">
+        <div className="absolute top-2 left-2 sm:top-3 sm:left-3">
+          <span className="bg-primary text-primary-foreground text-[10px] sm:text-xs font-bold px-2 py-1 rounded-md shadow-sm">
             Location
           </span>
         </div>
       </div>
       
       {/* Location Info */}
-      <div className="p-4 flex-1 flex flex-col">
-        <h4 className="font-serif text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+      <div className="p-3 sm:p-4 flex-1 flex flex-col">
+        <h4 className="font-serif text-base sm:text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
           {location.name}
         </h4>
         {location.description && (
-          <p className="text-muted-foreground text-sm mt-1 line-clamp-2">
+          <p className="text-muted-foreground text-xs sm:text-sm mt-1 line-clamp-2">
             {location.description}
           </p>
         )}
@@ -167,19 +172,19 @@ const LocationCardSmall = ({
 
 // Loading Skeleton
 const LoadingSkeleton = () => (
-  <section className="py-12 md:py-16 lg:py-20 bg-background">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="text-center mb-12">
-        <Skeleton className="h-12 w-64 mx-auto mb-4" />
-        <Skeleton className="h-6 w-96 mx-auto" />
+  <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-background">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="text-center mb-8 sm:mb-12">
+        <Skeleton className="h-8 sm:h-12 w-48 sm:w-64 mx-auto mb-4" />
+        <Skeleton className="h-4 sm:h-6 w-64 sm:w-96 mx-auto" />
       </div>
       {/* Full width property card skeleton */}
-      <Skeleton className="h-[400px] w-full rounded-2xl mb-6" />
+      <Skeleton className="h-[280px] sm:h-[350px] md:h-[400px] w-full rounded-xl sm:rounded-2xl mb-4 sm:mb-6" />
       {/* Location cards in a row */}
-      <div className="grid grid-cols-3 gap-4">
-        <Skeleton className="h-[200px] rounded-xl" />
-        <Skeleton className="h-[200px] rounded-xl" />
-        <Skeleton className="h-[200px] rounded-xl" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        <Skeleton className="h-[180px] sm:h-[200px] rounded-xl" />
+        <Skeleton className="h-[180px] sm:h-[200px] rounded-xl hidden sm:block" />
+        <Skeleton className="h-[180px] sm:h-[200px] rounded-xl hidden lg:block" />
       </div>
     </div>
   </section>
@@ -265,10 +270,10 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
 
   if (error) {
     return (
-      <section className="py-12 md:py-16 lg:py-20 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-destructive mb-4">{error}</p>
-          <Button onClick={fetchData} variant="outline">
+      <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-background">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-destructive mb-4 text-sm sm:text-base">{error}</p>
+          <Button onClick={fetchData} variant="outline" className="min-h-[44px]">
             Try Again
           </Button>
         </div>
@@ -285,25 +290,27 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
   // Location Detail View
   if (selectedLocation) {
     return (
-      <section className="py-12 md:py-16 lg:py-20 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-background">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back button */}
           <Reveal>
             <button 
               onClick={() => setSelectedLocation(null)}
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6 sm:mb-8 min-h-[44px]"
             >
               <ChevronLeft className="w-5 h-5" />
-              <span>Back to Locations</span>
+              <span className="text-sm sm:text-base">Back to Locations</span>
             </button>
           </Reveal>
 
           {/* Location Header */}
           <Reveal delay={100}>
-            <div className="text-center mb-12">
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-foreground mb-4">{selectedLocation.name}</h2>
+            <div className="text-center mb-8 sm:mb-12">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-foreground mb-3 sm:mb-4">
+                {selectedLocation.name}
+              </h2>
               {selectedLocation.description && (
-                <p className="font-sans text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
+                <p className="font-sans text-muted-foreground text-sm sm:text-base lg:text-lg max-w-2xl mx-auto px-4">
                   {selectedLocation.description}
                 </p>
               )}
@@ -313,7 +320,7 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
           {/* Location Rich Text Content */}
           {selectedLocation.content_sections && selectedLocation.content_sections.length > 0 && (
             <Reveal delay={200}>
-              <div className="mb-12">
+              <div className="mb-8 sm:mb-12">
                 <ContentSections 
                   sections={selectedLocation.content_sections.map(s => ({
                     heading: s.heading || '',
@@ -327,7 +334,7 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
 
           {/* Rentals Grid */}
           {selectedLocation.rentals.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {selectedLocation.rentals.map((rental, index) => (
                 <Reveal key={rental.id} delay={300 + index * 50}>
                   <div
@@ -341,26 +348,26 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                       />
                       {rental.price && (
-                        <div className="absolute top-4 right-4">
-                          <span className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-md shadow-sm">
+                        <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
+                          <span className="bg-primary text-primary-foreground text-[10px] sm:text-xs font-bold px-2 py-1 sm:px-3 sm:py-1.5 rounded-md shadow-sm">
                             {rental.price}
                           </span>
                         </div>
                       )}
                     </div>
-                    <div className="p-5">
-                      <h4 className="font-serif text-lg text-foreground mb-2 line-clamp-1 group-hover:text-primary transition-colors">
+                    <div className="p-4 sm:p-5">
+                      <h4 className="font-serif text-base sm:text-lg text-foreground mb-2 line-clamp-1 group-hover:text-primary transition-colors">
                         {rental.title}
                       </h4>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-1.5 sm:gap-2">
                         {rental.bedrooms && (
-                          <span className="text-xs bg-muted px-2 py-1 rounded">{rental.bedrooms} Beds</span>
+                          <span className="text-[10px] sm:text-xs bg-muted px-2 py-1 rounded">{rental.bedrooms} Beds</span>
                         )}
                         {rental.bathrooms && (
-                          <span className="text-xs bg-muted px-2 py-1 rounded">{rental.bathrooms} Baths</span>
+                          <span className="text-[10px] sm:text-xs bg-muted px-2 py-1 rounded">{rental.bathrooms} Baths</span>
                         )}
                         {rental.area && (
-                          <span className="text-xs bg-muted px-2 py-1 rounded">{rental.area}</span>
+                          <span className="text-[10px] sm:text-xs bg-muted px-2 py-1 rounded">{rental.area}</span>
                         )}
                       </div>
                     </div>
@@ -369,8 +376,8 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">No properties available in this location yet.</p>
+            <div className="text-center py-8 sm:py-12">
+              <p className="text-muted-foreground text-sm sm:text-base">No properties available in this location yet.</p>
             </div>
           )}
         </div>
@@ -378,15 +385,17 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
     );
   }
 
-  // Main Grid View - 2 column layout
+  // Main Grid View
   return (
-    <section className="py-12 md:py-16 lg:py-20 bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-background">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <Reveal>
-          <div className="text-center mb-12 lg:mb-16">
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-foreground mb-4">Luxury Rentals</h2>
-            <p className="font-sans text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
+          <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-foreground mb-3 sm:mb-4">
+              Luxury Rentals
+            </h2>
+            <p className="font-sans text-muted-foreground text-sm sm:text-base lg:text-lg max-w-2xl mx-auto px-4">
               Exclusive Properties for Short & Long Term Stays
             </p>
           </div>
@@ -394,12 +403,12 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
 
         {hasNoContent ? (
           <Reveal delay={100}>
-            <div className="text-center py-20">
-              <p className="text-muted-foreground text-lg">No rental properties available at this time.</p>
+            <div className="text-center py-12 sm:py-20">
+              <p className="text-muted-foreground text-base sm:text-lg">No rental properties available at this time.</p>
             </div>
           </Reveal>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Full Width Featured Property Card */}
             {featuredRental && (
               <Reveal delay={100}>
@@ -410,15 +419,11 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
               </Reveal>
             )}
 
-            {/* Location Cards - Side by Side (even on mobile) */}
-            <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+            {/* Location Cards - Responsive grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {topLocations.map((location, index) => (
                 <Reveal key={location.id} delay={150 + index * 50}>
-                  <div className="min-w-[280px] sm:min-w-0 sm:flex-1">
-                    <LocationCardSmall
-                      location={location}
-                    />
-                  </div>
+                  <LocationCardSmall location={location} />
                 </Reveal>
               ))}
 
@@ -426,31 +431,24 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
               {topLocations.length < 3 && allRentals.slice(1, 4 - topLocations.length).map((rental, index) => (
                 <Reveal key={rental.id} delay={200 + index * 50}>
                   <div
-                    className="group cursor-pointer bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated hover:border-primary/30 transition-all duration-300 h-full flex"
+                    className="group cursor-pointer bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated hover:border-primary/30 transition-all duration-300 h-full"
                     onClick={() => onItemClick(mapRentalToProperty(rental))}
                   >
-                    <div className="relative w-1/3 overflow-hidden">
+                    <div className="relative aspect-[16/10] overflow-hidden">
                       <img
                         src={rental.thumbnail_url || '/placeholder.svg'}
                         alt={rental.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
-                    <div className="flex-1 p-4 flex flex-col justify-between">
-                      <div>
-                        <h4 className="font-serif text-lg font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
-                          {rental.title}
-                        </h4>
-                        {rental.short_description && (
-                          <p className="text-muted-foreground text-sm mt-1 line-clamp-2">
-                            {rental.short_description}
-                          </p>
-                        )}
-                      </div>
-                      {rental.price && (
-                        <span className="text-primary font-semibold text-sm mt-2">
-                          {rental.price}
-                        </span>
+                    <div className="p-3 sm:p-4">
+                      <h4 className="font-serif text-base sm:text-lg font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                        {rental.title}
+                      </h4>
+                      {rental.short_description && (
+                        <p className="text-muted-foreground text-xs sm:text-sm mt-1 line-clamp-2">
+                          {rental.short_description}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -458,18 +456,6 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
               ))}
             </div>
           </div>
-        )}
-
-        {/* View All Button */}
-        {(locationsWithRentals.length > 3 || allRentals.length > 4) && (
-          <Reveal delay={300}>
-            <div className="text-center mt-12">
-              <Button variant="outline" size="lg">
-                View All Properties
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </div>
-          </Reveal>
         )}
       </div>
     </section>
