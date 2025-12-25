@@ -298,38 +298,38 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-3xl h-[90vh] max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
-        <DialogHeader className="px-6 py-4 border-b border-border shrink-0">
-          <DialogTitle className="font-serif text-2xl">Edit Home Page</DialogTitle>
+      <DialogContent className="max-w-[95vw] sm:max-w-[90vw] md:max-w-2xl lg:max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
+        <DialogHeader className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border shrink-0">
+          <DialogTitle className="font-serif text-lg sm:text-xl md:text-2xl">Edit Home Page</DialogTitle>
         </DialogHeader>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-10 flex-1">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-primary" />
           </div>
         ) : (
-          <ScrollArea className="flex-1 min-h-0">
-            <div className="px-6 py-6 space-y-8">
+          <ScrollArea className="flex-1 min-h-0 h-[50vh] sm:h-[60vh] md:h-[65vh]">
+            <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8">
               {/* Hero Images Section */}
-              <div className="p-4 rounded-lg border border-primary/20 bg-primary/5">
-                <h3 className="font-serif text-lg font-semibold mb-4 flex items-center gap-2">
-                  <Image className="w-5 h-5 text-primary" />
+              <div className="p-3 sm:p-4 rounded-lg border border-primary/20 bg-primary/5">
+                <h3 className="font-serif text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2">
+                  <Image className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                   Hero Images (Rotating)
                 </h3>
-                <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
+                <div className="space-y-3 sm:space-y-4">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     Upload images to display on the right side of the hero section. Images will rotate automatically.
                   </p>
                   
                   {/* Image Grid */}
                   {heroImages.length > 0 && (
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
                       {heroImages.map((img, index) => (
                         <div key={index} className="relative group aspect-video rounded-lg overflow-hidden border border-border">
                           <img src={img} alt={`Hero ${index + 1}`} className="w-full h-full object-cover" />
                           <button
                             onClick={() => removeHeroImage(index)}
-                            className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute top-1 right-1 p-1.5 sm:p-1 bg-destructive text-destructive-foreground rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity min-w-[28px] min-h-[28px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
                           >
                             <X className="w-3 h-3" />
                           </button>
@@ -352,7 +352,7 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
                       variant="outline"
                       onClick={() => heroImageInputRef.current?.click()}
                       disabled={isUploading}
-                      className="w-full"
+                      className="w-full h-10 sm:h-11 text-sm sm:text-base"
                     >
                       {isUploading ? (
                         <>
@@ -371,36 +371,38 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
               </div>
 
               {/* Brand Story Section */}
-              <div className="p-4 rounded-lg border border-primary/20 bg-primary/5">
-                <h3 className="font-serif text-lg font-semibold mb-4">Brand Story Section</h3>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="brandStoryHeading">Section Heading</Label>
+              <div className="p-3 sm:p-4 rounded-lg border border-primary/20 bg-primary/5">
+                <h3 className="font-serif text-base sm:text-lg font-semibold mb-3 sm:mb-4">Brand Story Section</h3>
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="brandStoryHeading" className="text-xs sm:text-sm font-medium">Section Heading</Label>
                     <Input
                       id="brandStoryHeading"
                       value={brandStoryHeading}
                       onChange={(e) => setBrandStoryHeading(e.target.value)}
                       placeholder="Our Brand Story"
+                      className="text-sm sm:text-base h-10 sm:h-11"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="brandStoryParagraph">Paragraph</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="brandStoryParagraph" className="text-xs sm:text-sm font-medium">Paragraph</Label>
                     <Textarea
                       id="brandStoryParagraph"
                       value={brandStoryParagraph}
                       onChange={(e) => setBrandStoryParagraph(e.target.value)}
                       placeholder="Write a brief description about your brand story..."
                       rows={4}
+                      className="text-sm sm:text-base min-h-[100px] sm:min-h-[120px]"
                     />
                   </div>
-                  <div>
-                    <Label>Section Image</Label>
+                  <div className="space-y-2">
+                    <Label className="text-xs sm:text-sm font-medium">Section Image</Label>
                     {brandStoryImage && (
                       <div className="relative mt-2 mb-3 aspect-video max-w-xs rounded-lg overflow-hidden border border-border">
                         <img src={brandStoryImage} alt="Brand Story" className="w-full h-full object-cover" />
                         <button
                           onClick={() => setBrandStoryImage("")}
-                          className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full"
+                          className="absolute top-1 right-1 p-1.5 sm:p-1 bg-destructive text-destructive-foreground rounded-full min-w-[28px] min-h-[28px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -418,6 +420,7 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
                       onClick={() => brandStoryImageInputRef.current?.click()}
                       disabled={isUploading}
                       size="sm"
+                      className="h-9 sm:h-10 text-sm"
                     >
                       {isUploading ? (
                         <>
@@ -437,53 +440,56 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
 
               {/* Testimonials Section */}
               <div>
-                <h3 className="font-serif text-lg font-semibold mb-4">Scrolling Testimonials</h3>
-                <div className="space-y-4">
+                <h3 className="font-serif text-base sm:text-lg font-semibold mb-3 sm:mb-4">Scrolling Testimonials</h3>
+                <div className="space-y-3 sm:space-y-4">
                   {testimonials.map((testimonial, index) => (
-                    <div key={testimonial.id} className="border border-border rounded-lg p-4 space-y-3">
+                    <div key={testimonial.id} className="border border-border rounded-lg p-3 sm:p-4 space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-muted-foreground">
+                        <span className="text-xs sm:text-sm font-medium text-muted-foreground">
                           Testimonial {index + 1}
                         </span>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => removeTestimonial(index)}
-                          className="text-destructive hover:text-destructive"
+                          className="text-destructive hover:text-destructive h-9 sm:h-10 min-w-[44px]"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
-                      <div>
-                        <Label>Quote Text</Label>
+                      <div className="space-y-2">
+                        <Label className="text-xs sm:text-sm font-medium">Quote Text</Label>
                         <Textarea
                           value={testimonial.text}
                           onChange={(e) => updateTestimonial(index, "text", e.target.value)}
                           placeholder="Enter testimonial quote..."
                           rows={2}
+                          className="text-sm sm:text-base min-h-[80px] sm:min-h-[100px]"
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <Label>Author Name</Label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="space-y-2">
+                          <Label className="text-xs sm:text-sm font-medium">Author Name</Label>
                           <Input
                             value={testimonial.author}
                             onChange={(e) => updateTestimonial(index, "author", e.target.value)}
                             placeholder="John D."
+                            className="text-sm sm:text-base h-10 sm:h-11"
                           />
                         </div>
-                        <div>
-                          <Label>Role/Title</Label>
+                        <div className="space-y-2">
+                          <Label className="text-xs sm:text-sm font-medium">Role/Title</Label>
                           <Input
                             value={testimonial.role}
                             onChange={(e) => updateTestimonial(index, "role", e.target.value)}
                             placeholder="Developer"
+                            className="text-sm sm:text-base h-10 sm:h-11"
                           />
                         </div>
                       </div>
                     </div>
                   ))}
-                  <Button variant="outline" onClick={addTestimonial} className="w-full">
+                  <Button variant="outline" onClick={addTestimonial} className="w-full h-10 sm:h-11 text-sm sm:text-base">
                     <Plus className="w-4 h-4 mr-2" />
                     Add Testimonial
                   </Button>
@@ -492,18 +498,19 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
 
               {/* Trusted By Section */}
               <div>
-                <h3 className="font-serif text-lg font-semibold mb-4">Trusted By Marquee</h3>
-                <div className="space-y-4">
-                  <div>
-                    <Label>Section Title</Label>
+                <h3 className="font-serif text-base sm:text-lg font-semibold mb-3 sm:mb-4">Trusted By Marquee</h3>
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs sm:text-sm font-medium">Section Title</Label>
                     <Input
                       value={trustedByTitle}
                       onChange={(e) => setTrustedByTitle(e.target.value)}
                       placeholder="Trusted By"
+                      className="text-sm sm:text-base h-10 sm:h-11"
                     />
                   </div>
-                  <div>
-                    <Label className="mb-2 block">Brand Names (scrolling text)</Label>
+                  <div className="space-y-2">
+                    <Label className="text-xs sm:text-sm font-medium mb-2 block">Brand Names (scrolling text)</Label>
                     <div className="space-y-2">
                       {trustedByLogos.map((logo, index) => (
                         <div key={index} className="flex items-center gap-2">
@@ -511,18 +518,19 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
                             value={logo}
                             onChange={(e) => updateLogo(index, e.target.value)}
                             placeholder="Brand name..."
+                            className="text-sm sm:text-base h-10 sm:h-11"
                           />
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => removeLogo(index)}
-                            className="text-destructive hover:text-destructive shrink-0"
+                            className="text-destructive hover:text-destructive shrink-0 h-10 w-10 sm:h-11 sm:w-11"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
                       ))}
-                      <Button variant="outline" onClick={addLogo} className="w-full">
+                      <Button variant="outline" onClick={addLogo} className="w-full h-10 sm:h-11 text-sm sm:text-base">
                         <Plus className="w-4 h-4 mr-2" />
                         Add Brand
                       </Button>
@@ -535,14 +543,14 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
         )}
 
         {/* Sticky Footer */}
-        <DialogFooter className="px-6 py-4 border-t border-border shrink-0 bg-background">
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>
+        <DialogFooter className="flex-col-reverse sm:flex-row gap-3 sm:gap-4 px-4 py-4 sm:px-6 border-t border-border shrink-0 bg-background">
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving} className="w-full sm:w-auto h-9 sm:h-10 text-sm sm:text-base">
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={isSaving || isLoading} className="bg-primary">
+          <Button onClick={handleSave} disabled={isSaving || isLoading} className="w-full sm:w-auto h-9 sm:h-10 text-sm sm:text-base bg-primary">
             {isSaving ? (
               <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2 animate-spin" />
                 Saving...
               </>
             ) : (

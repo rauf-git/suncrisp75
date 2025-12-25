@@ -44,7 +44,7 @@ const EmailModal = ({ isOpen, onClose }: EmailModalProps) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 sm:p-0">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 sm:p-6">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-foreground/60 backdrop-blur-sm transition-opacity"
@@ -52,39 +52,40 @@ const EmailModal = ({ isOpen, onClose }: EmailModalProps) => {
       />
       
       {/* Modal Container */}
-      <div className="relative w-full max-w-lg bg-card border border-border shadow-2xl rounded-t-2xl sm:rounded-2xl overflow-hidden animate-fade-in">
+      <div className="relative w-full max-w-[95vw] sm:max-w-lg bg-card border border-border shadow-2xl rounded-t-2xl sm:rounded-2xl overflow-hidden animate-fade-in">
         
         {/* Header */}
-        <div className="p-6 border-b border-border flex justify-between items-center bg-secondary">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center">
-              <Mail className="text-primary w-5 h-5" />
+        <div className="p-4 sm:p-6 border-b border-border flex justify-between items-center bg-secondary">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary-light flex items-center justify-center">
+              <Mail className="text-primary w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <h3 className="font-serif text-xl text-foreground leading-none">Contact Us</h3>
+              <h3 className="font-serif text-lg sm:text-xl text-foreground leading-none">Contact Us</h3>
               <p className="text-xs text-muted-foreground mt-1">Send us a message directly</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="text-muted-foreground hover:text-foreground transition-colors p-2 hover:bg-background rounded-full"
+            className="text-muted-foreground hover:text-foreground transition-colors p-2 hover:bg-background rounded-full min-w-[44px] min-h-[44px] flex items-center justify-center"
           >
             <X size={20} />
           </button>
         </div>
 
         {/* Body */}
-        <div className="p-6">
+        <div className="p-4 sm:p-6 max-h-[60vh] sm:max-h-[65vh] overflow-y-auto">
           {status === 'success' ? (
-            <div className="flex flex-col items-center justify-center py-10 text-center animate-fade-in">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 text-green-600">
-                <Check size={32} />
+            <div className="flex flex-col items-center justify-center py-8 sm:py-10 text-center animate-fade-in">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 text-green-600">
+                <Check size={28} className="sm:hidden" />
+                <Check size={32} className="hidden sm:block" />
               </div>
-              <h4 className="text-xl font-serif text-foreground mb-2">Message Sent!</h4>
+              <h4 className="text-lg sm:text-xl font-serif text-foreground mb-2">Message Sent!</h4>
               <p className="text-muted-foreground text-sm">Thank you for reaching out. We will get back to you shortly.</p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
               <div>
                 <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-semibold">Name</label>
                 <input 
@@ -92,7 +93,7 @@ const EmailModal = ({ isOpen, onClose }: EmailModalProps) => {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-secondary border border-border rounded-lg p-3 text-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors"
+                  className="w-full bg-secondary border border-border rounded-lg p-3 text-sm sm:text-base text-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors"
                   placeholder="Your Name"
                 />
               </div>
@@ -103,7 +104,7 @@ const EmailModal = ({ isOpen, onClose }: EmailModalProps) => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-secondary border border-border rounded-lg p-3 text-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors"
+                  className="w-full bg-secondary border border-border rounded-lg p-3 text-sm sm:text-base text-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors"
                   placeholder="your@email.com"
                 />
               </div>
@@ -114,7 +115,7 @@ const EmailModal = ({ isOpen, onClose }: EmailModalProps) => {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   rows={4}
-                  className="w-full bg-secondary border border-border rounded-lg p-3 text-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors resize-none"
+                  className="w-full bg-secondary border border-border rounded-lg p-3 text-sm sm:text-base text-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors resize-none min-h-[100px] sm:min-h-[120px]"
                   placeholder="How can we help you?"
                 />
               </div>
@@ -129,7 +130,7 @@ const EmailModal = ({ isOpen, onClose }: EmailModalProps) => {
               <button 
                 type="submit" 
                 disabled={status === 'loading'}
-                className="w-full btn-primary rounded-lg flex items-center justify-center gap-2 mt-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg"
+                className="w-full btn-primary rounded-lg flex items-center justify-center gap-2 mt-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg h-11 sm:h-12 text-sm sm:text-base"
               >
                 {status === 'loading' ? (
                   <>

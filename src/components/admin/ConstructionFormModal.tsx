@@ -256,42 +256,42 @@ export function ConstructionFormModal({ open, onOpenChange, construction, onSucc
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
-        <DialogHeader className="px-6 py-4 border-b border-border shrink-0">
-          <DialogTitle className="font-serif text-xl">
+      <DialogContent className="max-w-[95vw] sm:max-w-[90vw] md:max-w-2xl lg:max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
+        <DialogHeader className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border shrink-0">
+          <DialogTitle className="font-serif text-lg sm:text-xl">
             {isEditMode ? "Edit Construction Project" : "Add Construction Project"}
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
-          <ScrollArea className="flex-1 min-h-0">
-            <div className="px-6 py-6 space-y-5">
+          <ScrollArea className="flex-1 min-h-0 h-[50vh] sm:h-[60vh] md:h-[65vh]">
+            <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-5 md:space-y-6">
               {/* Title */}
               <div className="space-y-2">
-                <Label htmlFor="title">Title *</Label>
+                <Label htmlFor="title" className="text-xs sm:text-sm font-medium">Title *</Label>
                 <Input
                   id="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Enter project title"
-                  className={errors.title ? "border-destructive" : ""}
+                  className={`text-sm sm:text-base h-10 sm:h-11 ${errors.title ? "border-destructive" : ""}`}
                   disabled={isLoading}
                 />
                 {errors.title && (
-                  <p className="text-sm text-destructive">{errors.title}</p>
+                  <p className="text-xs sm:text-sm text-destructive">{errors.title}</p>
                 )}
               </div>
 
               {/* Status */}
               <div className="space-y-2">
-                <Label>Status</Label>
+                <Label className="text-xs sm:text-sm font-medium">Status</Label>
                 <Select value={status} onValueChange={setStatus} disabled={isLoading}>
-                  <SelectTrigger>
+                  <SelectTrigger className="text-sm sm:text-base h-10 sm:h-11">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
                     {STATUS_OPTIONS.map((opt) => (
-                      <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                      <SelectItem key={opt} value={opt} className="text-sm sm:text-base">{opt}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -299,7 +299,7 @@ export function ConstructionFormModal({ open, onOpenChange, construction, onSucc
 
               {/* Description */}
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description" className="text-xs sm:text-sm font-medium">Description</Label>
                 <Textarea
                   id="description"
                   value={description}
@@ -307,25 +307,27 @@ export function ConstructionFormModal({ open, onOpenChange, construction, onSucc
                   placeholder="Enter project description"
                   rows={3}
                   disabled={isLoading}
+                  className="text-sm sm:text-base min-h-[80px] sm:min-h-[100px]"
                 />
               </div>
 
               {/* Address */}
               <div className="space-y-2">
-                <Label htmlFor="address">Address</Label>
+                <Label htmlFor="address" className="text-xs sm:text-sm font-medium">Address</Label>
                 <Input
                   id="address"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="Enter project address"
                   disabled={isLoading}
+                  className="text-sm sm:text-base h-10 sm:h-11"
                 />
               </div>
 
               {/* Coordinates */}
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="latitude">Latitude</Label>
+                  <Label htmlFor="latitude" className="text-xs sm:text-sm font-medium">Latitude</Label>
                   <Input
                     id="latitude"
                     type="number"
@@ -334,10 +336,11 @@ export function ConstructionFormModal({ open, onOpenChange, construction, onSucc
                     onChange={(e) => setLatitude(e.target.value)}
                     placeholder="e.g., 17.7275"
                     disabled={isLoading}
+                    className="text-sm sm:text-base h-10 sm:h-11"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="longitude">Longitude</Label>
+                  <Label htmlFor="longitude" className="text-xs sm:text-sm font-medium">Longitude</Label>
                   <Input
                     id="longitude"
                     type="number"
@@ -346,10 +349,11 @@ export function ConstructionFormModal({ open, onOpenChange, construction, onSucc
                     onChange={(e) => setLongitude(e.target.value)}
                     placeholder="e.g., 83.2956"
                     disabled={isLoading}
+                    className="text-sm sm:text-base h-10 sm:h-11"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="displayOrder">Display Order</Label>
+                  <Label htmlFor="displayOrder" className="text-xs sm:text-sm font-medium">Display Order</Label>
                   <Input
                     id="displayOrder"
                     type="number"
@@ -357,26 +361,27 @@ export function ConstructionFormModal({ open, onOpenChange, construction, onSucc
                     onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
                     placeholder="0"
                     disabled={isLoading}
+                    className="text-sm sm:text-base h-10 sm:h-11"
                   />
                 </div>
               </div>
 
               {/* Thumbnail */}
               <div className="space-y-2">
-                <Label>Thumbnail Image</Label>
+                <Label className="text-xs sm:text-sm font-medium">Thumbnail Image</Label>
 
                 {thumbnailPreview ? (
                   <div className="relative group">
                     <img
                       src={thumbnailPreview}
                       alt="Thumbnail preview"
-                      className="w-full h-40 object-cover rounded-lg border border-border"
+                      className="w-full h-32 sm:h-40 object-cover rounded-lg border border-border"
                       loading="lazy"
                     />
                     <button
                       type="button"
                       onClick={handleRemoveThumbnail}
-                      className="absolute top-2 right-2 p-1.5 bg-background/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground"
+                      className="absolute top-2 right-2 p-1.5 bg-background/90 rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground min-w-[36px] min-h-[36px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
                       disabled={isLoading}
                     >
                       <X className="w-4 h-4" />
@@ -385,12 +390,12 @@ export function ConstructionFormModal({ open, onOpenChange, construction, onSucc
                 ) : (
                   <div
                     onClick={() => thumbnailInputRef.current?.click()}
-                    className={`w-full h-40 border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors hover:border-primary hover:bg-primary/5 ${
+                    className={`w-full h-32 sm:h-40 border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors hover:border-primary hover:bg-primary/5 ${
                       errors.thumbnail ? "border-destructive" : "border-border"
                     }`}
                   >
-                    <ImageIcon className="w-8 h-8 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">Click to upload thumbnail</p>
+                    <ImageIcon className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground" />
+                    <p className="text-xs sm:text-sm text-muted-foreground">Click to upload thumbnail</p>
                   </div>
                 )}
 
@@ -410,6 +415,7 @@ export function ConstructionFormModal({ open, onOpenChange, construction, onSucc
                     size="sm"
                     onClick={() => thumbnailInputRef.current?.click()}
                     disabled={isLoading}
+                    className="h-9 sm:h-10 text-sm"
                   >
                     <Upload className="w-4 h-4 mr-2" />
                     Replace Thumbnail
@@ -417,14 +423,14 @@ export function ConstructionFormModal({ open, onOpenChange, construction, onSucc
                 )}
 
                 {errors.thumbnail && (
-                  <p className="text-sm text-destructive">{errors.thumbnail}</p>
+                  <p className="text-xs sm:text-sm text-destructive">{errors.thumbnail}</p>
                 )}
               </div>
 
               {/* Gallery Images */}
               <div className="space-y-2">
-                <Label>Gallery Images</Label>
-                <div className="grid grid-cols-4 gap-2">
+                <Label className="text-xs sm:text-sm font-medium">Gallery Images</Label>
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
                   {images.map((img, index) => (
                     <div key={`existing-${index}`} className="relative group aspect-square">
                       <img
@@ -436,7 +442,7 @@ export function ConstructionFormModal({ open, onOpenChange, construction, onSucc
                       <button
                         type="button"
                         onClick={() => handleRemoveExistingImage(index)}
-                        className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-1 right-1 p-1.5 sm:p-1 bg-destructive text-destructive-foreground rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity min-w-[28px] min-h-[28px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
                         disabled={isLoading}
                       >
                         <Trash2 className="w-3 h-3" />
@@ -454,7 +460,7 @@ export function ConstructionFormModal({ open, onOpenChange, construction, onSucc
                       <button
                         type="button"
                         onClick={() => handleRemoveNewImage(index)}
-                        className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-1 right-1 p-1.5 sm:p-1 bg-destructive text-destructive-foreground rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity min-w-[28px] min-h-[28px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
                         disabled={isLoading}
                       >
                         <Trash2 className="w-3 h-3" />
@@ -468,7 +474,7 @@ export function ConstructionFormModal({ open, onOpenChange, construction, onSucc
                     className="aspect-square border-2 border-dashed border-border rounded-lg flex items-center justify-center hover:border-primary hover:bg-primary/5 transition-colors"
                     disabled={isLoading}
                   >
-                    <Plus className="w-6 h-6 text-muted-foreground" />
+                    <Plus className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
                   </button>
                 </div>
                 <input
@@ -484,13 +490,13 @@ export function ConstructionFormModal({ open, onOpenChange, construction, onSucc
             </div>
           </ScrollArea>
 
-          <DialogFooter className="px-6 py-4 border-t border-border shrink-0 bg-background flex flex-row items-center justify-end gap-3">
-            <Button type="button" variant="outline" onClick={handleClose} disabled={isLoading}>
+          <DialogFooter className="flex-col-reverse sm:flex-row gap-3 sm:gap-4 px-4 py-4 sm:px-6 border-t border-border shrink-0 bg-background">
+            <Button type="button" variant="outline" onClick={handleClose} disabled={isLoading} className="w-full sm:w-auto h-9 sm:h-10 text-sm sm:text-base">
               Cancel
             </Button>
-            <Button type="submit" className="bg-primary hover:bg-primary/90" disabled={isLoading}>
+            <Button type="submit" className="w-full sm:w-auto h-9 sm:h-10 text-sm sm:text-base bg-primary hover:bg-primary/90" disabled={isLoading}>
               {isLoading ? (
-                <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
               ) : isEditMode ? (
                 "Update Project"
               ) : (

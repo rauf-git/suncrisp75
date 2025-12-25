@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { rentalService, RentalLocation, LocationContentSection } from "@/services/rentalService";
-import { X, Image as ImageIcon, Plus, GripVertical } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import { ContentSectionsEditor } from "./ContentSectionsEditor";
 
 interface LocationFormModalProps {
@@ -215,35 +215,35 @@ export function LocationFormModal({ open, onOpenChange, location, onSuccess }: L
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="w-[95vw] max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
-        <DialogHeader className="px-6 py-4 border-b border-border shrink-0">
-          <DialogTitle className="font-serif text-xl">
+      <DialogContent className="max-w-[95vw] sm:max-w-[90vw] md:max-w-2xl lg:max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
+        <DialogHeader className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border shrink-0">
+          <DialogTitle className="font-serif text-lg sm:text-xl">
             {isEditMode ? "Edit Location" : "Add Location"}
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
-          <ScrollArea className="flex-1 min-h-0">
-            <div className="px-6 py-6 space-y-5">
+          <ScrollArea className="flex-1 min-h-0 h-[50vh] sm:h-[60vh] md:h-[65vh]">
+            <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-5 md:space-y-6">
               {/* Name */}
               <div className="space-y-2">
-                <Label htmlFor="name">Name *</Label>
+                <Label htmlFor="name" className="text-xs sm:text-sm font-medium">Name *</Label>
                 <Input
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter location name (e.g., Visakhapatnam)"
-                  className={errors.name ? "border-destructive" : ""}
+                  className={`text-sm sm:text-base h-10 sm:h-11 ${errors.name ? "border-destructive" : ""}`}
                   disabled={isLoading}
                 />
                 {errors.name && (
-                  <p className="text-sm text-destructive">{errors.name}</p>
+                  <p className="text-xs sm:text-sm text-destructive">{errors.name}</p>
                 )}
               </div>
 
               {/* Description */}
               <div className="space-y-2">
-                <Label htmlFor="description">Short Description</Label>
+                <Label htmlFor="description" className="text-xs sm:text-sm font-medium">Short Description</Label>
                 <Textarea
                   id="description"
                   value={description}
@@ -251,12 +251,13 @@ export function LocationFormModal({ open, onOpenChange, location, onSuccess }: L
                   placeholder="Brief description of this location"
                   rows={2}
                   disabled={isLoading}
+                  className="text-sm sm:text-base min-h-[80px] sm:min-h-[100px]"
                 />
               </div>
 
               {/* Display Order */}
               <div className="space-y-2">
-                <Label htmlFor="displayOrder">Display Order</Label>
+                <Label htmlFor="displayOrder" className="text-xs sm:text-sm font-medium">Display Order</Label>
                 <Input
                   id="displayOrder"
                   type="number"
@@ -264,22 +265,22 @@ export function LocationFormModal({ open, onOpenChange, location, onSuccess }: L
                   onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
                   placeholder="0"
                   disabled={isLoading}
-                  className="w-32"
+                  className="w-24 sm:w-32 text-sm sm:text-base h-10 sm:h-11"
                 />
               </div>
 
               {/* Images */}
               <div className="space-y-2">
-                <Label>Location Images (for carousel)</Label>
-                <p className="text-sm text-muted-foreground">
+                <Label className="text-xs sm:text-sm font-medium">Location Images (for carousel)</Label>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Upload multiple images to display in a carousel on the rentals page
                 </p>
 
                 {/* Image Grid */}
                 {allPreviewImages.length > 0 && (
-                  <div className="grid grid-cols-3 gap-3 mt-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mt-3">
                     {allPreviewImages.map((img, i) => (
-                      <div key={`${img.type}-${img.index}`} className="relative group aspect-[4/3]">
+                      <div key={`${img.type}-${img.index}`} className="relative group aspect-[4/3] sm:aspect-[3/2]">
                         <img
                           src={img.url}
                           alt={`Location image ${i + 1}`}
@@ -295,13 +296,13 @@ export function LocationFormModal({ open, onOpenChange, location, onSuccess }: L
                               handleRemoveNewImage(img.index);
                             }
                           }}
-                          className="absolute top-1 right-1 p-1 bg-background/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground"
+                          className="absolute top-1 right-1 p-1.5 sm:p-1 bg-background/90 rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground min-w-[32px] min-h-[32px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
                           disabled={isLoading}
                         >
-                          <X className="w-3 h-3" />
+                          <X className="w-3 h-3 sm:w-3 sm:h-3" />
                         </button>
                         {i === 0 && (
-                          <span className="absolute bottom-1 left-1 text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded">
+                          <span className="absolute bottom-1 left-1 text-[10px] sm:text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded">
                             Main
                           </span>
                         )}
@@ -313,10 +314,10 @@ export function LocationFormModal({ open, onOpenChange, location, onSuccess }: L
                 {/* Add Image Button */}
                 <div
                   onClick={() => imageInputRef.current?.click()}
-                  className="w-full h-24 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors hover:border-primary hover:bg-primary/5 mt-3"
+                  className="w-full h-20 sm:h-24 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors hover:border-primary hover:bg-primary/5 mt-3"
                 >
-                  <Plus className="w-6 h-6 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">Click to add images</p>
+                  <Plus className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
+                  <p className="text-xs sm:text-sm text-muted-foreground">Click to add images</p>
                 </div>
 
                 <input
@@ -350,12 +351,14 @@ export function LocationFormModal({ open, onOpenChange, location, onSuccess }: L
             </div>
           </ScrollArea>
 
-          <DialogFooter className="px-6 py-4 border-t border-border shrink-0">
-            <Button type="button" variant="outline" onClick={handleClose} disabled={isLoading}>
+          <DialogFooter className="flex-col-reverse sm:flex-row gap-3 sm:gap-4 px-4 py-4 sm:px-6 border-t border-border shrink-0">
+            <Button type="button" variant="outline" onClick={handleClose} disabled={isLoading} className="w-full sm:w-auto h-9 sm:h-10 text-sm sm:text-base">
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Saving..." : isEditMode ? "Update Location" : "Add Location"}
+            <Button type="submit" disabled={isLoading} className="w-full sm:w-auto h-9 sm:h-10 text-sm sm:text-base">
+              {isLoading ? (
+                <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              ) : isEditMode ? "Update Location" : "Add Location"}
             </Button>
           </DialogFooter>
         </form>
