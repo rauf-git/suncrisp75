@@ -88,45 +88,63 @@ export default function AdminDashboard() {
   // Fetch functions
   const fetchProjects = async () => {
     setIsLoadingProjects(true);
-    const { data, error } = await projectService.getAll();
-    if (error) {
+    try {
+      const { data, error } = await projectService.getAll();
+      if (error) {
+        console.error("[Dashboard] Failed to load projects:", error);
+        toast({ title: "Error", description: "Failed to load projects", variant: "destructive" });
+      } else {
+        setProjects(data || []);
+      }
+    } catch (error) {
+      console.error("[Dashboard] Unexpected error loading projects:", error);
       toast({ title: "Error", description: "Failed to load projects", variant: "destructive" });
-    } else {
-      setProjects(data || []);
     }
     setIsLoadingProjects(false);
   };
 
   const fetchConstructions = async () => {
     setIsLoadingConstructions(true);
-    const { data, error } = await constructionService.getAll();
-    if (error) {
+    try {
+      const { data, error } = await constructionService.getAll();
+      if (error) {
+        console.error("[Dashboard] Failed to load construction projects:", error);
+        toast({ title: "Error", description: "Failed to load construction projects", variant: "destructive" });
+      } else {
+        setConstructions(data || []);
+      }
+    } catch (error) {
+      console.error("[Dashboard] Unexpected error loading constructions:", error);
       toast({ title: "Error", description: "Failed to load construction projects", variant: "destructive" });
-    } else {
-      setConstructions(data || []);
     }
     setIsLoadingConstructions(false);
   };
 
   const fetchRentals = async () => {
     setIsLoadingRentals(true);
-    const [rentalsResult, locationsResult] = await Promise.all([
-      rentalService.getAll(),
-      rentalService.getAllLocations()
-    ]);
-    
-    if (rentalsResult.error) {
+    try {
+      const [rentalsResult, locationsResult] = await Promise.all([
+        rentalService.getAll(),
+        rentalService.getAllLocations()
+      ]);
+      
+      if (rentalsResult.error) {
+        console.error("[Dashboard] Failed to load rentals:", rentalsResult.error);
+        toast({ title: "Error", description: "Failed to load rentals", variant: "destructive" });
+      } else {
+        setRentals(rentalsResult.data || []);
+      }
+      
+      if (locationsResult.error) {
+        console.error("[Dashboard] Failed to load rental locations:", locationsResult.error);
+        toast({ title: "Error", description: "Failed to load rental locations", variant: "destructive" });
+      } else {
+        setRentalLocations(locationsResult.data || []);
+      }
+    } catch (error) {
+      console.error("[Dashboard] Unexpected error loading rentals:", error);
       toast({ title: "Error", description: "Failed to load rentals", variant: "destructive" });
-    } else {
-      setRentals(rentalsResult.data || []);
     }
-    
-    if (locationsResult.error) {
-      toast({ title: "Error", description: "Failed to load rental locations", variant: "destructive" });
-    } else {
-      setRentalLocations(locationsResult.data || []);
-    }
-    
     setIsLoadingRentals(false);
   };
 
@@ -198,7 +216,8 @@ export default function AdminDashboard() {
         await projectService.update(update.id, { display_order: update.display_order });
       }
       toast({ title: "Order saved", description: "Project order has been updated." });
-    } catch {
+    } catch (error) {
+      console.error("[Dashboard] Failed to save project order:", error);
       toast({ title: "Error", description: "Failed to save order", variant: "destructive" });
       fetchProjects();
     }
@@ -216,7 +235,8 @@ export default function AdminDashboard() {
         await constructionService.update(update.id, { display_order: update.display_order });
       }
       toast({ title: "Order saved", description: "Construction order has been updated." });
-    } catch {
+    } catch (error) {
+      console.error("[Dashboard] Failed to save construction order:", error);
       toast({ title: "Error", description: "Failed to save order", variant: "destructive" });
       fetchConstructions();
     }
@@ -232,7 +252,8 @@ export default function AdminDashboard() {
     try {
       await rentalService.updateOrder(updates);
       toast({ title: "Order saved", description: "Rental order has been updated." });
-    } catch {
+    } catch (error) {
+      console.error("[Dashboard] Failed to save rental order:", error);
       toast({ title: "Error", description: "Failed to save order", variant: "destructive" });
       fetchRentals();
     }
@@ -277,7 +298,8 @@ export default function AdminDashboard() {
         toast({ title: "Location deleted", description: "The rental location has been deleted successfully." });
         fetchRentals();
       }
-    } catch {
+    } catch (error) {
+      console.error("[Dashboard] Failed to delete item:", error);
       toast({ title: "Error", description: "Failed to delete item", variant: "destructive" });
     }
     
@@ -413,10 +435,15 @@ export default function AdminDashboard() {
                     onEdit={() => handleEditProject(project)}
                     onDelete={() => setDeleteTarget({ type: "project", item: project })}
                     onToggleFeatured={async () => {
-                      const currentFeatured = project.is_featured;
-                      await projectService.update(project.id, { is_featured: !currentFeatured });
-                      fetchProjects();
-                      toast({ title: currentFeatured ? "Removed from featured" : "Added to featured" });
+                      const currentFeatured = project.is_featured ?? false;
+                      try {
+                        await projectService.update(project.id, { is_featured: !currentFeatured });
+                        fetchProjects();
+                        toast({ title: currentFeatured ? "Removed from featured" : "Added to featured" });
+                      } catch (error) {
+                        console.error("[Dashboard] Failed to toggle featured:", error);
+                        toast({ title: "Error", description: "Failed to update project", variant: "destructive" });
+                      }
                     }}
                   />
                 )}
