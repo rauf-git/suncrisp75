@@ -187,13 +187,13 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
             <div className="space-y-10 sm:space-y-16">
               {contentSections.map((section, index) => (
                 <Reveal key={index} delay={300 + index * 100}>
-                  <div className={`flex flex-col ${section.image ? 'md:flex-row md:gap-6 lg:gap-8 md:items-start' : ''} ${index % 2 === 1 && section.image ? 'md:flex-row-reverse' : ''}`}>
+                  <div className="flex flex-col gap-4 sm:gap-6 md:gap-8">
                     {section.image && (
-                      <div className="w-full md:w-1/2 flex-shrink-0 mb-4 sm:mb-6 md:mb-0 rounded-lg sm:rounded-xl overflow-hidden shadow-elevated">
+                      <div className="w-full rounded-lg sm:rounded-xl overflow-hidden shadow-elevated flex-shrink-0">
                         <img 
                           src={section.image} 
                           alt={section.heading || `Section ${index + 1}`} 
-                          className="w-full h-auto object-cover aspect-[4/3] sm:aspect-video md:aspect-[4/3]"
+                          className="w-full h-auto object-cover aspect-[4/3] sm:aspect-video"
                           loading="lazy"
                           onError={(e) => {
                             (e.target as HTMLImageElement).style.display = 'none';
@@ -201,7 +201,7 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
                         />
                       </div>
                     )}
-                    <div className={section.image ? 'md:w-1/2' : ''}>
+                    <div>
                       {section.heading && (
                         <h3 className="font-serif text-lg sm:text-xl md:text-2xl lg:text-3xl text-foreground mb-3 sm:mb-4 md:mb-6 border-l-4 border-primary pl-3 sm:pl-4 md:pl-6">
                           {section.heading}
