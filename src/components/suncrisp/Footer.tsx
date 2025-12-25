@@ -1,6 +1,6 @@
 import { Phone, Mail } from "lucide-react";
 import { NAV_LINKS } from "@/constants";
-import suncrespLogo from "@/assets/suncrisp-logo-new.png";
+import suncrespLogo from "@/assets/suncrisp-logo-orange.png";
 
 interface FooterProps {
   onNavigate?: (page: string) => void;
