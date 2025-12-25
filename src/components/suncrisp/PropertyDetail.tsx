@@ -269,14 +269,14 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
             </div>
           </Reveal>
           
-          <div className="grid grid-cols-1 sm:columns-2 lg:columns-3 gap-4 sm:gap-6 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {resolvedItem.gallery.map((img: string, index: number) => (
               <Reveal key={index} delay={index * 100}>
-                <div className="group relative break-inside-avoid rounded-xl sm:rounded-2xl overflow-hidden shadow-md hover:shadow-elevated hover:-translate-y-1 transition-all duration-500 ease-in-out cursor-zoom-in mb-4 sm:mb-6 md:mb-8">
+                <div className="group relative aspect-[4/3] rounded-xl sm:rounded-2xl overflow-hidden shadow-md hover:shadow-elevated hover:-translate-y-1 transition-all duration-500 ease-in-out cursor-zoom-in">
                   <img 
                     src={img} 
-                    alt={`Gallery ${index}`} 
-                    className="w-full h-auto object-cover transform scale-100 group-hover:scale-110 transition-transform duration-1000"
+                    alt={`Gallery ${index + 1}`} 
+                    className="w-full h-full object-cover transform scale-100 group-hover:scale-110 transition-transform duration-1000"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   
