@@ -394,10 +394,10 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
         <Reveal>
           <div className="text-center mb-8 sm:mb-12 lg:mb-16">
             <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-foreground mb-3 sm:mb-4">
-              Rentals
+              Luxury Rentals
             </h2>
             <p className="font-sans text-muted-foreground text-sm sm:text-base lg:text-lg max-w-2xl mx-auto px-4">
-              Exclusive Properties for Short & Long Term Stays
+              Quality and Professional Environment with all Amenities
             </p>
           </div>
         </Reveal>
