@@ -175,30 +175,47 @@ const PropertyDetail = ({
         {/* Main Text */}
         <div className="lg:col-span-7">
           {/* Dynamic Content Sections */}
-          {contentSections.length > 0 ? <div className="space-y-10 sm:space-y-16">
-              {contentSections.map((section, index) => <Reveal key={index} delay={300 + index * 100}>
-                  <div className={`${section.image ? 'flex flex-col gap-6 sm:gap-8' : ''}`}>
-                    {section.image && <div className="w-full rounded-xl overflow-hidden shadow-elevated flex-shrink-0">
-                        
-                      </div>}
-                    <div>
-                      {section.heading && <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-foreground mb-4 sm:mb-6 border-l-4 border-primary pl-4 sm:pl-6">
-                          {section.heading}
-                        </h3>}
-                      <div className="prose prose-sm sm:prose-lg text-muted-foreground font-sans leading-relaxed sm:leading-loose whitespace-pre-line text-sm sm:text-base md:text-lg pl-4 sm:pl-6">
-                        {section.content}
+          {contentSections.length > 0 ? (
+            <div className="space-y-10 sm:space-y-16">
+              {contentSections
+                .filter((s) => (s.heading || '').trim() || (s.content || '').trim())
+                .map((section, index) => (
+                  <Reveal key={index} delay={300 + index * 100}>
+                    <div className={`${section.image ? 'flex flex-col gap-6 sm:gap-8' : ''}`}>
+                      {section.image && (
+                        <div className="w-full rounded-xl overflow-hidden shadow-elevated flex-shrink-0">
+                          <img
+                            src={section.image}
+                            alt={section.heading ? `${section.heading} image` : `Section ${index + 1} image`}
+                            className="w-full h-auto object-cover aspect-video"
+                            loading="lazy"
+                          />
+                        </div>
+                      )}
+                      <div>
+                        {section.heading && (
+                          <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-foreground mb-4 sm:mb-6 border-l-4 border-primary pl-4 sm:pl-6">
+                            {section.heading}
+                          </h3>
+                        )}
+                        <div className="prose prose-sm sm:prose-lg text-muted-foreground font-sans leading-relaxed sm:leading-loose whitespace-pre-line text-sm sm:text-base md:text-lg pl-4 sm:pl-6">
+                          {section.content}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Reveal>)}
-            </div> : <Reveal delay={300}>
+                  </Reveal>
+                ))}
+            </div>
+          ) : (
+            <Reveal delay={300}>
               <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-foreground mb-6 sm:mb-8 border-l-4 border-primary pl-4 sm:pl-6">
                 Project Overview
               </h3>
               <div className="prose prose-sm sm:prose-lg text-muted-foreground font-sans leading-relaxed sm:leading-loose whitespace-pre-line text-sm sm:text-base md:text-lg pl-4 sm:pl-6">
                 {item.detailedDescription || item.description || "No detailed description available."}
               </div>
-            </Reveal>}
+            </Reveal>
+          )}
         </div>
 
         {/* Features Sidebar */}
