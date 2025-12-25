@@ -297,7 +297,7 @@ const RentalsByLocation = ({
             <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-foreground mb-3 sm:mb-4 pr-[350px]">
               Rentals
             </h2>
-            <p className="font-sans text-muted-foreground text-sm sm:text-base lg:text-lg max-w-2xl mx-auto px-4">
+            <p className="font-sans text-muted-foreground text-sm sm:text-base lg:text-lg max-w-2xl mx-auto px-4 pl-0 pr-[107px]">
               Quality and Professional Environment with all Amenities
             </p>
           </div>
