@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { MessageCircle, X, Send, Loader2, Check, AlertCircle } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from "@/integrations/supabase/safeClient";
 import { toast } from 'sonner';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
