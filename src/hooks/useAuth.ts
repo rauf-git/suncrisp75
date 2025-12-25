@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { authService } from "@/services/authService";
 
@@ -7,6 +7,7 @@ export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const initializedRef = useRef(false);
 
   const checkAdminStatus = useCallback(async (userId: string) => {
     try {
@@ -21,8 +22,31 @@ export function useAuth() {
   useEffect(() => {
     let isMounted = true;
 
-    // Check for existing session first
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = authService.onAuthStateChange(
+      async (event, session) => {
+        if (!isMounted) return;
+        
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          await checkAdminStatus(session.user.id);
+        } else {
+          setIsAdmin(false);
+        }
+        
+        // Always set loading to false when auth state changes
+        setLoading(false);
+      }
+    );
+
+    // Then check for existing session
     const initializeAuth = async () => {
+      // Prevent double initialization
+      if (initializedRef.current) return;
+      initializedRef.current = true;
+      
       try {
         const { session } = await authService.getSession();
         
@@ -44,22 +68,6 @@ export function useAuth() {
     };
 
     initializeAuth();
-
-    // Set up auth state listener
-    const { data: { subscription } } = authService.onAuthStateChange(
-      async (event, session) => {
-        if (!isMounted) return;
-        
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          await checkAdminStatus(session.user.id);
-        } else {
-          setIsAdmin(false);
-        }
-      }
-    );
 
     return () => {
       isMounted = false;
