@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Index from "./pages/Index";
 import AboutUs from "./pages/AboutUs";
@@ -27,16 +27,8 @@ const App = () => (
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/our-brand-story" element={<BrandStory />} />
             
-            {/* Admin routes - using specific paths to avoid 404 on refresh */}
+            {/* Admin routes */}
             <Route path="/admin/login" element={<AdminLogin />} />
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute requireAdmin>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              }
-            />
             <Route
               path="/admin/dashboard"
               element={
@@ -44,6 +36,11 @@ const App = () => (
                   <AdminDashboard />
                 </ProtectedRoute>
               }
+            />
+            {/* Redirect /admin to /admin/dashboard */}
+            <Route
+              path="/admin"
+              element={<Navigate to="/admin/dashboard" replace />}
             />
             
             {/* Catch-all for 404 */}

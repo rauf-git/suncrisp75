@@ -32,6 +32,22 @@ const INITIAL_CONTACT: ContactData = {
   mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3800.4835815693146!2d83.2956!3d17.7275!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTfCsDQzJzM5LjAiTiA4M8KwMTcnNDQuMCJF!5e0!3m2!1sen!2sin!4v1709462800000!5m2!1sen!2sin"
 };
 
+// Allowed pages for URL validation
+const ALLOWED_PAGES = ['home', 'portfolio', 'construction', 'rentals', 'hospitality', 'about', 'contact'] as const;
+type AllowedPage = typeof ALLOWED_PAGES[number];
+
+const isValidPage = (page: string | null): page is AllowedPage => {
+  return page !== null && ALLOWED_PAGES.includes(page as AllowedPage);
+};
+
+// Helper to safely cast content_sections
+const safeContentSections = (data: unknown): { heading: string; content: string; image?: string }[] => {
+  if (!Array.isArray(data)) return [];
+  return data.filter((section): section is { heading: string; content: string; image?: string } => 
+    typeof section === 'object' && section !== null
+  );
+};
+
 const Index = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -39,8 +55,10 @@ const Index = () => {
   const [selectedItem, setSelectedItem] = useState<Property | null>(null);
   const [selectedSection, setSelectedSection] = useState<string>('');
   
-  // Get current page from URL params, default to 'home'
-  const currentPage = searchParams.get('page') || 'home';
+  // Get current page from URL params with validation
+  const pageParam = searchParams.get('page');
+  const currentPage: AllowedPage = isValidPage(pageParam) ? pageParam : 'home';
+  
   // Data state - separate for each section
   const [portfolioData, setPortfolioData] = useState<Property[]>([]);
   const [rentalsData, setRentalsData] = useState<Property[]>([]);
@@ -57,92 +75,105 @@ const Index = () => {
   // Fetch data from database - SEPARATE for each section
   useEffect(() => {
     const fetchData = async () => {
-      console.log("[Index] Fetching all data from database...");
+      if (import.meta.env.DEV) {
+        console.log("[Index] Fetching all data from database...");
+      }
       
-      // Fetch portfolio projects (from projects table)
-      const { data: portfolioProjects } = await projectService.getAll();
-      const mappedPortfolio: Property[] = (portfolioProjects || []).map(p => ({
-        id: p.id,
-        title: p.title,
-        type: p.category || 'Project',
-        location: p.location || '',
-        price: p.short_description || '',
-        image: p.image_url,
-        description: p.short_description || p.description || '',
-        detailedDescription: p.long_description || p.description || '',
-        features: [],
-        gallery: p.images || [],
-        is_featured: p.is_featured,
-        content_sections: ((p as unknown as Record<string, unknown>).content_sections as { heading: string; content: string; image?: string }[]) || [],
-      }));
-      setPortfolioData(mappedPortfolio);
-
-      // Filter hospitality projects from portfolio (category = Hospitality)
-      const hospitalityProperties: Property[] = (portfolioProjects || [])
-        .filter(p => (p.category || '').toLowerCase().includes('hospitality'))
-        .map(h => ({
-          id: h.id,
-          title: h.title,
-          type: 'Hospitality',
-          location: h.location || '',
-          price: h.short_description || '',
-          image: h.image_url || '',
-          description: h.short_description || h.description || '',
-          detailedDescription: h.long_description || h.description || '',
+      try {
+        // Fetch portfolio projects (from projects table)
+        const { data: portfolioProjects, error: portfolioError } = await projectService.getAll();
+        if (portfolioError) {
+          console.error("[Index] Failed to fetch portfolio:", portfolioError);
+        }
+        const mappedPortfolio: Property[] = (portfolioProjects || []).map(p => ({
+          id: p.id,
+          title: p.title,
+          type: p.category || 'Project',
+          location: p.location || '',
+          price: p.short_description || '',
+          image: p.image_url,
+          description: p.short_description || p.description || '',
+          detailedDescription: p.long_description || p.description || '',
           features: [],
-          gallery: h.images || [],
-          content_sections: ((h as unknown as Record<string, unknown>).content_sections as { heading: string; content: string; image?: string }[]) || [],
+          gallery: p.images || [],
+          is_featured: p.is_featured ?? false,
+          content_sections: safeContentSections(p.content_sections),
         }));
-      setHospitalityData(hospitalityProperties);
+        setPortfolioData(mappedPortfolio);
 
-      // Fetch construction projects (from construction_projects table)
-      const { data: constructionProjects, error: constructionError } = await constructionService.getAll();
-      console.log("[Index] Construction projects fetched:", constructionProjects?.length, "Error:", constructionError);
-      if (constructionProjects && constructionProjects.length > 0) {
-        const mappedConstruction: Property[] = constructionProjects.map(c => ({
-          id: c.id,
-          title: c.title,
-          type: c.status || 'Construction',
-          location: c.address || '',
-          price: c.status || '',
-          image: c.thumbnail_url || '',
-          description: c.description || '',
-          detailedDescription: c.description || '',
-          features: [c.status || 'Under Construction'],
-          gallery: c.images || [],
-          content_sections: ((c as unknown as Record<string, unknown>).content_sections as { heading: string; content: string; image?: string }[]) || [],
-        }));
-        console.log("[Index] Mapped construction:", mappedConstruction);
-        setConstructionData(mappedConstruction);
+        // Filter hospitality projects from portfolio (category = Hospitality)
+        const hospitalityProperties: Property[] = (portfolioProjects || [])
+          .filter(p => (p.category || '').toLowerCase().includes('hospitality'))
+          .map(h => ({
+            id: h.id,
+            title: h.title,
+            type: 'Hospitality',
+            location: h.location || '',
+            price: h.short_description || '',
+            image: h.image_url || '',
+            description: h.short_description || h.description || '',
+            detailedDescription: h.long_description || h.description || '',
+            features: [],
+            gallery: h.images || [],
+            content_sections: safeContentSections(h.content_sections),
+          }));
+        setHospitalityData(hospitalityProperties);
+
+        // Fetch construction projects (from construction_projects table)
+        const { data: constructionProjects, error: constructionError } = await constructionService.getAll();
+        if (constructionError) {
+          console.error("[Index] Failed to fetch construction:", constructionError);
+        }
+        if (constructionProjects && constructionProjects.length > 0) {
+          const mappedConstruction: Property[] = constructionProjects.map(c => ({
+            id: c.id,
+            title: c.title,
+            type: c.status || 'Construction',
+            location: c.address || '',
+            price: c.status || '',
+            image: c.thumbnail_url || '',
+            description: c.description || '',
+            detailedDescription: c.description || '',
+            features: [c.status || 'Under Construction'],
+            gallery: c.images || [],
+            content_sections: safeContentSections(c.content_sections),
+          }));
+          setConstructionData(mappedConstruction);
+        }
+
+        // Fetch rentals (from rentals table)
+        const { data: rentalItems, error: rentalError } = await rentalService.getAll();
+        if (rentalError) {
+          console.error("[Index] Failed to fetch rentals:", rentalError);
+        }
+        if (rentalItems && rentalItems.length > 0) {
+          const mappedRentals: Property[] = rentalItems.map(r => ({
+            id: r.id,
+            title: r.title,
+            type: 'Rental',
+            location: r.address || '',
+            price: r.price || '',
+            image: r.thumbnail_url || '',
+            description: r.short_description || '',
+            detailedDescription: r.long_description || r.short_description || '',
+            features: [
+              r.bedrooms ? `${r.bedrooms} Beds` : '',
+              r.bathrooms ? `${r.bathrooms} Baths` : '',
+              r.area || '',
+              ...(r.amenities || [])
+            ].filter(Boolean),
+            gallery: r.images || [],
+            content_sections: safeContentSections(r.content_sections),
+          }));
+          setRentalsData(mappedRentals);
+        }
+
+        if (import.meta.env.DEV) {
+          console.log("[Index] Fetch complete.");
+        }
+      } catch (error) {
+        console.error("[Index] Unexpected error fetching data:", error);
       }
-
-      // Fetch rentals (from rentals table)
-      const { data: rentalItems, error: rentalError } = await rentalService.getAll();
-      console.log("[Index] Rentals fetched:", rentalItems?.length, "Error:", rentalError);
-      if (rentalItems && rentalItems.length > 0) {
-        const mappedRentals: Property[] = rentalItems.map(r => ({
-          id: r.id,
-          title: r.title,
-          type: 'Rental',
-          location: r.address || '',
-          price: r.price || '',
-          image: r.thumbnail_url || '',
-          description: r.short_description || '',
-          detailedDescription: r.long_description || r.short_description || '',
-          features: [
-            r.bedrooms ? `${r.bedrooms} Beds` : '',
-            r.bathrooms ? `${r.bathrooms} Baths` : '',
-            r.area || '',
-            ...(r.amenities || [])
-          ].filter(Boolean),
-          gallery: r.images || [],
-          content_sections: ((r as unknown as Record<string, unknown>).content_sections as { heading: string; content: string; image?: string }[]) || [],
-        }));
-        console.log("[Index] Mapped rentals:", mappedRentals);
-        setRentalsData(mappedRentals);
-      }
-
-      console.log("[Index] Fetch complete.");
     };
 
     fetchData();

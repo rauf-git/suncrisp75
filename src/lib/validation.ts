@@ -1,13 +1,13 @@
 import { z } from "zod";
 
-// Common validation patterns
-const MAX_TITLE_LENGTH = 200;
-const MAX_SHORT_DESCRIPTION_LENGTH = 500;
-const MAX_LONG_DESCRIPTION_LENGTH = 10000;
-const MAX_ADDRESS_LENGTH = 500;
-const MAX_CATEGORY_LENGTH = 100;
-const MAX_URL_LENGTH = 2000;
-const MAX_TEXT_FIELD_LENGTH = 1000;
+// Common validation patterns - exported for reuse
+export const MAX_TITLE_LENGTH = 200;
+export const MAX_SHORT_DESCRIPTION_LENGTH = 500;
+export const MAX_LONG_DESCRIPTION_LENGTH = 10000;
+export const MAX_ADDRESS_LENGTH = 500;
+export const MAX_CATEGORY_LENGTH = 100;
+export const MAX_URL_LENGTH = 2000;
+export const MAX_TEXT_FIELD_LENGTH = 1000;
 
 // Utility to sanitize text input (trim and limit length)
 export const sanitizeText = (text: string | undefined | null, maxLength: number): string | undefined => {

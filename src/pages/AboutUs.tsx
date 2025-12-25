@@ -43,17 +43,18 @@ const AboutUs = () => {
     fetchContent();
   }, []);
 
-  // Listen for CMS updates
+  // Listen for CMS updates with proper typing
   useEffect(() => {
-    const handleContentUpdate = (event: CustomEvent) => {
-      if (event.detail?.page_key === 'about-us') {
+    const handleContentUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent<{ page_key?: string }>;
+      if (customEvent.detail?.page_key === 'about-us') {
         fetchContent();
       }
     };
 
-    window.addEventListener('page-content-updated', handleContentUpdate as EventListener);
+    window.addEventListener('page-content-updated', handleContentUpdate);
     return () => {
-      window.removeEventListener('page-content-updated', handleContentUpdate as EventListener);
+      window.removeEventListener('page-content-updated', handleContentUpdate);
     };
   }, []);
 
