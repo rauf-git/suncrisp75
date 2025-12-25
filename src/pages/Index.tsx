@@ -51,7 +51,6 @@ const safeContentSections = (data: unknown): { heading: string; content: string;
 const Index = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [isLoaded, setIsLoaded] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Property | null>(null);
   const [selectedSection, setSelectedSection] = useState<string>('');
   
@@ -67,10 +66,6 @@ const Index = () => {
   const [aboutData] = useState<AboutData>(INITIAL_ABOUT);
   const [contactData] = useState<ContactData>(INITIAL_CONTACT);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoaded(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Fetch data from database - SEPARATE for each section
   useEffect(() => {
@@ -339,7 +334,7 @@ const Index = () => {
   };
 
   return (
-    <div className={`min-h-screen transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+    <div className="min-h-screen">
       <Navbar 
         currentPage={currentPage} 
         onNavigate={handleNavigation}
