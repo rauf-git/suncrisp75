@@ -8,6 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface DeleteConfirmDialogProps {
   open: boolean;
@@ -28,12 +29,14 @@ export function DeleteConfirmDialog({
 }: DeleteConfirmDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-[95vw] sm:max-w-md p-4 sm:p-6">
-        <AlertDialogHeader>
+      <AlertDialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
+        <AlertDialogHeader className="px-4 sm:px-6 py-3 sm:py-4 shrink-0">
           <AlertDialogTitle className="font-serif text-lg sm:text-xl">{title}</AlertDialogTitle>
-          <AlertDialogDescription className="text-sm sm:text-base">{description}</AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="flex-col-reverse sm:flex-row gap-3 sm:gap-2 mt-4">
+        <ScrollArea className="flex-1 min-h-0 px-4 sm:px-6">
+          <AlertDialogDescription className="text-sm sm:text-base pb-4">{description}</AlertDialogDescription>
+        </ScrollArea>
+        <AlertDialogFooter className="flex-col-reverse sm:flex-row gap-3 sm:gap-2 px-4 sm:px-6 py-4 border-t border-border shrink-0">
           <AlertDialogCancel disabled={isLoading} className="w-full sm:w-auto h-9 sm:h-10 text-sm sm:text-base">Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
