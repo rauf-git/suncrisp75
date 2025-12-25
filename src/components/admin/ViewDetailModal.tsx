@@ -173,7 +173,7 @@ export function ViewDetailModal({
         </DialogHeader>
 
         {/* Scrollable Content */}
-        <ScrollArea className="flex-1 min-h-0 h-[50vh] sm:h-[60vh] md:h-[65vh]">
+        <ScrollArea className="flex-1 min-h-0 pr-4">
           <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 relative z-10">
             {/* Hero Image with classy shape */}
             {mainImage && (
