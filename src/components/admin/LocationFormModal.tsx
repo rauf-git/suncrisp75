@@ -215,7 +215,7 @@ export function LocationFormModal({ open, onOpenChange, location, onSuccess }: L
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-[95vw] sm:max-w-[90vw] md:max-w-2xl lg:max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
+      <DialogContent className="max-w-[95vw] sm:max-w-[90vw] md:max-w-2xl lg:max-w-3xl h-[90vh] max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
         <DialogHeader className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border shrink-0">
           <DialogTitle className="font-serif text-lg sm:text-xl">
             {isEditMode ? "Edit Location" : "Add Location"}
@@ -223,7 +223,7 @@ export function LocationFormModal({ open, onOpenChange, location, onSuccess }: L
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
-          <ScrollArea className="flex-1 min-h-0 h-[50vh] sm:h-[60vh] md:h-[65vh]">
+          <ScrollArea className="flex-1 min-h-0 pr-4">
             <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-5 md:space-y-6">
               {/* Name */}
               <div className="space-y-2">
