@@ -69,7 +69,7 @@ const Hero = ({
       <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-background/40" />
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 mt-4 sm:mt-8 md:mt-[61px]">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 mt-2 sm:mt-6 md:mt-10 lg:mt-[61px]">
         <div className="flex flex-col lg:grid lg:grid-cols-[1fr,auto] gap-6 sm:gap-8 lg:gap-12 items-center">
           {/* Left Column - Text Content */}
           <div className="max-w-xl order-2 lg:order-1 text-left sm:text-center lg:text-left">
