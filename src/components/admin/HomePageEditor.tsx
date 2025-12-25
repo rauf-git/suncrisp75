@@ -308,7 +308,7 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
             <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-primary" />
           </div>
         ) : (
-          <ScrollArea className="flex-1 min-h-0 h-[50vh] sm:h-[60vh] md:h-[65vh]">
+          <ScrollArea className="flex-1 min-h-0 pr-4">
             <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8">
               {/* Hero Images Section */}
               <div className="p-3 sm:p-4 rounded-lg border border-primary/20 bg-primary/5">

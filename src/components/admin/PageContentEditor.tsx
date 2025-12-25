@@ -138,7 +138,7 @@ export function PageContentEditor({
             <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-primary" />
           </div>
         ) : (
-          <ScrollArea className="flex-1 min-h-0 h-[50vh] sm:h-[60vh] md:h-[65vh]">
+          <ScrollArea className="flex-1 min-h-0 pr-4">
             <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-5 md:space-y-6">
               {/* Page Title & Subtitle */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
