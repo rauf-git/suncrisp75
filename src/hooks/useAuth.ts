@@ -22,28 +22,29 @@ export function useAuth() {
   useEffect(() => {
     let isMounted = true;
 
-    // Set up auth state listener FIRST
+    // Set up auth state listener FIRST - defer updates with setTimeout to avoid hook count issues
     const { data: { subscription } } = authService.onAuthStateChange(
-      async (event, session) => {
-        if (!isMounted) return;
-        
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          await checkAdminStatus(session.user.id);
-        } else {
-          setIsAdmin(false);
-        }
-        
-        // Always set loading to false when auth state changes
-        setLoading(false);
+      (event, session) => {
+        // Use setTimeout(0) to defer state updates and avoid "Rendered more hooks" error
+        setTimeout(() => {
+          if (!isMounted) return;
+          
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            checkAdminStatus(session.user.id);
+          } else {
+            setIsAdmin(false);
+          }
+          
+          setLoading(false);
+        }, 0);
       }
     );
 
     // Then check for existing session
     const initializeAuth = async () => {
-      // Prevent double initialization
       if (initializedRef.current) return;
       initializedRef.current = true;
       
