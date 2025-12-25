@@ -339,7 +339,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-card/80 backdrop-blur-lg border-b border-border sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="font-serif text-2xl font-semibold text-foreground">
               Admin Dashboard
@@ -363,7 +363,7 @@ export default function AdminDashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ContentType)} className="w-full">
           <TabsList className="grid w-full grid-cols-4 mb-8">
             <TabsTrigger value="portfolio" className="flex items-center gap-2">
@@ -385,7 +385,7 @@ export default function AdminDashboard() {
           </TabsList>
 
           {/* Actions Bar */}
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6 sm:mb-8">
             <div className="flex items-center gap-4">
               <h2 className="font-serif text-xl text-foreground capitalize">{activeTab}</h2>
               <span className="text-sm text-muted-foreground">
