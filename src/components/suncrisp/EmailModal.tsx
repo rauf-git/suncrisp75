@@ -1,3 +1,4 @@
+// Email contact modal component
 import { useState } from 'react';
 import { X, Send, Mail, Check, AlertCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';

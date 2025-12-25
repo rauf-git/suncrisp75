@@ -1,5 +1,5 @@
+// Reveal animation component
 import { useEffect, useRef, useState, ReactNode } from 'react';
-
 interface RevealProps {
   children: ReactNode;
   width?: "fit-content" | "100%";
