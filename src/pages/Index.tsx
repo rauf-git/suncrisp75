@@ -1,41 +1,44 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import Navbar from '@/components/suncrisp/Navbar';
-import Hero from '@/components/suncrisp/Hero';
-import Properties from '@/components/suncrisp/Properties';
-import RentalsByLocation from '@/components/suncrisp/RentalsByLocation';
-import Services from '@/components/suncrisp/Services';
-import About from '@/components/suncrisp/About';
-import ContactFooter from '@/components/suncrisp/ContactFooter';
-import Testimonials from '@/components/suncrisp/Testimonials';
-import Footer from '@/components/suncrisp/Footer';
-import PropertyDetail from '@/components/suncrisp/PropertyDetail';
-import FloatingCTA from '@/components/suncrisp/FloatingCTA';
-import FeaturedProjects from '@/components/suncrisp/FeaturedProjects';
-import BrandStorySection from '@/components/suncrisp/BrandStorySection';
-import { SectionSkeleton } from '@/components/suncrisp/SectionSkeleton';
-import { CONSTRUCTION_SERVICES } from '@/constants';
-import { Property, Service, Experience, AboutData, ContactData } from '@/types';
-import { projectService } from '@/services/projectService';
-import { rentalService } from '@/services/rentalService';
-import { constructionService } from '@/services/constructionService';
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import Navbar from "@/components/suncrisp/Navbar";
+import Hero from "@/components/suncrisp/Hero";
+import Properties from "@/components/suncrisp/Properties";
+import RentalsByLocation from "@/components/suncrisp/RentalsByLocation";
+import Services from "@/components/suncrisp/Services";
+import About from "@/components/suncrisp/About";
+import ContactFooter from "@/components/suncrisp/ContactFooter";
+import Testimonials from "@/components/suncrisp/Testimonials";
+import Footer from "@/components/suncrisp/Footer";
+import PropertyDetail from "@/components/suncrisp/PropertyDetail";
+import FloatingCTA from "@/components/suncrisp/FloatingCTA";
+import FeaturedProjects from "@/components/suncrisp/FeaturedProjects";
+import BrandStorySection from "@/components/suncrisp/BrandStorySection";
+import { SectionSkeleton } from "@/components/suncrisp/SectionSkeleton";
+import { CONSTRUCTION_SERVICES } from "@/constants";
+import { Property, Service, Experience, AboutData, ContactData } from "@/types";
+import { projectService } from "@/services/projectService";
+import { rentalService } from "@/services/rentalService";
+import { constructionService } from "@/services/constructionService";
 
 const INITIAL_ABOUT: AboutData = {
   title: "Building Futures Through Excellence",
-  description: "At Suncrisp Hospitality, we believe that true luxury lies in the integrity of construction and the art of service. With experience spanning major global markets, we have cultivated a portfolio that stands as a testament to quality.\n\nWe don't just build structures; we create environments. From the foundation to the final guest experience, our integrated approach ensures every detail resonates with purpose and elegance.",
-  image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&h=800&fit=crop&q=80"
+  description:
+    "At Suncrisp Hospitality, we believe that true luxury lies in the integrity of construction and the art of service. With experience spanning major global markets, we have cultivated a portfolio that stands as a testament to quality.\n\nWe don't just build structures; we create environments. From the foundation to the final guest experience, our integrated approach ensures every detail resonates with purpose and elegance.",
+  image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&h=800&fit=crop&q=80",
 };
 
 const INITIAL_CONTACT: ContactData = {
   email: "suncrisphospitality@gmail.com",
   phone: "+91 9559665556",
-  address: "Door No.7-8-9, Ground Floor, Flat No.102, Harbour Park Road, Siri Puram Area, Pandurangapuram, Visakhkapatnam-530003",
-  mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3800.4835815693146!2d83.2956!3d17.7275!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTfCsDQzJzM5LjAiTiA4M8KwMTcnNDQuMCJF!5e0!3m2!1sen!2sin!4v1709462800000!5m2!1sen!2sin"
+  address:
+    "Door No.7-8-9, Ground Floor, Flat No.102, Harbour Park Road, Siri Puram Area, Pandurangapuram, Visakhapatnam-530003",
+  mapUrl:
+    "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3800.4835815693146!2d83.2956!3d17.7275!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTfCsDQzJzM5LjAiTiA4M8KwMTcnNDQuMCJF!5e0!3m2!1sen!2sin!4v1709462800000!5m2!1sen!2sin",
 };
 
 // Allowed pages for URL validation
-const ALLOWED_PAGES = ['home', 'portfolio', 'construction', 'rentals', 'hospitality', 'about', 'contact'] as const;
-type AllowedPage = typeof ALLOWED_PAGES[number];
+const ALLOWED_PAGES = ["home", "portfolio", "construction", "rentals", "hospitality", "about", "contact"] as const;
+type AllowedPage = (typeof ALLOWED_PAGES)[number];
 
 const isValidPage = (page: string | null): page is AllowedPage => {
   return page !== null && ALLOWED_PAGES.includes(page as AllowedPage);
@@ -44,8 +47,9 @@ const isValidPage = (page: string | null): page is AllowedPage => {
 // Helper to safely cast content_sections
 const safeContentSections = (data: unknown): { heading: string; content: string; image?: string }[] => {
   if (!Array.isArray(data)) return [];
-  return data.filter((section): section is { heading: string; content: string; image?: string } => 
-    typeof section === 'object' && section !== null
+  return data.filter(
+    (section): section is { heading: string; content: string; image?: string } =>
+      typeof section === "object" && section !== null,
   );
 };
 
@@ -53,24 +57,24 @@ const Index = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedItem, setSelectedItem] = useState<Property | null>(null);
-  const [selectedSection, setSelectedSection] = useState<string>('');
-  
+  const [selectedSection, setSelectedSection] = useState<string>("");
+
   // Get current page from URL params with validation
-  const pageParam = searchParams.get('page');
-  const currentPage: AllowedPage = isValidPage(pageParam) ? pageParam : 'home';
-  
+  const pageParam = searchParams.get("page");
+  const currentPage: AllowedPage = isValidPage(pageParam) ? pageParam : "home";
+
   // Data state with loading flags - separate for each section
   const [portfolioData, setPortfolioData] = useState<Property[]>([]);
   const [portfolioLoading, setPortfolioLoading] = useState(true);
-  
+
   const [rentalsData, setRentalsData] = useState<Property[]>([]);
   const [rentalsLoading, setRentalsLoading] = useState(true);
-  
+
   const [constructionData, setConstructionData] = useState<Property[]>([]);
   const [constructionLoading, setConstructionLoading] = useState(true);
-  
+
   const [hospitalityData, setHospitalityData] = useState<Property[]>([]);
-  
+
   const [aboutData] = useState<AboutData>(INITIAL_ABOUT);
   const [contactData] = useState<ContactData>(INITIAL_CONTACT);
 
@@ -83,34 +87,34 @@ const Index = () => {
         if (error) {
           console.error("[Index] Failed to fetch portfolio:", error);
         }
-        const mappedPortfolio: Property[] = (portfolioProjects || []).map(p => ({
+        const mappedPortfolio: Property[] = (portfolioProjects || []).map((p) => ({
           id: p.id,
           title: p.title,
-          type: p.category || 'Project',
-          location: p.location || '',
-          price: p.short_description || '',
+          type: p.category || "Project",
+          location: p.location || "",
+          price: p.short_description || "",
           image: p.image_url,
-          description: p.short_description || p.description || '',
-          detailedDescription: p.long_description || p.description || '',
+          description: p.short_description || p.description || "",
+          detailedDescription: p.long_description || p.description || "",
           features: [],
           gallery: p.images || [],
           is_featured: p.is_featured ?? false,
           content_sections: safeContentSections(p.content_sections),
         }));
         setPortfolioData(mappedPortfolio);
-        
+
         // Also set hospitality data from portfolio
         const hospitalityProperties: Property[] = (portfolioProjects || [])
-          .filter(p => (p.category || '').toLowerCase().includes('hospitality'))
-          .map(h => ({
+          .filter((p) => (p.category || "").toLowerCase().includes("hospitality"))
+          .map((h) => ({
             id: h.id,
             title: h.title,
-            type: 'Hospitality',
-            location: h.location || '',
-            price: h.short_description || '',
-            image: h.image_url || '',
-            description: h.short_description || h.description || '',
-            detailedDescription: h.long_description || h.description || '',
+            type: "Hospitality",
+            location: h.location || "",
+            price: h.short_description || "",
+            image: h.image_url || "",
+            description: h.short_description || h.description || "",
+            detailedDescription: h.long_description || h.description || "",
             features: [],
             gallery: h.images || [],
             content_sections: safeContentSections(h.content_sections),
@@ -129,16 +133,16 @@ const Index = () => {
           console.error("[Index] Failed to fetch construction:", error);
         }
         if (constructionProjects && constructionProjects.length > 0) {
-          const mappedConstruction: Property[] = constructionProjects.map(c => ({
+          const mappedConstruction: Property[] = constructionProjects.map((c) => ({
             id: c.id,
             title: c.title,
-            type: c.status || 'Construction',
-            location: c.address || '',
-            price: c.status || '',
-            image: c.thumbnail_url || '',
-            description: c.description || '',
-            detailedDescription: c.description || '',
-            features: [c.status || 'Under Construction'],
+            type: c.status || "Construction",
+            location: c.address || "",
+            price: c.status || "",
+            image: c.thumbnail_url || "",
+            description: c.description || "",
+            detailedDescription: c.description || "",
+            features: [c.status || "Under Construction"],
             gallery: c.images || [],
             content_sections: safeContentSections(c.content_sections),
           }));
@@ -157,20 +161,20 @@ const Index = () => {
           console.error("[Index] Failed to fetch rentals:", error);
         }
         if (rentalItems && rentalItems.length > 0) {
-          const mappedRentals: Property[] = rentalItems.map(r => ({
+          const mappedRentals: Property[] = rentalItems.map((r) => ({
             id: r.id,
             title: r.title,
-            type: 'Rental',
-            location: r.address || '',
-            price: r.price || '',
-            image: r.thumbnail_url || '',
-            description: r.short_description || '',
-            detailedDescription: r.long_description || r.short_description || '',
+            type: "Rental",
+            location: r.address || "",
+            price: r.price || "",
+            image: r.thumbnail_url || "",
+            description: r.short_description || "",
+            detailedDescription: r.long_description || r.short_description || "",
             features: [
-              r.bedrooms ? `${r.bedrooms} Beds` : '',
-              r.bathrooms ? `${r.bathrooms} Baths` : '',
-              r.area || '',
-              ...(r.amenities || [])
+              r.bedrooms ? `${r.bedrooms} Beds` : "",
+              r.bathrooms ? `${r.bathrooms} Baths` : "",
+              r.area || "",
+              ...(r.amenities || []),
             ].filter(Boolean),
             gallery: r.images || [],
             content_sections: safeContentSections(r.content_sections),
@@ -190,34 +194,34 @@ const Index = () => {
 
   // Scroll to top when page changes
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentPage, selectedItem]);
 
   const handleNavigation = (page: string) => {
     // Navigate to brand-story page
-    if (page === 'brand-story') {
-      navigate('/our-brand-story');
+    if (page === "brand-story") {
+      navigate("/our-brand-story");
       return;
     }
     // Update URL query param instead of local state
-    if (page === 'home') {
+    if (page === "home") {
       setSearchParams({});
     } else {
       setSearchParams({ page });
     }
     setSelectedItem(null);
-    setSelectedSection('');
+    setSelectedSection("");
   };
 
   const handleItemClick = (section: string, item: Property | Service | Experience) => {
     // Convert Experience to Property format for detail view
-    if ('priceStart' in item) {
+    if ("priceStart" in item) {
       const exp = item as Experience & { detailedDescription?: string; gallery?: string[]; location?: string };
       const propertyItem: Property = {
         id: exp.id,
         title: exp.title,
-        type: 'Hospitality',
-        location: exp.location || '',
+        type: "Hospitality",
+        location: exp.location || "",
         price: exp.priceStart,
         image: exp.image,
         description: exp.description,
@@ -227,7 +231,7 @@ const Index = () => {
       };
       setSelectedItem(propertyItem);
       setSelectedSection(section);
-    } else if ('features' in item) {
+    } else if ("features" in item) {
       setSelectedItem(item as Property);
       setSelectedSection(section);
     }
@@ -235,25 +239,19 @@ const Index = () => {
 
   const handleBack = () => {
     setSelectedItem(null);
-    setSelectedSection('');
+    setSelectedSection("");
   };
 
   const renderPage = () => {
     // Show detail view if an item is selected
     if (selectedItem) {
-      return (
-        <PropertyDetail 
-          item={selectedItem} 
-          section={selectedSection}
-          onBack={handleBack}
-        />
-      );
+      return <PropertyDetail item={selectedItem} section={selectedSection} onBack={handleBack} />;
     }
 
     switch (currentPage) {
-      case 'home':
+      case "home":
         // Get featured projects from portfolio
-        const featuredProjects = portfolioData.filter(p => p.is_featured);
+        const featuredProjects = portfolioData.filter((p) => p.is_featured);
         return (
           <>
             <Hero onNavigate={handleNavigation} />
@@ -261,10 +259,10 @@ const Index = () => {
             {portfolioLoading ? (
               <SectionSkeleton title="Our Portfolio" cardCount={3} variant="carousel" />
             ) : featuredProjects.length > 0 ? (
-              <FeaturedProjects 
+              <FeaturedProjects
                 items={featuredProjects}
-                onItemClick={(item) => handleItemClick('portfolio', item)}
-                onViewAll={() => handleNavigation('portfolio')}
+                onItemClick={(item) => handleItemClick("portfolio", item)}
+                onViewAll={() => handleNavigation("portfolio")}
                 title="Our Portfolio"
               />
             ) : null}
@@ -272,10 +270,10 @@ const Index = () => {
             {constructionLoading ? (
               <SectionSkeleton title="Commercial Property" cardCount={2} variant="grid" />
             ) : constructionData.length > 0 ? (
-              <FeaturedProjects 
+              <FeaturedProjects
                 items={constructionData.slice(0, 2)}
-                onItemClick={(item) => handleItemClick('construction', item)}
-                onViewAll={() => handleNavigation('construction')}
+                onItemClick={(item) => handleItemClick("construction", item)}
+                onViewAll={() => handleNavigation("construction")}
                 title="Commercial Property"
                 variant="grid"
               />
@@ -285,7 +283,7 @@ const Index = () => {
             <Testimonials />
           </>
         );
-      case 'portfolio':
+      case "portfolio":
         return (
           <div className="pt-20">
             {portfolioLoading ? (
@@ -295,12 +293,12 @@ const Index = () => {
                 title="Our Portfolio"
                 subtitle="Showcasing Excellence in Development & Design"
                 items={portfolioData}
-                onItemClick={(item) => handleItemClick('portfolio', item)}
+                onItemClick={(item) => handleItemClick("portfolio", item)}
               />
             )}
           </div>
         );
-      case 'construction':
+      case "construction":
         return (
           <div className="pt-20">
             {constructionLoading ? (
@@ -310,30 +308,28 @@ const Index = () => {
                 title="Construction Projects"
                 subtitle="Building Excellence with Precision"
                 items={constructionData}
-                onItemClick={(item) => handleItemClick('construction', item)}
+                onItemClick={(item) => handleItemClick("construction", item)}
               />
             ) : (
               <Services
                 title="Construction Services"
                 items={CONSTRUCTION_SERVICES}
-                onItemClick={(item) => handleItemClick('construction', item)}
+                onItemClick={(item) => handleItemClick("construction", item)}
               />
             )}
           </div>
         );
-      case 'rentals':
+      case "rentals":
         return (
           <div className="pt-20">
             {rentalsLoading ? (
               <SectionSkeleton title="Rentals" cardCount={4} variant="grid" />
             ) : (
-              <RentalsByLocation
-                onItemClick={(item) => handleItemClick('rentals', item)}
-              />
+              <RentalsByLocation onItemClick={(item) => handleItemClick("rentals", item)} />
             )}
           </div>
         );
-      case 'hospitality':
+      case "hospitality":
         return (
           <div className="pt-20">
             {portfolioLoading ? (
@@ -343,18 +339,18 @@ const Index = () => {
                 title="Hospitality"
                 subtitle="Exceptional Hospitality Experiences"
                 items={hospitalityData}
-                onItemClick={(item) => handleItemClick('hospitality', item)}
+                onItemClick={(item) => handleItemClick("hospitality", item)}
               />
             )}
           </div>
         );
-      case 'about':
+      case "about":
         return (
           <div className="pt-20">
             <About data={aboutData} />
           </div>
         );
-      case 'contact':
+      case "contact":
         return (
           <div className="pt-20">
             <ContactFooter data={contactData} />
@@ -367,22 +363,15 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <Navbar 
-        currentPage={currentPage} 
-        onNavigate={handleNavigation}
-      />
+      <Navbar currentPage={currentPage} onNavigate={handleNavigation} />
 
-      <main>
-        {renderPage()}
-      </main>
+      <main>{renderPage()}</main>
 
       {/* Floating CTA Button - Right Side */}
       <FloatingCTA isVisible={!selectedItem} />
 
       {/* Footer - hide on contact page which has its own dark section */}
-      {currentPage !== 'contact' && !selectedItem && (
-        <Footer onNavigate={handleNavigation} />
-      )}
+      {currentPage !== "contact" && !selectedItem && <Footer onNavigate={handleNavigation} />}
     </div>
   );
 };
