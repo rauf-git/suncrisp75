@@ -7,6 +7,7 @@ export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [adminCheckComplete, setAdminCheckComplete] = useState(false);
   const initializedRef = useRef(false);
 
   const checkAdminStatus = useCallback(async (userId: string) => {
@@ -16,6 +17,8 @@ export function useAuth() {
     } catch (error) {
       console.error("[useAuth] Failed to check admin status:", error);
       setIsAdmin(false);
+    } finally {
+      setAdminCheckComplete(true);
     }
   }, []);
 
@@ -36,9 +39,9 @@ export function useAuth() {
             checkAdminStatus(session.user.id);
           } else {
             setIsAdmin(false);
+            setAdminCheckComplete(true);
+            setLoading(false);
           }
-          
-          setLoading(false);
         }, 0);
       }
     );
@@ -58,9 +61,12 @@ export function useAuth() {
         
         if (session?.user) {
           await checkAdminStatus(session.user.id);
+        } else {
+          setAdminCheckComplete(true);
         }
       } catch (error) {
         console.error("[useAuth] Failed to initialize auth:", error);
+        setAdminCheckComplete(true);
       } finally {
         if (isMounted) {
           setLoading(false);
@@ -77,6 +83,7 @@ export function useAuth() {
   }, [checkAdminStatus]);
 
   const signIn = async (email: string, password: string) => {
+    setAdminCheckComplete(false);
     const { data, error } = await authService.signIn(email, password);
     return { data, error };
   };
@@ -92,15 +99,19 @@ export function useAuth() {
       setUser(null);
       setSession(null);
       setIsAdmin(false);
+      setAdminCheckComplete(true);
     }
     return { error };
   };
+
+  // Only consider fully loaded when both auth and admin check are complete
+  const isFullyLoaded = !loading && adminCheckComplete;
 
   return {
     user,
     session,
     isAdmin,
-    loading,
+    loading: !isFullyLoaded,
     signIn,
     signUp,
     signOut,
