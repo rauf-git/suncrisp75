@@ -183,31 +183,28 @@ const PropertyDetail = ({ item, section = 'property', onBack }: PropertyDetailPr
         {/* Main Text */}
         <div className="lg:col-span-7">
           {/* Dynamic Content Sections */}
-{contentSections.length > 0 ? (
+          {contentSections.length > 0 ? (
             <div className="space-y-10 sm:space-y-16">
               {contentSections.map((section, index) => (
                 <Reveal key={index} delay={300 + index * 100}>
-                  <div className="flex flex-col gap-4 sm:gap-6 md:gap-8">
+                  <div className={`${section.image ? 'flex flex-col gap-6 sm:gap-8' : ''}`}>
                     {section.image && (
-                      <div className="w-full rounded-lg sm:rounded-xl overflow-hidden shadow-elevated flex-shrink-0">
+                      <div className="w-full rounded-xl overflow-hidden shadow-elevated flex-shrink-0">
                         <img 
                           src={section.image} 
                           alt={section.heading || `Section ${index + 1}`} 
-                          className="w-full h-auto object-cover aspect-[4/3] sm:aspect-video"
+                          className="w-full h-auto object-cover aspect-video"
                           loading="lazy"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
-                          }}
                         />
                       </div>
                     )}
                     <div>
                       {section.heading && (
-                        <h3 className="font-serif text-lg sm:text-xl md:text-2xl lg:text-3xl text-foreground mb-3 sm:mb-4 md:mb-6 border-l-4 border-primary pl-3 sm:pl-4 md:pl-6">
+                        <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-foreground mb-4 sm:mb-6 border-l-4 border-primary pl-4 sm:pl-6">
                           {section.heading}
                         </h3>
                       )}
-                      <div className="prose prose-sm sm:prose-base md:prose-lg text-muted-foreground font-sans leading-relaxed sm:leading-loose whitespace-pre-line text-sm sm:text-base md:text-lg pl-3 sm:pl-4 md:pl-6">
+                      <div className="prose prose-sm sm:prose-lg text-muted-foreground font-sans leading-relaxed sm:leading-loose whitespace-pre-line text-sm sm:text-base md:text-lg pl-4 sm:pl-6">
                         {section.content}
                       </div>
                     </div>
