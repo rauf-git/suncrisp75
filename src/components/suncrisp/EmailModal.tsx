@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { X, Send, Mail, Check, AlertCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -8,7 +8,7 @@ interface EmailModalProps {
   onClose: () => void;
 }
 
-const EmailModal = React.forwardRef<HTMLDivElement, EmailModalProps>(({ isOpen, onClose }, ref) => {
+const EmailModal = ({ isOpen, onClose }: EmailModalProps) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -23,11 +23,11 @@ const EmailModal = React.forwardRef<HTMLDivElement, EmailModalProps>(({ isOpen, 
     setErrorMessage('');
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
       setStatus('success');
       toast.success('Message sent successfully!');
-
+      
       setTimeout(() => {
         onClose();
         setTimeout(() => {
@@ -44,12 +44,16 @@ const EmailModal = React.forwardRef<HTMLDivElement, EmailModalProps>(({ isOpen, 
   };
 
   return (
-    <div ref={ref} className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 sm:p-6">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 sm:p-6">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-foreground/60 backdrop-blur-sm transition-opacity" onClick={onClose} />
-
+      <div 
+        className="absolute inset-0 bg-foreground/60 backdrop-blur-sm transition-opacity"
+        onClick={onClose}
+      />
+      
       {/* Modal Container */}
       <div className="relative w-full max-w-[95vw] sm:max-w-lg max-h-[90vh] bg-card border border-border shadow-2xl rounded-t-2xl sm:rounded-2xl overflow-hidden animate-fade-in flex flex-col">
+        
         {/* Header */}
         <div className="p-4 sm:p-6 border-b border-border flex justify-between items-center bg-secondary shrink-0">
           <div className="flex items-center gap-2 sm:gap-3">
@@ -61,7 +65,7 @@ const EmailModal = React.forwardRef<HTMLDivElement, EmailModalProps>(({ isOpen, 
               <p className="text-xs text-muted-foreground mt-1">Send us a message directly</p>
             </div>
           </div>
-          <button
+          <button 
             onClick={onClose}
             className="text-muted-foreground hover:text-foreground transition-colors p-2 hover:bg-background rounded-full min-w-[44px] min-h-[44px] flex items-center justify-center"
           >
@@ -85,8 +89,8 @@ const EmailModal = React.forwardRef<HTMLDivElement, EmailModalProps>(({ isOpen, 
               <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
                 <div>
                   <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-semibold">Name</label>
-                  <input
-                    type="text"
+                  <input 
+                    type="text" 
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -96,8 +100,8 @@ const EmailModal = React.forwardRef<HTMLDivElement, EmailModalProps>(({ isOpen, 
                 </div>
                 <div>
                   <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-semibold">Email</label>
-                  <input
-                    type="email"
+                  <input 
+                    type="email" 
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -107,7 +111,7 @@ const EmailModal = React.forwardRef<HTMLDivElement, EmailModalProps>(({ isOpen, 
                 </div>
                 <div>
                   <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-semibold">Message</label>
-                  <textarea
+                  <textarea 
                     required
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
@@ -124,8 +128,8 @@ const EmailModal = React.forwardRef<HTMLDivElement, EmailModalProps>(({ isOpen, 
                   </div>
                 )}
 
-                <button
-                  type="submit"
+                <button 
+                  type="submit" 
                   disabled={status === 'loading'}
                   className="w-full btn-primary rounded-lg flex items-center justify-center gap-2 mt-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg h-11 sm:h-12 text-sm sm:text-base"
                 >
@@ -146,8 +150,6 @@ const EmailModal = React.forwardRef<HTMLDivElement, EmailModalProps>(({ isOpen, 
       </div>
     </div>
   );
-});
-
-EmailModal.displayName = 'EmailModal';
+};
 
 export default EmailModal;
