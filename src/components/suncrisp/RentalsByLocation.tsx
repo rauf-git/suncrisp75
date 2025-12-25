@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { rentalService, RentalLocation, Rental } from '@/services/rentalService';
-import Reveal from './Reveal';
-import { Property } from '@/types';
-import { ChevronLeft, ArrowRight, Bed, Bath, Maximize } from 'lucide-react';
-import ContentSections from './ContentSections';
-import { AutoCarousel } from '@/components/ui/auto-carousel';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+import { useState, useEffect } from "react";
+import { rentalService, RentalLocation, Rental } from "@/services/rentalService";
+import Reveal from "./Reveal";
+import { Property } from "@/types";
+import { ChevronLeft, ArrowRight, Bed, Bath, Maximize } from "lucide-react";
+import ContentSections from "./ContentSections";
+import { AutoCarousel } from "@/components/ui/auto-carousel";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface RentalsByLocationProps {
   onItemClick: (item: Property) => void;
@@ -17,18 +17,12 @@ interface LocationWithRentals extends RentalLocation {
 }
 
 // Featured Property Card (Full Width)
-const FeaturedPropertyCard = ({ 
-  rental, 
-  onClick 
-}: { 
-  rental: Rental; 
-  onClick: () => void;
-}) => {
-  const images = rental.images?.length ? rental.images : (rental.thumbnail_url ? [rental.thumbnail_url] : []);
+const FeaturedPropertyCard = ({ rental, onClick }: { rental: Rental; onClick: () => void }) => {
+  const images = rental.images?.length ? rental.images : rental.thumbnail_url ? [rental.thumbnail_url] : [];
   const amenities = rental.amenities?.slice(0, 6) || [];
 
   return (
-    <div 
+    <div
       className="group cursor-pointer bg-card border border-border rounded-xl sm:rounded-2xl overflow-hidden hover:shadow-elevated hover:border-primary/30 transition-all duration-300"
       onClick={onClick}
     >
@@ -69,7 +63,7 @@ const FeaturedPropertyCard = ({
                 {rental.short_description}
               </p>
             )}
-            
+
             {/* Property features */}
             <div className="flex flex-wrap gap-3 sm:gap-4 pt-1 sm:pt-2">
               {rental.bedrooms && (
@@ -96,7 +90,10 @@ const FeaturedPropertyCard = ({
             {amenities.length > 0 && (
               <div className="flex flex-wrap gap-1.5 sm:gap-2 pt-1 sm:pt-2">
                 {amenities.slice(0, 4).map((amenity, index) => (
-                  <span key={index} className="text-[10px] sm:text-xs md:text-sm bg-muted px-2 py-1 sm:px-3 sm:py-1.5 rounded-full">
+                  <span
+                    key={index}
+                    className="text-[10px] sm:text-xs md:text-sm bg-muted px-2 py-1 sm:px-3 sm:py-1.5 rounded-full"
+                  >
                     {amenity}
                   </span>
                 ))}
@@ -108,10 +105,13 @@ const FeaturedPropertyCard = ({
               </div>
             )}
 
-            <Button 
+            <Button
               className="w-full sm:w-auto mt-3 sm:mt-4 group/btn min-h-[44px]"
               size="lg"
-              onClick={(e) => { e.stopPropagation(); onClick(); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onClick();
+              }}
             >
               View Property
               <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
@@ -124,17 +124,11 @@ const FeaturedPropertyCard = ({
 };
 
 // Location Card (Right Side Small Cards) with Auto-Rotating Carousel
-const LocationCardSmall = ({ 
-  location
-}: { 
-  location: LocationWithRentals;
-}) => {
-  const images = location.images?.length ? location.images : (location.image_url ? [location.image_url] : []);
-  
+const LocationCardSmall = ({ location }: { location: LocationWithRentals }) => {
+  const images = location.images?.length ? location.images : location.image_url ? [location.image_url] : [];
+
   return (
-    <div 
-      className="group bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated hover:border-primary/30 transition-all duration-300 h-full flex flex-col"
-    >
+    <div className="group bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated hover:border-primary/30 transition-all duration-300 h-full flex flex-col">
       {/* Image Carousel - auto-rotating */}
       <div className="relative aspect-[16/10] sm:aspect-[16/9] overflow-hidden">
         <AutoCarousel
@@ -146,7 +140,7 @@ const LocationCardSmall = ({
           showCounter={true}
           pauseOnHover={true}
         />
-        
+
         {/* Location tag */}
         <div className="absolute top-2 left-2 sm:top-3 sm:left-3">
           <span className="bg-primary text-primary-foreground text-[10px] sm:text-xs font-bold px-2 py-1 rounded-md shadow-sm">
@@ -154,16 +148,14 @@ const LocationCardSmall = ({
           </span>
         </div>
       </div>
-      
+
       {/* Location Info */}
       <div className="p-3 sm:p-4 flex-1 flex flex-col">
         <h4 className="font-serif text-base sm:text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
           {location.name}
         </h4>
         {location.description && (
-          <p className="text-muted-foreground text-xs sm:text-sm mt-1 line-clamp-2">
-            {location.description}
-          </p>
+          <p className="text-muted-foreground text-xs sm:text-sm mt-1 line-clamp-2">{location.description}</p>
         )}
       </div>
     </div>
@@ -200,11 +192,11 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
   const fetchData = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const [locationsResult, rentalsResult] = await Promise.all([
         rentalService.getAllLocations(),
-        rentalService.getAll()
+        rentalService.getAll(),
       ]);
 
       if (locationsResult.error) throw new Error(locationsResult.error.message);
@@ -215,27 +207,30 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
 
       // Group rentals by location using location_ids array
       const locationMap = new Map<string, LocationWithRentals>();
-      locations.forEach(loc => {
+      locations.forEach((loc) => {
         locationMap.set(loc.id, { ...loc, rentals: [] });
       });
 
-      rentals.forEach(rental => {
+      rentals.forEach((rental) => {
         // Check location_ids array first, fallback to location_id for backward compatibility
-        const rentalLocationIds = rental.location_ids?.length ? rental.location_ids : (rental.location_id ? [rental.location_id] : []);
-        rentalLocationIds.forEach(locId => {
+        const rentalLocationIds = rental.location_ids?.length
+          ? rental.location_ids
+          : rental.location_id
+            ? [rental.location_id]
+            : [];
+        rentalLocationIds.forEach((locId) => {
           if (locationMap.has(locId)) {
             locationMap.get(locId)!.rentals.push(rental);
           }
         });
       });
 
-      const allLocations = Array.from(locationMap.values())
-        .sort((a, b) => a.display_order - b.display_order);
+      const allLocations = Array.from(locationMap.values()).sort((a, b) => a.display_order - b.display_order);
 
       setLocationsWithRentals(allLocations);
       setAllRentals(rentals);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load data');
+      setError(err instanceof Error ? err.message : "Failed to load data");
     } finally {
       setIsLoading(false);
     }
@@ -248,17 +243,17 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
   const mapRentalToProperty = (rental: Rental): Property => ({
     id: rental.id,
     title: rental.title,
-    type: 'Rental',
-    location: rental.address || '',
-    price: rental.price || '',
-    image: rental.thumbnail_url || '',
-    description: rental.short_description || '',
-    detailedDescription: rental.long_description || rental.short_description || '',
+    type: "Rental",
+    location: rental.address || "",
+    price: rental.price || "",
+    image: rental.thumbnail_url || "",
+    description: rental.short_description || "",
+    detailedDescription: rental.long_description || rental.short_description || "",
     features: [
-      rental.bedrooms ? `${rental.bedrooms} Beds` : '',
-      rental.bathrooms ? `${rental.bathrooms} Baths` : '',
-      rental.area || '',
-      ...(rental.amenities || [])
+      rental.bedrooms ? `${rental.bedrooms} Beds` : "",
+      rental.bathrooms ? `${rental.bathrooms} Baths` : "",
+      rental.area || "",
+      ...(rental.amenities || []),
     ].filter(Boolean),
     gallery: rental.images || [],
     content_sections: (rental.content_sections as { heading: string; content: string }[]) || [],
@@ -284,7 +279,7 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
   const hasNoContent = locationsWithRentals.length === 0 && allRentals.length === 0;
 
   // Get featured rental (first one) and top 3 locations
-  const featuredRental = allRentals.find(r => r.is_featured) || allRentals[0];
+  const featuredRental = allRentals.find((r) => r.is_featured) || allRentals[0];
   const topLocations = locationsWithRentals.slice(0, 3);
 
   // Location Detail View
@@ -294,7 +289,7 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back button */}
           <Reveal>
-            <button 
+            <button
               onClick={() => setSelectedLocation(null)}
               className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6 sm:mb-8 min-h-[44px]"
             >
@@ -321,11 +316,11 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
           {selectedLocation.content_sections && selectedLocation.content_sections.length > 0 && (
             <Reveal delay={200}>
               <div className="mb-8 sm:mb-12">
-                <ContentSections 
-                  sections={selectedLocation.content_sections.map(s => ({
-                    heading: s.heading || '',
-                    content: s.content || '',
-                    image: s.image
+                <ContentSections
+                  sections={selectedLocation.content_sections.map((s) => ({
+                    heading: s.heading || "",
+                    content: s.content || "",
+                    image: s.image,
                   }))}
                 />
               </div>
@@ -343,7 +338,7 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
                   >
                     <div className="relative aspect-[4/3] overflow-hidden">
                       <img
-                        src={rental.thumbnail_url || '/placeholder.svg'}
+                        src={rental.thumbnail_url || "/placeholder.svg"}
                         alt={rental.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                       />
@@ -361,10 +356,14 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
                       </h4>
                       <div className="flex flex-wrap gap-1.5 sm:gap-2">
                         {rental.bedrooms && (
-                          <span className="text-[10px] sm:text-xs bg-muted px-2 py-1 rounded">{rental.bedrooms} Beds</span>
+                          <span className="text-[10px] sm:text-xs bg-muted px-2 py-1 rounded">
+                            {rental.bedrooms} Beds
+                          </span>
                         )}
                         {rental.bathrooms && (
-                          <span className="text-[10px] sm:text-xs bg-muted px-2 py-1 rounded">{rental.bathrooms} Baths</span>
+                          <span className="text-[10px] sm:text-xs bg-muted px-2 py-1 rounded">
+                            {rental.bathrooms} Baths
+                          </span>
                         )}
                         {rental.area && (
                           <span className="text-[10px] sm:text-xs bg-muted px-2 py-1 rounded">{rental.area}</span>
@@ -377,7 +376,9 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
             </div>
           ) : (
             <div className="text-center py-8 sm:py-12">
-              <p className="text-muted-foreground text-sm sm:text-base">No properties available in this location yet.</p>
+              <p className="text-muted-foreground text-sm sm:text-base">
+                No properties available in this location yet.
+              </p>
             </div>
           )}
         </div>
@@ -393,7 +394,7 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
         <Reveal>
           <div className="text-center mb-8 sm:mb-12 lg:mb-16">
             <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-foreground mb-3 sm:mb-4">
-              Luxury Rentals
+              Rentals
             </h2>
             <p className="font-sans text-muted-foreground text-sm sm:text-base lg:text-lg max-w-2xl mx-auto px-4">
               Exclusive Properties for Short & Long Term Stays
@@ -428,32 +429,33 @@ const RentalsByLocation = ({ onItemClick }: RentalsByLocationProps) => {
               ))}
 
               {/* If less than 3 locations, show remaining rentals */}
-              {topLocations.length < 3 && allRentals.slice(1, 4 - topLocations.length).map((rental, index) => (
-                <Reveal key={rental.id} delay={200 + index * 50}>
-                  <div
-                    className="group cursor-pointer bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated hover:border-primary/30 transition-all duration-300 h-full"
-                    onClick={() => onItemClick(mapRentalToProperty(rental))}
-                  >
-                    <div className="relative aspect-[16/10] overflow-hidden">
-                      <img
-                        src={rental.thumbnail_url || '/placeholder.svg'}
-                        alt={rental.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
+              {topLocations.length < 3 &&
+                allRentals.slice(1, 4 - topLocations.length).map((rental, index) => (
+                  <Reveal key={rental.id} delay={200 + index * 50}>
+                    <div
+                      className="group cursor-pointer bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated hover:border-primary/30 transition-all duration-300 h-full"
+                      onClick={() => onItemClick(mapRentalToProperty(rental))}
+                    >
+                      <div className="relative aspect-[16/10] overflow-hidden">
+                        <img
+                          src={rental.thumbnail_url || "/placeholder.svg"}
+                          alt={rental.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                      <div className="p-3 sm:p-4">
+                        <h4 className="font-serif text-base sm:text-lg font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                          {rental.title}
+                        </h4>
+                        {rental.short_description && (
+                          <p className="text-muted-foreground text-xs sm:text-sm mt-1 line-clamp-2">
+                            {rental.short_description}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <div className="p-3 sm:p-4">
-                      <h4 className="font-serif text-base sm:text-lg font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
-                        {rental.title}
-                      </h4>
-                      {rental.short_description && (
-                        <p className="text-muted-foreground text-xs sm:text-sm mt-1 line-clamp-2">
-                          {rental.short_description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </Reveal>
-              ))}
+                  </Reveal>
+                ))}
             </div>
           </div>
         )}
