@@ -69,10 +69,10 @@ const Hero = ({
       <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-background/40" />
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 mt-[61px]">
-        <div className="flex flex-col lg:grid lg:grid-cols-[1fr,auto] gap-8 lg:gap-12 items-center">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 mt-4 sm:mt-8 md:mt-[61px]">
+        <div className="flex flex-col lg:grid lg:grid-cols-[1fr,auto] gap-6 sm:gap-8 lg:gap-12 items-center">
           {/* Left Column - Text Content */}
-          <div className="max-w-xl order-2 lg:order-1 text-center lg:text-left">
+          <div className="max-w-xl order-2 lg:order-1 text-left sm:text-center lg:text-left">
             <Reveal delay={200}>
               <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight tracking-tight">
                 <span className="text-primary">​Sun</span>
@@ -90,7 +90,7 @@ const Hero = ({
             </Reveal>
 
             <Reveal delay={400}>
-              <p className="font-sans text-muted-foreground text-sm sm:text-base tracking-wide max-w-md mx-auto lg:mx-0 mb-6 leading-relaxed text-right sm:text-center lg:text-left">
+              <p className="font-sans text-muted-foreground text-sm sm:text-base tracking-wide max-w-md lg:mx-0 mb-6 leading-relaxed">
                 {heroData.description || 'From groundbreaking construction to exquisite rentals and world-class experiences. We build the future and curate the present.'}
               </p>
             </Reveal>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface HeroImageCarouselProps {
   images: string[];
@@ -11,16 +11,28 @@ const HeroImageCarousel = ({
 }: HeroImageCarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const nextSlide = useCallback(() => {
-    setCurrentIndex(prev => (prev + 1) % images.length);
-  }, [images.length]);
+  // Clear and restart timer
+  const startTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    if (images.length > 1 && !isPaused) {
+      timerRef.current = setInterval(() => {
+        setCurrentIndex(prev => (prev + 1) % images.length);
+      }, interval);
+    }
+  };
 
   useEffect(() => {
-    if (images.length <= 1 || isPaused) return;
-    const timer = setInterval(nextSlide, interval);
-    return () => clearInterval(timer);
-  }, [images.length, interval, nextSlide, isPaused]);
+    startTimer();
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [images.length, interval, isPaused]);
 
   // Log warning if no images
   if (!images || images.length === 0) {
