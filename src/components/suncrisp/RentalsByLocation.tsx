@@ -294,10 +294,10 @@ const RentalsByLocation = ({
         {/* Header */}
         <Reveal>
           <div className="text-center mb-8 sm:mb-12 lg:mb-16">
-            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-foreground mb-3 sm:mb-4 pr-[240px]">
+            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-foreground mb-3 sm:mb-4">
               Rentals
             </h2>
-            <p className="font-sans text-muted-foreground text-sm sm:text-base lg:text-lg max-w-2xl mx-auto px-4 pr-[107px] pl-[10px]">
+            <p className="font-sans text-muted-foreground text-sm sm:text-base lg:text-lg max-w-2xl mx-auto">
               Quality and Professional Environment with all Amenities
             </p>
           </div>
