@@ -328,6 +328,20 @@ export function ViewDetailModal({
                 </h4>
                 {contentSections.map((section, index) => (
                   <div key={index} className="p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/30 border border-border/50">
+                    {/* Section Image */}
+                    {section.image && (
+                      <div className="mb-3 sm:mb-4 rounded-lg overflow-hidden">
+                        <img 
+                          src={section.image} 
+                          alt={section.heading || `Section ${index + 1}`} 
+                          className="w-full h-auto object-cover aspect-video"
+                          loading="lazy"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
                     {section.heading && (
                       <h5 className="font-serif text-base sm:text-lg font-medium mb-2">{section.heading}</h5>
                     )}
