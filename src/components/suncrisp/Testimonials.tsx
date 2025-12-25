@@ -14,6 +14,7 @@ const Testimonials = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>(TESTIMONIALS);
   const [trustedByTitle, setTrustedByTitle] = useState("Trusted By");
   const [trustedByLogos, setTrustedByLogos] = useState<string[]>(PRESS_LOGOS);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,6 +40,9 @@ const Testimonials = () => {
     fetchData();
   }, []);
 
+  const handleTouchStart = () => setIsPaused(true);
+  const handleTouchEnd = () => setIsPaused(false);
+
   return (
     <section className="py-12 md:py-16 bg-background border-y border-border overflow-hidden">
       
@@ -48,12 +52,21 @@ const Testimonials = () => {
       </div>
 
       {/* Testimonials Marquee */}
-      <div className="mb-12 touch-pan-x">
-        <div className="flex w-max animate-marquee" style={{ touchAction: 'pan-x' }}>
+      <div 
+        className="mb-12"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        <div 
+          className="flex w-max animate-marquee"
+          style={{ animationPlayState: isPaused ? 'paused' : 'running' }}
+        >
           {[...testimonials, ...testimonials].map((item, index) => (
             <div 
               key={`${item.id}-${index}`} 
-              className="w-[400px] md:w-[600px] mx-6 p-8 md:p-10 bg-secondary border border-border rounded-2xl relative shadow-soft pointer-events-none"
+              className="w-[400px] md:w-[600px] mx-6 p-8 md:p-10 bg-secondary border border-border rounded-2xl relative shadow-soft"
             >
               <Quote className="absolute top-6 left-6 text-primary/10 w-12 h-12 fill-current" />
               <p className="font-serif text-lg md:text-xl text-foreground/80 italic mb-8 relative z-10 leading-relaxed">
@@ -72,13 +85,21 @@ const Testimonials = () => {
       </div>
 
       {/* Press Marquee (Reverse) */}
-      <div className="touch-pan-x">
+      <div
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
         <h3 className="text-center text-xs uppercase tracking-[0.3em] text-muted-foreground mb-8 font-bold">{trustedByTitle}</h3>
-        <div className="flex w-max animate-marquee-reverse" style={{ touchAction: 'pan-x' }}>
+        <div 
+          className="flex w-max animate-marquee-reverse"
+          style={{ animationPlayState: isPaused ? 'paused' : 'running' }}
+        >
           {[...trustedByLogos, ...trustedByLogos, ...trustedByLogos].map((logo, index) => (
             <div 
               key={`press-${index}`} 
-              className="mx-12 opacity-40 transition-opacity duration-300 pointer-events-none"
+              className="mx-12 opacity-40 transition-opacity duration-300"
             >
               <span className="font-serif text-3xl md:text-4xl text-muted-foreground font-bold whitespace-nowrap cursor-default">
                 {logo}
