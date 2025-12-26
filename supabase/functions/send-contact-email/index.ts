@@ -13,9 +13,11 @@ const ALLOWED_ORIGINS = [
 ];
 
 const getCorsHeaders = (origin: string | null) => {
-  // Check if origin is allowed, otherwise use first allowed origin
+  // Check if origin is allowed (including Vercel domains), otherwise use first allowed origin
   const allowedOrigin = origin && ALLOWED_ORIGINS.some(allowed => 
-    origin === allowed || origin.endsWith('.lovableproject.com')
+    origin === allowed || 
+    origin.endsWith('.lovableproject.com') ||
+    origin.endsWith('.vercel.app')
   ) ? origin : ALLOWED_ORIGINS[0];
   
   return {
