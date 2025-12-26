@@ -128,7 +128,7 @@ export default function AdminLogin() {
               <Input
                 id="email"
                 type="email"
-                placeholder="suncrisphospitality@gmail.com"
+                placeholder="admin"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className={errors.email ? "border-destructive" : ""}
