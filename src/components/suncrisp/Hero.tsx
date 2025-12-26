@@ -63,11 +63,11 @@ const Hero = ({
     }} />
       
       {/* Background gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/85 to-background/60" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/60 to-background/40" />
       
       {/* Dark gradient overlay - stronger on left side for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-background/40" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/75 via-background/50 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-background/30" />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 mt-2 sm:mt-6 md:mt-10 lg:mt-[61px]">
         <div className="flex flex-col lg:grid lg:grid-cols-[1fr,auto] gap-6 sm:gap-8 lg:gap-12 items-center">
