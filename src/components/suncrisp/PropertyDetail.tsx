@@ -170,10 +170,10 @@ const PropertyDetail = ({
           </a>
         </div>}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 md:py-32 grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 md:py-32">
         
-        {/* Main Text */}
-        <div className="lg:col-span-7">
+        {/* Main Text - Full Width */}
+        <div className="w-full">
           {/* Dynamic Content Sections */}
           {contentSections.length > 0 ? (
             <div className="space-y-10 sm:space-y-16">
@@ -181,26 +181,14 @@ const PropertyDetail = ({
                 .filter((s) => (s.heading || '').trim() || (s.content || '').trim())
                 .map((section, index) => (
                   <Reveal key={index} delay={300 + index * 100}>
-                    <div className={`${section.image ? 'flex flex-col gap-6 sm:gap-8' : ''}`}>
-                      {section.image && (
-                        <div className="w-full rounded-xl overflow-hidden shadow-elevated flex-shrink-0">
-                          <img
-                            src={section.image}
-                            alt={section.heading ? `${section.heading} image` : `Section ${index + 1} image`}
-                            className="w-full h-auto object-cover aspect-video"
-                            loading="lazy"
-                          />
-                        </div>
+                    <div>
+                      {section.heading && (
+                        <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-foreground mb-4 sm:mb-6 border-l-4 border-primary pl-4 sm:pl-6">
+                          {section.heading}
+                        </h3>
                       )}
-                      <div>
-                        {section.heading && (
-                          <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-foreground mb-4 sm:mb-6 border-l-4 border-primary pl-4 sm:pl-6">
-                            {section.heading}
-                          </h3>
-                        )}
-                        <div className="prose prose-sm sm:prose-lg text-muted-foreground font-sans leading-relaxed sm:leading-loose whitespace-pre-line text-sm sm:text-base md:text-lg pl-4 sm:pl-6">
-                          {section.content}
-                        </div>
+                      <div className="prose prose-sm sm:prose-lg max-w-none text-muted-foreground font-sans leading-relaxed sm:leading-loose whitespace-pre-line text-sm sm:text-base md:text-lg pl-4 sm:pl-6">
+                        {section.content}
                       </div>
                     </div>
                   </Reveal>
@@ -211,36 +199,40 @@ const PropertyDetail = ({
               <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-foreground mb-6 sm:mb-8 border-l-4 border-primary pl-4 sm:pl-6">
                 Project Overview
               </h3>
-              <div className="prose prose-sm sm:prose-lg text-muted-foreground font-sans leading-relaxed sm:leading-loose whitespace-pre-line text-sm sm:text-base md:text-lg pl-4 sm:pl-6">
+              <div className="prose prose-sm sm:prose-lg max-w-none text-muted-foreground font-sans leading-relaxed sm:leading-loose whitespace-pre-line text-sm sm:text-base md:text-lg pl-4 sm:pl-6">
                 {item.detailedDescription || item.description || "No detailed description available."}
               </div>
             </Reveal>
           )}
         </div>
 
-        {/* Features Sidebar */}
-        <div className="lg:col-span-5">
-          {item.features && item.features.length > 0 && <Reveal delay={400}>
-              <div className="bg-secondary p-6 sm:p-8 rounded-2xl sm:rounded-3xl border border-border shadow-sm lg:sticky lg:top-32">
+        {/* Features Section - Full Width Below Content */}
+        {item.features && item.features.length > 0 && (
+          <div className="mt-12 sm:mt-16">
+            <Reveal delay={400}>
+              <div className="bg-secondary p-6 sm:p-8 rounded-2xl sm:rounded-3xl border border-border shadow-sm">
                 <h4 className="font-serif text-lg sm:text-xl text-foreground mb-6 sm:mb-8 flex items-center gap-3">
                   <span className="w-6 sm:w-8 h-[2px] bg-primary"></span>
                   Key Features
                 </h4>
-                <div className="grid grid-cols-1 gap-3 sm:gap-4">
-                  {item.features.map((feature: string, idx: number) => <div key={idx} className="flex items-center gap-3 sm:gap-4 text-foreground/80 group">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                  {item.features.map((feature: string, idx: number) => (
+                    <div key={idx} className="flex items-center gap-3 sm:gap-4 text-foreground/80 group">
                       <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-card flex items-center justify-center border border-border group-hover:border-primary/50 transition-colors flex-shrink-0">
                         <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
                       </div>
                       <span className="font-medium text-sm sm:text-base">{feature}</span>
-                    </div>)}
+                    </div>
+                  ))}
                 </div>
                 
-                <button onClick={() => setIsEmailModalOpen(true)} className="w-full btn-primary rounded-xl mt-6 sm:mt-8 min-h-[48px]">
+                <button onClick={() => setIsEmailModalOpen(true)} className="w-full sm:w-auto btn-primary rounded-xl mt-6 sm:mt-8 min-h-[48px] px-8">
                   Schedule a Viewing
                 </button>
               </div>
-            </Reveal>}
-        </div>
+            </Reveal>
+          </div>
+        )}
       </div>
 
       {/* 3. Gallery Section */}
