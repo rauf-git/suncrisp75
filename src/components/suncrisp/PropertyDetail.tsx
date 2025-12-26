@@ -120,7 +120,7 @@ const PropertyDetail = ({
         
         {/* Navigation Overlay */}
         <div className="absolute top-0 left-0 w-full p-4 sm:p-6 flex justify-between items-start z-30 pt-20 sm:pt-24 md:pt-32">
-          <button onClick={onBack} className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full transition-all backdrop-blur-md border border-primary-foreground/10 min-h-[44px] bg-primary text-primary">
+          <button onClick={onBack} className="flex items-center gap-1.5 sm:gap-2 text-primary-foreground hover:text-primary bg-foreground/20 hover:bg-foreground/40 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full transition-all backdrop-blur-md border border-primary-foreground/10 min-h-[44px]">
             <ArrowLeft size={16} className="sm:w-[18px] sm:h-[18px]" /> 
             <span className="uppercase tracking-widest text-[10px] sm:text-xs font-bold">Back</span>
           </button>
@@ -175,29 +175,40 @@ const PropertyDetail = ({
         {/* Main Text - Full Width */}
         <div className="w-full">
           {/* Dynamic Content Sections */}
-          {contentSections.length > 0 ? <div className="space-y-10 sm:space-y-16">
-              {contentSections.filter(s => (s.heading || '').trim() || (s.content || '').trim()).map((section, index) => <Reveal key={index} delay={300 + index * 100}>
+          {contentSections.length > 0 ? (
+            <div className="space-y-10 sm:space-y-16">
+              {contentSections
+                .filter((s) => (s.heading || '').trim() || (s.content || '').trim())
+                .map((section, index) => (
+                  <Reveal key={index} delay={300 + index * 100}>
                     <div>
-                      {section.heading && <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-foreground mb-4 sm:mb-6 border-l-4 border-primary pl-4 sm:pl-6">
+                      {section.heading && (
+                        <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-foreground mb-4 sm:mb-6 border-l-4 border-primary pl-4 sm:pl-6">
                           {section.heading}
-                        </h3>}
+                        </h3>
+                      )}
                       <div className="prose prose-sm sm:prose-lg max-w-none text-muted-foreground font-sans leading-relaxed sm:leading-loose whitespace-pre-line text-sm sm:text-base md:text-lg pl-4 sm:pl-6">
                         {section.content}
                       </div>
                     </div>
-                  </Reveal>)}
-            </div> : <Reveal delay={300}>
+                  </Reveal>
+                ))}
+            </div>
+          ) : (
+            <Reveal delay={300}>
               <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-foreground mb-6 sm:mb-8 border-l-4 border-primary pl-4 sm:pl-6">
                 Project Overview
               </h3>
               <div className="prose prose-sm sm:prose-lg max-w-none text-muted-foreground font-sans leading-relaxed sm:leading-loose whitespace-pre-line text-sm sm:text-base md:text-lg pl-4 sm:pl-6">
                 {item.detailedDescription || item.description || "No detailed description available."}
               </div>
-            </Reveal>}
+            </Reveal>
+          )}
         </div>
 
         {/* Features Section - Full Width Below Content */}
-        {item.features && item.features.length > 0 && <div className="mt-12 sm:mt-16">
+        {item.features && item.features.length > 0 && (
+          <div className="mt-12 sm:mt-16">
             <Reveal delay={400}>
               <div className="bg-secondary p-6 sm:p-8 rounded-2xl sm:rounded-3xl border border-border shadow-sm">
                 <h4 className="font-serif text-lg sm:text-xl text-foreground mb-6 sm:mb-8 flex items-center gap-3">
@@ -205,12 +216,14 @@ const PropertyDetail = ({
                   Key Features
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                  {item.features.map((feature: string, idx: number) => <div key={idx} className="flex items-center gap-3 sm:gap-4 text-foreground/80 group">
+                  {item.features.map((feature: string, idx: number) => (
+                    <div key={idx} className="flex items-center gap-3 sm:gap-4 text-foreground/80 group">
                       <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-card flex items-center justify-center border border-border group-hover:border-primary/50 transition-colors flex-shrink-0">
                         <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
                       </div>
                       <span className="font-medium text-sm sm:text-base">{feature}</span>
-                    </div>)}
+                    </div>
+                  ))}
                 </div>
                 
                 <button onClick={() => setIsEmailModalOpen(true)} className="w-full sm:w-auto btn-primary rounded-xl mt-6 sm:mt-8 min-h-[48px] px-8">
@@ -218,7 +231,8 @@ const PropertyDetail = ({
                 </button>
               </div>
             </Reveal>
-          </div>}
+          </div>
+        )}
       </div>
 
       {/* 3. Gallery Section */}
