@@ -289,15 +289,15 @@ const RentalsByLocation = ({
   }
 
   // Main Grid View
-  return <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-background">
+  return <section className="py-8 md:py-12 bg-secondary">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <Reveal>
-          <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+          <div className="mb-8 pb-4 border-b border-border">
             <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-foreground mb-3 sm:mb-4">
               Rentals
             </h2>
-            <p className="font-sans text-muted-foreground text-sm sm:text-base lg:text-lg max-w-2xl mx-auto">
+            <p className="font-sans text-muted-foreground text-sm sm:text-base lg:text-lg max-w-2xl">
               Quality and Professional Environment with all Amenities
             </p>
           </div>
