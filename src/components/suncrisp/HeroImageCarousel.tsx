@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
+import useEmblaCarousel from "embla-carousel-react";
 
 interface HeroImageCarouselProps {
   images: string[];
@@ -9,30 +10,53 @@ const HeroImageCarousel = ({
   images,
   interval = 4000
 }: HeroImageCarouselProps) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, dragFree: false });
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isInteracting, setIsInteracting] = useState(false);
 
-  // Clear and restart timer
-  const startTimer = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-    if (images.length > 1 && !isPaused) {
-      timerRef.current = setInterval(() => {
-        setCurrentIndex(prev => (prev + 1) % images.length);
-      }, interval);
-    }
-  };
+  const scrollTo = useCallback((index: number) => {
+    if (emblaApi) emblaApi.scrollTo(index);
+  }, [emblaApi]);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  // Handle pointer events to pause auto-scroll during interaction
+  const onPointerDown = useCallback(() => {
+    setIsInteracting(true);
+  }, []);
+
+  const onPointerUp = useCallback(() => {
+    setIsInteracting(false);
+  }, []);
 
   useEffect(() => {
-    startTimer();
+    if (!emblaApi) return;
+    
+    emblaApi.on("select", onSelect);
+    emblaApi.on("pointerDown", onPointerDown);
+    emblaApi.on("pointerUp", onPointerUp);
+    onSelect();
+
     return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
+      emblaApi.off("select", onSelect);
+      emblaApi.off("pointerDown", onPointerDown);
+      emblaApi.off("pointerUp", onPointerUp);
     };
-  }, [images.length, interval, isPaused]);
+  }, [emblaApi, onSelect, onPointerDown, onPointerUp]);
+
+  // Auto-scroll logic
+  useEffect(() => {
+    if (!emblaApi || images.length <= 1 || isInteracting) return;
+
+    const autoScroll = setInterval(() => {
+      emblaApi.scrollNext();
+    }, interval);
+
+    return () => clearInterval(autoScroll);
+  }, [emblaApi, images.length, interval, isInteracting]);
 
   // Log warning if no images
   if (!images || images.length === 0) {
@@ -50,28 +74,31 @@ const HeroImageCarousel = ({
   return (
     <div 
       className="relative w-full h-full" 
-      onMouseEnter={() => setIsPaused(true)} 
-      onMouseLeave={() => setIsPaused(false)}
+      onMouseEnter={() => setIsInteracting(true)} 
+      onMouseLeave={() => setIsInteracting(false)}
     >
       {/* Decorative frame */}
       <div className="absolute -inset-2 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-2xl blur-sm" />
 
       <div className="relative aspect-[3/4] w-full sm:aspect-[4/3] md:aspect-[4/3] rounded-xl overflow-hidden shadow-2xl shadow-black/20 bg-muted/50 backdrop-blur-sm border border-primary/20">
-        {images.map((image, index) => (
-          <div 
-            key={index} 
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              index === currentIndex ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            <img 
-              src={image} 
-              alt={`Hero image ${index + 1}`} 
-              className="w-full h-full object-cover" 
-              loading={index === 0 ? "eager" : "lazy"} 
-            />
+        <div className="overflow-hidden h-full" ref={emblaRef}>
+          <div className="flex h-full touch-pan-y">
+            {images.map((image, index) => (
+              <div 
+                key={index} 
+                className="flex-[0_0_100%] min-w-0 h-full"
+              >
+                <img 
+                  src={image} 
+                  alt={`Hero image ${index + 1}`} 
+                  className="w-full h-full object-cover" 
+                  loading={index === 0 ? "eager" : "lazy"} 
+                  draggable={false}
+                />
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
 
         {/* Image indicators */}
         {images.length > 1 && (
@@ -79,9 +106,9 @@ const HeroImageCarousel = ({
             {images.map((_, index) => (
               <button 
                 key={index} 
-                onClick={() => setCurrentIndex(index)} 
+                onClick={() => scrollTo(index)} 
                 className={`w-2 h-2 sm:w-2 sm:h-2 rounded-full transition-all duration-300 min-w-[8px] min-h-[8px] ${
-                  index === currentIndex 
+                  index === selectedIndex 
                     ? "bg-primary w-4 sm:w-6" 
                     : "bg-background/50 hover:bg-background/80"
                 }`} 
