@@ -89,15 +89,8 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
                 </button>
               ))}
               
-              <div className="flex items-center gap-0.5 pl-2 border-l border-border/50 flex-shrink-0">
+              <div className="flex items-center pl-2 border-l border-border/50 flex-shrink-0">
                 <ThemeToggle />
-                <button
-                  onClick={() => navigate('/admin')}
-                  className="p-2 rounded-full hover:bg-primary/15 transition-all duration-300 hover:scale-110 active:scale-95 min-h-[44px] min-w-[44px] flex items-center justify-center"
-                  title="Admin Panel"
-                >
-                  <Settings className="w-4 h-4 text-foreground/90 hover:text-primary transition-colors" />
-                </button>
               </div>
             </div>
 
@@ -166,18 +159,6 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
                 </button>
               ))}
               
-              <div className="pt-4 mt-4 border-t border-border">
-                <button
-                  onClick={() => {
-                    navigate('/admin');
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-foreground hover:bg-primary/10 hover:text-primary transition-all duration-300 min-h-[48px]"
-                >
-                  <Settings className="w-4 h-4" />
-                  <span className="text-sm font-bold uppercase tracking-wider">Admin Panel</span>
-                </button>
-              </div>
             </div>
           </div>
         </div>
