@@ -234,12 +234,12 @@ const handler = async (req: Request): Promise<Response> => {
         subject: `New Contact from ${escapeHtml(sanitizedName)}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #f97316; border-bottom: 2px solid #f59e0b; padding-bottom: 10px;">New Contact Message</h2>
+            <h2 style="color: #2596be; border-bottom: 2px solid #1e7aa8; padding-bottom: 10px;">New Contact Message</h2>
             <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
               <p><strong>Name:</strong> ${escapeHtml(sanitizedName)}</p>
               <p><strong>Email:</strong> <a href="mailto:${escapeHtml(sanitizedEmail)}">${escapeHtml(sanitizedEmail)}</a></p>
               <h3 style="color: #555; margin-top: 15px;">Message:</h3>
-              <p style="background: #fff; padding: 15px; border-radius: 5px; border-left: 3px solid #f97316;">${escapeHtml(sanitizedMessage).replace(/\n/g, '<br>')}</p>
+              <p style="background: #fff; padding: 15px; border-radius: 5px; border-left: 3px solid #2596be;">${escapeHtml(sanitizedMessage).replace(/\n/g, '<br>')}</p>
             </div>
             <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
             <p style="color: #888; font-size: 12px;">This email was sent from the SunCrisp Hospitality website contact form.</p>
