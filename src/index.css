@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 /* Suncrisp Hospitality Design System
-   A warm, elegant luxury aesthetic with orange accent
+   A warm, elegant luxury aesthetic with blue accent
    Typography: Cinzel (serif headings), Montserrat (sans body)
 */
 
@@ -22,12 +22,12 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 13% 8%;
 
-    /* Primary: Warm Orange */
-    --primary: 25 95% 53%;
-    --primary-rgb: 249, 115, 22;
+    /* Primary: Blue */
+    --primary: 196 67% 45%;
+    --primary-rgb: 37, 150, 190;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 25 95% 45%;
-    --primary-light: 33 100% 96%;
+    --primary-hover: 196 67% 38%;
+    --primary-light: 196 80% 95%;
 
     /* Secondary: Neutral grays */
     --secondary: 220 14% 96%;
@@ -38,7 +38,7 @@
     --muted-foreground: 220 9% 46%;
 
     /* Accent */
-    --accent: 33 100% 96%;
+    --accent: 196 80% 95%;
     --accent-foreground: 220 13% 8%;
 
     /* Destructive */
@@ -48,7 +48,7 @@
     /* Borders & inputs */
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 25 95% 53%;
+    --ring: 196 67% 45%;
 
     --radius: 0.5rem;
 
@@ -65,7 +65,7 @@
     --sidebar-accent: 220 14% 96%;
     --sidebar-accent-foreground: 220 13% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 25 95% 53%;
+    --sidebar-ring: 196 67% 45%;
   }
 
   .dark {
@@ -78,10 +78,10 @@
     --popover: 220 13% 8%;
     --popover-foreground: 220 14% 96%;
 
-    --primary: 25 95% 53%;
-    --primary-rgb: 249, 115, 22;
+    --primary: 196 67% 50%;
+    --primary-rgb: 37, 150, 190;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 25 95% 60%;
+    --primary-hover: 196 67% 58%;
     --primary-light: 220 13% 12%;
 
     --secondary: 220 13% 15%;
@@ -98,16 +98,16 @@
 
     --border: 220 13% 15%;
     --input: 220 13% 15%;
-    --ring: 25 95% 53%;
+    --ring: 196 67% 50%;
 
     --sidebar-background: 220 13% 5%;
     --sidebar-foreground: 220 14% 96%;
-    --sidebar-primary: 25 95% 53%;
+    --sidebar-primary: 196 67% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 13% 12%;
     --sidebar-accent-foreground: 220 14% 96%;
     --sidebar-border: 220 13% 12%;
-    --sidebar-ring: 25 95% 53%;
+    --sidebar-ring: 196 67% 50%;
   }
 }
 
