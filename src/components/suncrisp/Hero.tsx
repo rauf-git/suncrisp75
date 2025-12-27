@@ -63,19 +63,19 @@ const Hero = ({
       backgroundImage: heroData.backgroundImage ? `url(${heroData.backgroundImage})` : `url(${heroBackgroundImage})`
     }} />
       
-      {/* Background gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/85 to-background/60" />
+      {/* Background gradient overlay - reduced for more image visibility */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background/70 via-background/50 to-background/30" />
       
-      {/* Dark gradient overlay - stronger on left side for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-transparent mr-0" />
-      <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-background/40" />
+      {/* Dark gradient overlay - keeps left side readable */}
+      <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-background/40 to-transparent mr-0" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-background/20" />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 mt-2 sm:mt-6 md:mt-10 lg:mt-[61px]">
         <div className="flex flex-col lg:grid lg:grid-cols-[1fr,auto] gap-6 sm:gap-8 lg:gap-12 items-center">
           {/* Left Column - Text Content */}
-          <div className="max-w-xl order-2 lg:order-1 text-left sm:text-center lg:text-left">
+          <div className="max-w-xl order-2 lg:order-1 text-left sm:text-center lg:text-left bg-background/20 backdrop-blur-sm rounded-xl p-4 lg:p-6">
             <Reveal delay={200}>
-              <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight tracking-tight">
+              <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight tracking-tight drop-shadow-lg">
                 <span className="text-primary">​Sun</span>
                 <span className="text-primary">Crisp</span>
               </h1>
@@ -91,7 +91,7 @@ const Hero = ({
             </Reveal>
 
             <Reveal delay={400}>
-              <p className="font-sans text-muted-foreground text-sm sm:text-base tracking-wide max-w-md lg:mx-0 mb-6 leading-relaxed">
+              <p className="font-sans text-muted-foreground text-sm sm:text-base tracking-wide max-w-md lg:mx-0 mb-6 leading-relaxed drop-shadow-md">
                 {heroData.description || 'From groundbreaking construction to exquisite rentals and world-class experiences. We build the future and curate the present.'}
               </p>
             </Reveal>
