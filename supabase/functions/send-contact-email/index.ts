@@ -199,7 +199,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
-    const recipientEmail = "mdrafi9457@gmail.com";
+    const recipientEmail = "suncrisphospitality@gmail.com";
 
     if (!resendApiKey) {
       console.error("RESEND_API_KEY not configured");
