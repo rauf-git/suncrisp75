@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, MapPin, Tag, Camera, Maximize2, Check, ExternalLink, Mail } from 'lucide-react';
+import { ArrowLeft, MapPin, Tag, Camera, Maximize2, Check, ExternalLink } from 'lucide-react';
 import Reveal from './Reveal';
 import { Property } from '@/types';
 import { projectService } from '@/services/projectService';
@@ -167,25 +167,15 @@ const PropertyDetail = ({
         </div>
       </div>
 
-      {/* Action Buttons Below Hero */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 flex justify-between items-center gap-4">
-        {/* Get in Touch Button */}
-        <button 
-          onClick={() => setIsEmailModalOpen(true)} 
-          className="inline-flex items-center gap-2 text-primary-foreground bg-primary hover:bg-primary/90 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full transition-all shadow-lg min-h-[44px]"
-        >
-          <Mail size={16} className="sm:w-[18px] sm:h-[18px]" />
-          <span className="uppercase tracking-widest text-[10px] sm:text-xs font-bold">Get in Touch</span>
-        </button>
-
-        {/* Visit Link */}
-        {visitUrl && (
+      {/* Visit Link Below Hero */}
+      {visitUrl && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8">
           <a href={visitUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-primary hover:text-primary/80 bg-primary/10 hover:bg-primary/20 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full transition-all border border-primary/20 min-h-[44px]">
             <ExternalLink size={16} className="sm:w-[18px] sm:h-[18px]" />
             <span className="uppercase tracking-widest text-[10px] sm:text-xs font-bold">Visit</span>
           </a>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 md:py-32">
         
