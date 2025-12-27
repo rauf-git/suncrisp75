@@ -1,18 +1,46 @@
-import { Phone, Mail } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Phone, Mail, Instagram, Facebook, Youtube } from "lucide-react";
 import { NAV_LINKS } from "@/constants";
 import suncrespLogo from "@/assets/suncrisp-logo-orange.png";
+import { pageBlockService } from "@/services/pageBlockService";
 
 interface FooterProps {
   onNavigate?: (page: string) => void;
 }
 
+interface SocialLinks {
+  instagram?: string;
+  facebook?: string;
+  youtube?: string;
+}
+
 const Footer = ({ onNavigate }: FooterProps) => {
   const currentYear = new Date().getFullYear();
+  const [socialLinks, setSocialLinks] = useState<SocialLinks>({});
+
+  useEffect(() => {
+    const fetchSocialLinks = async () => {
+      const { data } = await pageBlockService.getByKey("home", "social_links");
+      if (data) {
+        setSocialLinks(data.content as SocialLinks);
+      }
+    };
+    fetchSocialLinks();
+
+    // Listen for updates from admin
+    const handleUpdate = (e: CustomEvent) => {
+      if (e.detail?.block_key === "social_links") {
+        fetchSocialLinks();
+      }
+    };
+    window.addEventListener("page-block-updated", handleUpdate as EventListener);
+    return () => window.removeEventListener("page-block-updated", handleUpdate as EventListener);
+  }, []);
 
   return (
     <footer className="bg-secondary pt-10 pb-6 border-t border-border font-sans">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
           {/* Column 1: Quick Links */}
           <div>
             <h3 className="font-serif text-foreground font-bold text-lg mb-6">Quick Links</h3>
@@ -59,7 +87,50 @@ const Footer = ({ onNavigate }: FooterProps) => {
             </div>
           </div>
 
-          {/* Column 3: Company Address */}
+          {/* Column 3: Follow Us */}
+          <div>
+            <h3 className="font-serif text-foreground font-bold text-lg mb-6">Follow Us</h3>
+            <div className="flex items-center gap-4">
+              {socialLinks.instagram && (
+                <a
+                  href={socialLinks.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-colors duration-300"
+                  aria-label="Instagram"
+                >
+                  <Instagram className="w-5 h-5" />
+                </a>
+              )}
+              {socialLinks.facebook && (
+                <a
+                  href={socialLinks.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-colors duration-300"
+                  aria-label="Facebook"
+                >
+                  <Facebook className="w-5 h-5" />
+                </a>
+              )}
+              {socialLinks.youtube && (
+                <a
+                  href={socialLinks.youtube}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-colors duration-300"
+                  aria-label="YouTube"
+                >
+                  <Youtube className="w-5 h-5" />
+                </a>
+              )}
+              {!socialLinks.instagram && !socialLinks.facebook && !socialLinks.youtube && (
+                <p className="text-muted-foreground text-sm">Coming soon</p>
+              )}
+            </div>
+          </div>
+
+          {/* Column 4: Company Address */}
           <div>
             <img src={suncrespLogo} alt="SunCrisp Hospitality" className="h-20 w-auto mb-2" />
             <p className="font-serif text-foreground font-bold text-sm mb-4">SUNCRISP HOSPITALITY LLP</p>

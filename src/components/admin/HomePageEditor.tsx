@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { pageBlockService, PageBlock } from "@/services/pageBlockService";
 import { supabase } from "@/integrations/supabase/safeClient";
-import { Loader2, Plus, Trash2, Image, Upload, X } from "lucide-react";
+import { Loader2, Plus, Trash2, Image, Upload, X, Instagram, Facebook, Youtube } from "lucide-react";
 
 interface HomePageEditorProps {
   open: boolean;
@@ -61,6 +61,12 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
   const [trustedByLogos, setTrustedByLogos] = useState<string[]>([]);
   const [trustedByBlock, setTrustedByBlock] = useState<PageBlock | null>(null);
   
+  // Social Links state
+  const [instagramUrl, setInstagramUrl] = useState("");
+  const [facebookUrl, setFacebookUrl] = useState("");
+  const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [socialLinksBlock, setSocialLinksBlock] = useState<PageBlock | null>(null);
+  
   const heroImageInputRef = useRef<HTMLInputElement>(null);
   const brandStoryImageInputRef = useRef<HTMLInputElement>(null);
   
@@ -75,11 +81,12 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
   const fetchData = async () => {
     setIsLoading(true);
     
-    const [heroResult, brandStoryResult, testimonialsResult, trustedByResult] = await Promise.all([
+    const [heroResult, brandStoryResult, testimonialsResult, trustedByResult, socialLinksResult] = await Promise.all([
       pageBlockService.getByKey("home", "hero"),
       pageBlockService.getByKey("home", "brand_story_section"),
       pageBlockService.getByKey("home", "testimonials"),
       pageBlockService.getByKey("home", "trusted_by"),
+      pageBlockService.getByKey("home", "social_links"),
     ]);
 
     if (heroResult.data) {
@@ -108,6 +115,14 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
       const content = trustedByResult.data.content as { title?: string; logos?: string[] };
       setTrustedByTitle(content.title || "Trusted By");
       setTrustedByLogos(content.logos || []);
+    }
+
+    if (socialLinksResult.data) {
+      setSocialLinksBlock(socialLinksResult.data);
+      const content = socialLinksResult.data.content as { instagram?: string; facebook?: string; youtube?: string };
+      setInstagramUrl(content.instagram || "");
+      setFacebookUrl(content.facebook || "");
+      setYoutubeUrl(content.youtube || "");
     }
 
     setIsLoading(false);
@@ -243,6 +258,30 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
         });
       }
 
+      // Save social links
+      const socialLinksContent = {
+        instagram: instagramUrl.trim() || undefined,
+        facebook: facebookUrl.trim() || undefined,
+        youtube: youtubeUrl.trim() || undefined,
+      };
+      
+      if (socialLinksBlock) {
+        await pageBlockService.update(socialLinksBlock.id, {
+          content: socialLinksContent as unknown as Record<string, unknown>,
+        });
+      } else {
+        const { data: createdSocialLinks, error: socialError } = await pageBlockService.create({
+          page_key: "home",
+          block_key: "social_links",
+          block_type: "social",
+          content: socialLinksContent as unknown as Record<string, unknown>,
+          display_order: 10,
+          is_active: true,
+        });
+        if (socialError) throw socialError;
+        setSocialLinksBlock(createdSocialLinks);
+      }
+
       // Notify the site to re-fetch latest blocks
       window.dispatchEvent(
         new CustomEvent("page-block-updated", {
@@ -252,6 +291,11 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
       window.dispatchEvent(
         new CustomEvent("page-block-updated", {
           detail: { page_key: "home", block_key: "brand_story_section" },
+        })
+      );
+      window.dispatchEvent(
+        new CustomEvent("page-block-updated", {
+          detail: { page_key: "home", block_key: "social_links" },
         })
       );
 
@@ -535,6 +579,54 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
                         Add Brand
                       </Button>
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Social Media Links Section */}
+              <div className="p-3 sm:p-4 rounded-lg border border-primary/20 bg-primary/5">
+                <h3 className="font-serif text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2">
+                  Social Media Links
+                </h3>
+                <p className="text-xs sm:text-sm text-muted-foreground mb-4">
+                  Add your social media profile URLs. These will appear in the footer.
+                </p>
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs sm:text-sm font-medium flex items-center gap-2">
+                      <Instagram className="w-4 h-4 text-pink-500" />
+                      Instagram URL
+                    </Label>
+                    <Input
+                      value={instagramUrl}
+                      onChange={(e) => setInstagramUrl(e.target.value)}
+                      placeholder="https://instagram.com/yourprofile"
+                      className="text-sm sm:text-base h-10 sm:h-11"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs sm:text-sm font-medium flex items-center gap-2">
+                      <Facebook className="w-4 h-4 text-blue-600" />
+                      Facebook URL
+                    </Label>
+                    <Input
+                      value={facebookUrl}
+                      onChange={(e) => setFacebookUrl(e.target.value)}
+                      placeholder="https://facebook.com/yourpage"
+                      className="text-sm sm:text-base h-10 sm:h-11"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs sm:text-sm font-medium flex items-center gap-2">
+                      <Youtube className="w-4 h-4 text-red-600" />
+                      YouTube URL
+                    </Label>
+                    <Input
+                      value={youtubeUrl}
+                      onChange={(e) => setYoutubeUrl(e.target.value)}
+                      placeholder="https://youtube.com/@yourchannel"
+                      className="text-sm sm:text-base h-10 sm:h-11"
+                    />
                   </div>
                 </div>
               </div>

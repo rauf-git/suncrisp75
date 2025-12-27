@@ -1,16 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, MapPin, Tag, Camera, Maximize2, Check, ExternalLink } from 'lucide-react';
+import { ArrowLeft, MapPin, Tag, Camera, Maximize2, Check, ExternalLink, Mail } from 'lucide-react';
 import Reveal from './Reveal';
 import { Property } from '@/types';
 import { projectService } from '@/services/projectService';
 import { constructionService } from '@/services/constructionService';
 import { rentalService } from '@/services/rentalService';
 import EmailModal from './EmailModal';
+import ImageLightbox from './ImageLightbox';
+
 interface PropertyDetailProps {
   item: Property;
   section?: string;
   onBack: () => void;
 }
+
 const PropertyDetail = ({
   item,
   section = 'property',
@@ -19,6 +22,8 @@ const PropertyDetail = ({
   const [resolvedItem, setResolvedItem] = useState<Property>(item);
   const [visitUrl, setVisitUrl] = useState<string | null>(null);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   // Scroll to top on mount
   useEffect(() => {
@@ -162,13 +167,25 @@ const PropertyDetail = ({
         </div>
       </div>
 
-      {/* Visit Link Below Hero */}
-      {visitUrl && <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 flex justify-end">
+      {/* Action Buttons Below Hero */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 flex justify-between items-center gap-4">
+        {/* Get in Touch Button */}
+        <button 
+          onClick={() => setIsEmailModalOpen(true)} 
+          className="inline-flex items-center gap-2 text-primary-foreground bg-primary hover:bg-primary/90 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full transition-all shadow-lg min-h-[44px]"
+        >
+          <Mail size={16} className="sm:w-[18px] sm:h-[18px]" />
+          <span className="uppercase tracking-widest text-[10px] sm:text-xs font-bold">Get in Touch</span>
+        </button>
+
+        {/* Visit Link */}
+        {visitUrl && (
           <a href={visitUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-primary hover:text-primary/80 bg-primary/10 hover:bg-primary/20 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full transition-all border border-primary/20 min-h-[44px]">
             <ExternalLink size={16} className="sm:w-[18px] sm:h-[18px]" />
             <span className="uppercase tracking-widest text-[10px] sm:text-xs font-bold">Visit</span>
           </a>
-        </div>}
+        )}
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 md:py-32">
         
@@ -249,7 +266,13 @@ const PropertyDetail = ({
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {resolvedItem.gallery.map((img: string, index: number) => <Reveal key={index} delay={index * 100}>
-                <div className="group relative aspect-[4/3] rounded-xl sm:rounded-2xl overflow-hidden shadow-md hover:shadow-elevated hover:-translate-y-1 transition-all duration-500 ease-in-out cursor-zoom-in">
+                <div 
+                  onClick={() => {
+                    setLightboxIndex(index);
+                    setLightboxOpen(true);
+                  }}
+                  className="group relative aspect-[4/3] rounded-xl sm:rounded-2xl overflow-hidden shadow-md hover:shadow-elevated hover:-translate-y-1 transition-all duration-500 ease-in-out cursor-zoom-in"
+                >
                   <img src={img} alt={`Gallery ${index + 1}`} className="w-full h-full object-cover transform scale-100 group-hover:scale-110 transition-transform duration-1000" />
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   
@@ -264,6 +287,17 @@ const PropertyDetail = ({
         </div>}
 
       <EmailModal isOpen={isEmailModalOpen} onClose={() => setIsEmailModalOpen(false)} />
+      
+      {/* Image Lightbox */}
+      {resolvedItem.gallery && resolvedItem.gallery.length > 0 && (
+        <ImageLightbox
+          images={resolvedItem.gallery}
+          currentIndex={lightboxIndex}
+          isOpen={lightboxOpen}
+          onClose={() => setLightboxOpen(false)}
+          onNavigate={setLightboxIndex}
+        />
+      )}
     </div>;
 };
 export default PropertyDetail;
