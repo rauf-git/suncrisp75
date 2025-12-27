@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import Reveal from './Reveal';
 import HeroImageCarousel from './HeroImageCarousel';
 import { pageBlockService } from '@/services/pageBlockService';
+import heroBackgroundImage from '@/assets/hero-background.png';
 interface HeroProps {
   onNavigate?: (page: string) => void;
 }
@@ -59,7 +60,7 @@ const Hero = ({
   return <section className="relative min-h-screen flex items-center overflow-hidden ml-0 mr-0 md:ml-[7px]">
       {/* Background Image */}
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
-      backgroundImage: heroData.backgroundImage ? `url(${heroData.backgroundImage})` : `url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80')`
+      backgroundImage: heroData.backgroundImage ? `url(${heroData.backgroundImage})` : `url(${heroBackgroundImage})`
     }} />
       
       {/* Background gradient overlay */}
