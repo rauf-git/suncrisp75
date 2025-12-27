@@ -368,7 +368,7 @@ const Index = () => {
       <main>{renderPage()}</main>
 
       {/* Floating CTA Button - Right Side */}
-      <FloatingCTA isVisible={!selectedItem} />
+      <FloatingCTA isVisible={true} />
 
       {/* Footer - hide on contact page which has its own dark section */}
       {currentPage !== "contact" && !selectedItem && <Footer onNavigate={handleNavigation} />}
