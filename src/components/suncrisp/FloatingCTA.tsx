@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MessageCircle, X, Send, Loader2, Check, AlertCircle } from 'lucide-react';
+import { MessageCircle, X, Send, Loader2, Check, AlertCircle, Phone } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/safeClient";
 import { toast } from 'sonner';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -52,19 +52,39 @@ const FloatingCTA = ({ isVisible = true }: FloatingCTAProps) => {
     }
   };
 
+  const whatsappNumber = '+919559665556';
+  const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/\+/g, '')}`;
+
   return (
     <>
-      {/* Floating Button */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-8 md:right-8 z-40 bg-primary text-primary-foreground p-3 sm:p-4 rounded-full shadow-elevated transition-all duration-300 hover:scale-110 hover:shadow-xl hover:shadow-primary/30 group min-w-[48px] min-h-[48px] sm:min-w-[56px] sm:min-h-[56px] flex items-center justify-center"
-        aria-label="Contact Us"
-      >
-        <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
-        <span className="absolute right-full mr-3 sm:mr-4 top-1/2 -translate-y-1/2 bg-foreground text-background text-[10px] sm:text-xs font-bold uppercase tracking-widest px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg hidden sm:block">
-          Get In Touch
-        </span>
-      </button>
+      {/* Floating Buttons Container */}
+      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-8 md:right-8 z-40 flex flex-col gap-3">
+        {/* WhatsApp Button */}
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-[#25D366] text-white p-3 sm:p-4 rounded-full shadow-elevated transition-all duration-300 hover:scale-110 hover:shadow-xl hover:shadow-[#25D366]/30 group min-w-[48px] min-h-[48px] sm:min-w-[56px] sm:min-h-[56px] flex items-center justify-center"
+          aria-label="Chat on WhatsApp"
+        >
+          <Phone className="w-5 h-5 sm:w-6 sm:h-6" />
+          <span className="absolute right-full mr-3 sm:mr-4 top-1/2 -translate-y-1/2 bg-foreground text-background text-[10px] sm:text-xs font-bold uppercase tracking-widest px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg hidden sm:block">
+            WhatsApp
+          </span>
+        </a>
+
+        {/* Email/Contact Button */}
+        <button
+          onClick={() => setIsOpen(true)}
+          className="bg-primary text-primary-foreground p-3 sm:p-4 rounded-full shadow-elevated transition-all duration-300 hover:scale-110 hover:shadow-xl hover:shadow-primary/30 group min-w-[48px] min-h-[48px] sm:min-w-[56px] sm:min-h-[56px] flex items-center justify-center"
+          aria-label="Contact Us"
+        >
+          <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+          <span className="absolute right-full mr-3 sm:mr-4 top-1/2 -translate-y-1/2 bg-foreground text-background text-[10px] sm:text-xs font-bold uppercase tracking-widest px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg hidden sm:block">
+            Get In Touch
+          </span>
+        </button>
+      </div>
 
       {/* Modal */}
       {isOpen && (
