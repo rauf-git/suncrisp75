@@ -157,7 +157,7 @@ const AboutUs = () => {
         )}
       </div>
 
-      <Footer onNavigate={handleNavigation} />
+      <Footer />
     </div>
   );
 };

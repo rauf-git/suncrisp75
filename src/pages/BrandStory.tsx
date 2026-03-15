@@ -157,7 +157,7 @@ const BrandStory = () => {
         )}
       </div>
 
-      <Footer onNavigate={handleNavigation} />
+      <Footer />
     </div>
   );
 };
