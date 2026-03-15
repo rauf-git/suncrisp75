@@ -23,7 +23,12 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             {/* Public routes */}
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<Index page="home" />} />
+            <Route path="/portfolio" element={<Index page="portfolio" />} />
+            <Route path="/construction" element={<Index page="construction" />} />
+            <Route path="/rentals" element={<Index page="rentals" />} />
+            <Route path="/hospitality" element={<Index page="hospitality" />} />
+            <Route path="/contact" element={<Index page="contact" />} />
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/our-brand-story" element={<BrandStory />} />
             
@@ -37,7 +42,6 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-            {/* Redirect /admin to /admin/dashboard */}
             <Route
               path="/admin"
               element={<Navigate to="/admin/dashboard" replace />}

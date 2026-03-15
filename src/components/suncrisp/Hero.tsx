@@ -5,9 +5,7 @@ import Reveal from './Reveal';
 import HeroImageCarousel from './HeroImageCarousel';
 import { pageBlockService } from '@/services/pageBlockService';
 import heroBackgroundImage from '@/assets/hero-background.png';
-interface HeroProps {
-  onNavigate?: (page: string) => void;
-}
+
 interface HeroData {
   title?: string;
   subtitle?: string;
@@ -16,20 +14,15 @@ interface HeroData {
   videoUrl?: string;
   heroImages?: string[];
 }
-const Hero = ({
-  onNavigate
-}: HeroProps) => {
+
+const Hero = () => {
   const navigate = useNavigate();
   const [heroData, setHeroData] = useState<HeroData>({});
+
   const fetchHeroData = async () => {
-    const {
-      data
-    } = await pageBlockService.getByKey("home", "hero");
+    const { data } = await pageBlockService.getByKey("home", "hero");
     if (data?.content) {
-      const content = data.content as HeroData & {
-        hero_images?: string[];
-      };
-      // Support both heroImages and hero_images for backwards compatibility
+      const content = data.content as HeroData & { hero_images?: string[] };
       const normalizedData: HeroData = {
         ...content,
         heroImages: content.heroImages || content.hero_images || []
@@ -37,13 +30,11 @@ const Hero = ({
       setHeroData(normalizedData);
     }
   };
+
   useEffect(() => {
     fetchHeroData();
     const onUpdated = (e: Event) => {
-      const evt = e as CustomEvent<{
-        page_key?: string;
-        block_key?: string;
-      }>;
+      const evt = e as CustomEvent<{ page_key?: string; block_key?: string }>;
       if (evt.detail?.page_key === "home" && evt.detail?.block_key === "hero") {
         fetchHeroData();
       }
@@ -51,28 +42,25 @@ const Hero = ({
     window.addEventListener("page-block-updated", onUpdated);
     return () => window.removeEventListener("page-block-updated", onUpdated);
   }, []);
+
   const heroImages = heroData.heroImages || [];
 
-  // Log warning if no images configured
   if (heroImages.length === 0) {
     console.warn('[Hero] No hero images configured. Upload images via Admin → Pages → Home.');
   }
-  return <section className="relative min-h-screen flex items-center overflow-hidden ml-0 mr-0 md:ml-[7px]">
-      {/* Background Image */}
+
+  return (
+    <section className="relative min-h-screen flex items-center overflow-hidden ml-0 mr-0 md:ml-[7px]">
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
-      backgroundImage: heroData.backgroundImage ? `url(${heroData.backgroundImage})` : `url(${heroBackgroundImage})`
-    }} />
+        backgroundImage: heroData.backgroundImage ? `url(${heroData.backgroundImage})` : `url(${heroBackgroundImage})`
+      }} />
       
-      {/* Background gradient overlay - reduced for more background visibility */}
       <div className="absolute inset-0 bg-gradient-to-br from-background/70 via-background/50 to-background/30" />
-      
-      {/* Dark gradient overlay - stronger on left side for text readability */}
       <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-background/40 to-transparent mr-0" />
       <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-background/20" />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 mt-2 sm:mt-6 md:mt-10 lg:mt-[61px]">
         <div className="flex flex-col lg:grid lg:grid-cols-[1fr,auto] gap-6 sm:gap-8 lg:gap-12 items-center">
-          {/* Left Column - Text Content */}
           <div className="max-w-xl order-2 lg:order-1 text-left sm:text-center lg:text-left">
             <Reveal delay={200}>
               <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight tracking-tight drop-shadow-lg">
@@ -103,7 +91,6 @@ const Hero = ({
             </Reveal>
           </div>
 
-          {/* Right Column - Image Carousel */}
           <Reveal delay={600} width="100%">
             <div className="relative w-full max-w-[320px] sm:max-w-[380px] md:max-w-[400px] lg:max-w-[400px] xl:max-w-[480px] mx-auto lg:mx-0 order-1 lg:order-2">
               <HeroImageCarousel key={heroImages.length} images={heroImages} interval={5000} />
@@ -112,10 +99,11 @@ const Hero = ({
         </div>
       </div>
       
-      {/* Scroll Indicator */}
       <div className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-muted-foreground/30">
         <div className="w-[1px] h-12 sm:h-20 bg-gradient-to-b from-transparent via-primary/50 to-transparent" />
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default Hero;

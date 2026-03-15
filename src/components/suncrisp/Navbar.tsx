@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Settings, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { NAV_LINKS } from '@/constants';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { PAGE_ROUTES } from '@/pages/Index';
 import suncrespLogo from '@/assets/suncrisp-logo-orange.png';
 
 interface NavbarProps {
   currentPage: string;
-  onNavigate: (page: string) => void;
 }
 
-const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
+const Navbar = ({ currentPage }: NavbarProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -23,7 +23,6 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu on resize to desktop
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
@@ -35,12 +34,12 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
   }, []);
 
   const handleNavClick = (id: string) => {
-    if (id === 'about-us') {
-      navigate('/about-us');
-      setIsMobileMenuOpen(false);
-      return;
+    const route = PAGE_ROUTES[id];
+    if (route) {
+      navigate(route);
+    } else {
+      navigate('/');
     }
-    onNavigate(id);
     setIsMobileMenuOpen(false);
   };
 
@@ -116,20 +115,17 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
       {/* Mobile/Tablet Menu Overlay */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
-          {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-foreground/40 backdrop-blur-sm animate-fade-in"
             onClick={() => setIsMobileMenuOpen(false)}
           />
           
-          {/* Menu Panel */}
           <div 
             className="absolute top-0 right-0 w-full sm:w-80 h-full bg-background/95 backdrop-blur-xl border-l border-border shadow-2xl animate-slide-in-right overflow-y-auto"
             style={{
               WebkitBackdropFilter: 'blur(20px)',
             }}
           >
-            {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border">
               <span className="font-serif text-lg text-foreground">Menu</span>
               <button
@@ -140,7 +136,6 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
               </button>
             </div>
             
-            {/* Nav Links */}
             <div className="p-4 space-y-2">
               {NAV_LINKS.map((link, index) => (
                 <button
@@ -158,7 +153,6 @@ const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
                   {link.label}
                 </button>
               ))}
-              
             </div>
           </div>
         </div>
