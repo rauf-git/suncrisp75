@@ -58,17 +58,9 @@ const BrandStory = () => {
     };
   }, []);
 
-  const handleNavigation = (page: string) => {
-    if (page === 'home') {
-      navigate('/');
-    } else {
-      navigate(`/?page=${page}`);
-    }
-  };
-
   return (
     <div className={`min-h-screen bg-background transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
-      <Navbar currentPage="brand-story" onNavigate={handleNavigation} />
+      <Navbar currentPage="brand-story" />
 
       {/* Hero Section - Same as PropertyDetail */}
       <div className="relative w-full h-[60vh] md:h-[75vh] overflow-hidden group">
