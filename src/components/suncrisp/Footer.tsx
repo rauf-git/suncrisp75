@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Phone, Mail, Instagram, Facebook, Youtube } from "lucide-react";
 import { NAV_LINKS } from "@/constants";
+import { PAGE_ROUTES } from "@/pages/Index";
 import suncrespLogo from "@/assets/suncrisp-logo-orange.png";
 import { pageBlockService } from "@/services/pageBlockService";
-
-interface FooterProps {
-  onNavigate?: (page: string) => void;
-}
 
 interface SocialLinks {
   instagram?: string;
@@ -14,9 +12,10 @@ interface SocialLinks {
   youtube?: string;
 }
 
-const Footer = ({ onNavigate }: FooterProps) => {
+const Footer = () => {
   const currentYear = new Date().getFullYear();
   const [socialLinks, setSocialLinks] = useState<SocialLinks>({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSocialLinks = async () => {
@@ -27,7 +26,6 @@ const Footer = ({ onNavigate }: FooterProps) => {
     };
     fetchSocialLinks();
 
-    // Listen for updates from admin
     const handleUpdate = (e: CustomEvent) => {
       if (e.detail?.block_key === "social_links") {
         fetchSocialLinks();
@@ -36,6 +34,15 @@ const Footer = ({ onNavigate }: FooterProps) => {
     window.addEventListener("page-block-updated", handleUpdate as EventListener);
     return () => window.removeEventListener("page-block-updated", handleUpdate as EventListener);
   }, []);
+
+  const handleNavigate = (id: string) => {
+    const route = PAGE_ROUTES[id];
+    if (route) {
+      navigate(route);
+    } else {
+      navigate('/');
+    }
+  };
 
   return (
     <footer className="bg-secondary pt-10 pb-6 border-t border-border font-sans">
@@ -48,7 +55,7 @@ const Footer = ({ onNavigate }: FooterProps) => {
               {NAV_LINKS.slice(0, 5).map((link) => (
                 <li key={link.id}>
                   <button
-                    onClick={() => onNavigate?.(link.id)}
+                    onClick={() => handleNavigate(link.id)}
                     className="text-muted-foreground hover:text-primary transition-colors duration-300 block w-fit text-sm font-medium"
                   >
                     {link.label}
@@ -57,7 +64,7 @@ const Footer = ({ onNavigate }: FooterProps) => {
               ))}
               <li>
                 <button
-                  onClick={() => onNavigate?.("brand-story")}
+                  onClick={() => handleNavigate("brand-story")}
                   className="text-muted-foreground hover:text-primary transition-colors duration-300 block w-fit text-sm font-medium"
                 >
                   OUR BRAND STORY

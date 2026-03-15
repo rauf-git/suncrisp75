@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/suncrisp/Navbar";
 import Hero from "@/components/suncrisp/Hero";
 import Properties from "@/components/suncrisp/Properties";
@@ -36,13 +36,21 @@ const INITIAL_CONTACT: ContactData = {
     "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3800.4835815693146!2d83.2956!3d17.7275!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTfCsDQzJzM5LjAiTiA4M8KwMTcnNDQuMCJF!5e0!3m2!1sen!2sin!4v1709462800000!5m2!1sen!2sin",
 };
 
-// Allowed pages for URL validation
+// Route mapping: page id → URL path
+export const PAGE_ROUTES: Record<string, string> = {
+  home: "/",
+  portfolio: "/portfolio",
+  construction: "/construction",
+  rentals: "/rentals",
+  hospitality: "/hospitality",
+  contact: "/contact",
+  "about-us": "/about-us",
+  "brand-story": "/our-brand-story",
+};
+
+// Allowed pages for validation
 const ALLOWED_PAGES = ["home", "portfolio", "construction", "rentals", "hospitality", "about", "contact"] as const;
 type AllowedPage = (typeof ALLOWED_PAGES)[number];
-
-const isValidPage = (page: string | null): page is AllowedPage => {
-  return page !== null && ALLOWED_PAGES.includes(page as AllowedPage);
-};
 
 // Helper to safely cast content_sections
 const safeContentSections = (data: unknown): { heading: string; content: string; image?: string }[] => {
@@ -53,15 +61,16 @@ const safeContentSections = (data: unknown): { heading: string; content: string;
   );
 };
 
-const Index = () => {
+interface IndexProps {
+  page?: string;
+}
+
+const Index = ({ page = "home" }: IndexProps) => {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedItem, setSelectedItem] = useState<Property | null>(null);
   const [selectedSection, setSelectedSection] = useState<string>("");
 
-  // Get current page from URL params with validation
-  const pageParam = searchParams.get("page");
-  const currentPage: AllowedPage = isValidPage(pageParam) ? pageParam : "home";
+  const currentPage = (ALLOWED_PAGES as readonly string[]).includes(page) ? page as AllowedPage : "home";
 
   // Data state with loading flags - separate for each section
   const [portfolioData, setPortfolioData] = useState<Property[]>([]);
@@ -80,7 +89,6 @@ const Index = () => {
 
   // Fetch all data in PARALLEL
   useEffect(() => {
-    // Fetch portfolio projects
     const fetchPortfolio = async () => {
       try {
         const { data: portfolioProjects, error } = await projectService.getAll();
@@ -103,7 +111,6 @@ const Index = () => {
         }));
         setPortfolioData(mappedPortfolio);
 
-        // Also set hospitality data from portfolio
         const hospitalityProperties: Property[] = (portfolioProjects || [])
           .filter((p) => (p.category || "").toLowerCase().includes("hospitality"))
           .map((h) => ({
@@ -125,7 +132,6 @@ const Index = () => {
       }
     };
 
-    // Fetch construction projects
     const fetchConstruction = async () => {
       try {
         const { data: constructionProjects, error } = await constructionService.getAll();
@@ -153,7 +159,6 @@ const Index = () => {
       }
     };
 
-    // Fetch rentals
     const fetchRentals = async () => {
       try {
         const { data: rentalItems, error } = await rentalService.getAll();
@@ -186,7 +191,6 @@ const Index = () => {
       }
     };
 
-    // Fire all fetches in parallel
     fetchPortfolio();
     fetchConstruction();
     fetchRentals();
@@ -197,24 +201,18 @@ const Index = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentPage, selectedItem]);
 
-  const handleNavigation = (page: string) => {
-    // Navigate to brand-story page
-    if (page === "brand-story") {
-      navigate("/our-brand-story");
-      return;
-    }
-    // Update URL query param instead of local state
-    if (page === "home") {
-      setSearchParams({});
+  const handleNavigation = (pageId: string) => {
+    const route = PAGE_ROUTES[pageId];
+    if (route) {
+      navigate(route);
     } else {
-      setSearchParams({ page });
+      navigate("/");
     }
     setSelectedItem(null);
     setSelectedSection("");
   };
 
   const handleItemClick = (section: string, item: Property | Service | Experience) => {
-    // Convert Experience to Property format for detail view
     if ("priceStart" in item) {
       const exp = item as Experience & { detailedDescription?: string; gallery?: string[]; location?: string };
       const propertyItem: Property = {
@@ -243,19 +241,16 @@ const Index = () => {
   };
 
   const renderPage = () => {
-    // Show detail view if an item is selected
     if (selectedItem) {
       return <PropertyDetail item={selectedItem} section={selectedSection} onBack={handleBack} />;
     }
 
     switch (currentPage) {
-      case "home":
-        // Get featured projects from portfolio
+      case "home": {
         const featuredProjects = portfolioData.filter((p) => p.is_featured);
         return (
           <>
-            <Hero onNavigate={handleNavigation} />
-            {/* Featured Portfolio Projects - show skeleton while loading */}
+            <Hero />
             {portfolioLoading ? (
               <SectionSkeleton title="Our Portfolio" cardCount={3} variant="carousel" />
             ) : featuredProjects.length > 0 ? (
@@ -266,7 +261,6 @@ const Index = () => {
                 title="Our Portfolio"
               />
             ) : null}
-            {/* Featured Construction Projects - show skeleton while loading */}
             {constructionLoading ? (
               <SectionSkeleton title="Commercial Property" cardCount={2} variant="grid" />
             ) : constructionData.length > 0 ? (
@@ -278,11 +272,11 @@ const Index = () => {
                 variant="grid"
               />
             ) : null}
-            {/* Brand Story Section */}
             <BrandStorySection />
             <Testimonials />
           </>
         );
+      }
       case "portfolio":
         return (
           <div className="pt-20">
@@ -357,21 +351,19 @@ const Index = () => {
           </div>
         );
       default:
-        return <Hero onNavigate={handleNavigation} />;
+        return <Hero />;
     }
   };
 
   return (
     <div className="min-h-screen">
-      <Navbar currentPage={currentPage} onNavigate={handleNavigation} />
+      <Navbar currentPage={currentPage} />
 
       <main>{renderPage()}</main>
 
-      {/* Floating CTA Button - Right Side */}
       <FloatingCTA isVisible={true} />
 
-      {/* Footer - hide on contact page which has its own dark section */}
-      {currentPage !== "contact" && !selectedItem && <Footer onNavigate={handleNavigation} />}
+      {currentPage !== "contact" && !selectedItem && <Footer />}
     </div>
   );
 };
