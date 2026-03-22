@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { slugify } from "@/lib/utils";
 import Navbar from "@/components/suncrisp/Navbar";
 import Hero from "@/components/suncrisp/Hero";
 import Properties from "@/components/suncrisp/Properties";
@@ -9,7 +10,6 @@ import About from "@/components/suncrisp/About";
 import ContactFooter from "@/components/suncrisp/ContactFooter";
 import Testimonials from "@/components/suncrisp/Testimonials";
 import Footer from "@/components/suncrisp/Footer";
-import PropertyDetail from "@/components/suncrisp/PropertyDetail";
 import FloatingCTA from "@/components/suncrisp/FloatingCTA";
 import FeaturedProjects from "@/components/suncrisp/FeaturedProjects";
 import BrandStorySection from "@/components/suncrisp/BrandStorySection";
@@ -67,12 +67,10 @@ interface IndexProps {
 
 const Index = ({ page = "home" }: IndexProps) => {
   const navigate = useNavigate();
-  const [selectedItem, setSelectedItem] = useState<Property | null>(null);
-  const [selectedSection, setSelectedSection] = useState<string>("");
 
   const currentPage = (ALLOWED_PAGES as readonly string[]).includes(page) ? page as AllowedPage : "home";
 
-  // Data state with loading flags - separate for each section
+  // Data state with loading flags
   const [portfolioData, setPortfolioData] = useState<Property[]>([]);
   const [portfolioLoading, setPortfolioLoading] = useState(true);
 
@@ -92,9 +90,7 @@ const Index = ({ page = "home" }: IndexProps) => {
     const fetchPortfolio = async () => {
       try {
         const { data: portfolioProjects, error } = await projectService.getAll();
-        if (error) {
-          console.error("[Index] Failed to fetch portfolio:", error);
-        }
+        if (error) console.error("[Index] Failed to fetch portfolio:", error);
         const mappedPortfolio: Property[] = (portfolioProjects || []).map((p) => ({
           id: p.id,
           title: p.title,
@@ -135,9 +131,7 @@ const Index = ({ page = "home" }: IndexProps) => {
     const fetchConstruction = async () => {
       try {
         const { data: constructionProjects, error } = await constructionService.getAll();
-        if (error) {
-          console.error("[Index] Failed to fetch construction:", error);
-        }
+        if (error) console.error("[Index] Failed to fetch construction:", error);
         if (constructionProjects && constructionProjects.length > 0) {
           const mappedConstruction: Property[] = constructionProjects.map((c) => ({
             id: c.id,
@@ -162,9 +156,7 @@ const Index = ({ page = "home" }: IndexProps) => {
     const fetchRentals = async () => {
       try {
         const { data: rentalItems, error } = await rentalService.getAll();
-        if (error) {
-          console.error("[Index] Failed to fetch rentals:", error);
-        }
+        if (error) console.error("[Index] Failed to fetch rentals:", error);
         if (rentalItems && rentalItems.length > 0) {
           const mappedRentals: Property[] = rentalItems.map((r) => ({
             id: r.id,
@@ -199,52 +191,20 @@ const Index = ({ page = "home" }: IndexProps) => {
   // Scroll to top when page changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [currentPage, selectedItem]);
+  }, [currentPage]);
 
   const handleNavigation = (pageId: string) => {
     const route = PAGE_ROUTES[pageId];
-    if (route) {
-      navigate(route);
-    } else {
-      navigate("/");
-    }
-    setSelectedItem(null);
-    setSelectedSection("");
+    navigate(route || "/");
   };
 
   const handleItemClick = (section: string, item: Property | Service | Experience) => {
-    if ("priceStart" in item) {
-      const exp = item as Experience & { detailedDescription?: string; gallery?: string[]; location?: string };
-      const propertyItem: Property = {
-        id: exp.id,
-        title: exp.title,
-        type: "Hospitality",
-        location: exp.location || "",
-        price: exp.priceStart,
-        image: exp.image,
-        description: exp.description,
-        detailedDescription: exp.detailedDescription || exp.description,
-        features: [],
-        gallery: exp.gallery || [],
-      };
-      setSelectedItem(propertyItem);
-      setSelectedSection(section);
-    } else if ("features" in item) {
-      setSelectedItem(item as Property);
-      setSelectedSection(section);
+    if ("title" in item) {
+      navigate(`/${section}/${slugify(item.title)}`);
     }
-  };
-
-  const handleBack = () => {
-    setSelectedItem(null);
-    setSelectedSection("");
   };
 
   const renderPage = () => {
-    if (selectedItem) {
-      return <PropertyDetail item={selectedItem} section={selectedSection} onBack={handleBack} />;
-    }
-
     switch (currentPage) {
       case "home": {
         const featuredProjects = portfolioData.filter((p) => p.is_featured);
@@ -358,12 +318,9 @@ const Index = ({ page = "home" }: IndexProps) => {
   return (
     <div className="min-h-screen">
       <Navbar currentPage={currentPage} />
-
       <main>{renderPage()}</main>
-
       <FloatingCTA isVisible={true} />
-
-      {currentPage !== "contact" && !selectedItem && <Footer />}
+      {currentPage !== "contact" && <Footer />}
     </div>
   );
 };

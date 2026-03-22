@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Index from "./pages/Index";
+import ItemDetailPage from "./pages/ItemDetailPage";
 import AboutUs from "./pages/AboutUs";
 import BrandStory from "./pages/BrandStory";
 import NotFound from "./pages/NotFound";
@@ -25,9 +26,13 @@ const App = () => (
             {/* Public routes */}
             <Route path="/" element={<Index page="home" />} />
             <Route path="/portfolio" element={<Index page="portfolio" />} />
+            <Route path="/portfolio/:slug" element={<ItemDetailPage section="portfolio" />} />
             <Route path="/construction" element={<Index page="construction" />} />
+            <Route path="/construction/:slug" element={<ItemDetailPage section="construction" />} />
             <Route path="/rentals" element={<Index page="rentals" />} />
+            <Route path="/rentals/:slug" element={<ItemDetailPage section="rentals" />} />
             <Route path="/hospitality" element={<Index page="hospitality" />} />
+            <Route path="/hospitality/:slug" element={<ItemDetailPage section="hospitality" />} />
             <Route path="/contact" element={<Index page="contact" />} />
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/our-brand-story" element={<BrandStory />} />
