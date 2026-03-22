@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { slugify } from "@/lib/utils";
 import { rentalService, RentalLocation, Rental } from "@/services/rentalService";
 import Reveal from "./Reveal";
 import { Property } from "@/types";
@@ -137,6 +139,7 @@ const LoadingSkeleton = () => <section className="py-8 sm:py-12 md:py-16 lg:py-2
 const RentalsByLocation = ({
   onItemClick
 }: RentalsByLocationProps) => {
+  const navigate = useNavigate();
   const [locationsWithRentals, setLocationsWithRentals] = useState<LocationWithRentals[]>([]);
   const [allRentals, setAllRentals] = useState<Rental[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -254,7 +257,7 @@ const RentalsByLocation = ({
           {/* Rentals Grid */}
           {selectedLocation.rentals.length > 0 ? <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {selectedLocation.rentals.map((rental, index) => <Reveal key={rental.id} delay={300 + index * 50}>
-                  <div className="group bg-card rounded-xl overflow-hidden shadow-soft cursor-pointer border border-border hover:shadow-elevated hover:border-primary/30 transition-all duration-300" onClick={() => onItemClick(mapRentalToProperty(rental))}>
+                  <div className="group bg-card rounded-xl overflow-hidden shadow-soft cursor-pointer border border-border hover:shadow-elevated hover:border-primary/30 transition-all duration-300" onClick={() => navigate(`/rentals/${slugify(rental.title)}`)}>
                     <div className="relative aspect-[4/3] overflow-hidden">
                       <img src={rental.thumbnail_url || "/placeholder.svg"} alt={rental.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
                       {rental.price && <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
@@ -310,7 +313,7 @@ const RentalsByLocation = ({
           </Reveal> : <div className="space-y-4 sm:space-y-6">
             {/* Full Width Featured Property Card */}
             {featuredRental && <Reveal delay={100}>
-                <FeaturedPropertyCard rental={featuredRental} onClick={() => onItemClick(mapRentalToProperty(featuredRental))} />
+                <FeaturedPropertyCard rental={featuredRental} onClick={() => navigate(`/rentals/${slugify(featuredRental.title)}`)} />
               </Reveal>}
 
             {/* Location Cards - Responsive grid */}
@@ -321,7 +324,7 @@ const RentalsByLocation = ({
 
               {/* If less than 3 locations, show remaining rentals */}
               {topLocations.length < 3 && allRentals.slice(1, 4 - topLocations.length).map((rental, index) => <Reveal key={rental.id} delay={200 + index * 50}>
-                    <div className="group cursor-pointer bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated hover:border-primary/30 transition-all duration-300 h-full" onClick={() => onItemClick(mapRentalToProperty(rental))}>
+                    <div className="group cursor-pointer bg-card border border-border rounded-xl overflow-hidden hover:shadow-elevated hover:border-primary/30 transition-all duration-300 h-full" onClick={() => navigate(`/rentals/${slugify(rental.title)}`)}>
                       <div className="relative aspect-[16/10] overflow-hidden">
                         <img src={rental.thumbnail_url || "/placeholder.svg"} alt={rental.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       </div>
