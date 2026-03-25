@@ -29,7 +29,7 @@ const INITIAL_ABOUT: AboutData = {
 
 const INITIAL_CONTACT: ContactData = {
   email: "suncrisphospitality@gmail.com",
-  phone: "+91 9559665556",
+  phone: "+91 9997268880 / 0891-2726888",
   address:
     "Door No.7-8-9, Ground Floor, Flat No.102, Harbour Park Road, Siri Puram Area, Pandurangapuram, Visakhapatnam-530003",
   mapUrl:
