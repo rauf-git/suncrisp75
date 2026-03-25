@@ -78,11 +78,18 @@ const Footer = () => {
             <h3 className="font-serif text-foreground font-bold text-lg mb-6">Contact Us</h3>
             <div className="space-y-4">
               <a
-                href="tel:+919559665556"
+                href="tel:+919997268880"
                 className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors duration-300 group w-fit"
               >
                 <Phone className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium">+91 9559665556</span>
+                <span className="text-sm font-medium">+91 9997268880</span>
+              </a>
+              <a
+                href="tel:+9108912726888"
+                className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors duration-300 group w-fit"
+              >
+                <Phone className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium">0891-2726888</span>
               </a>
               <a
                 href="mailto:suncrisphospitality@gmail.com"

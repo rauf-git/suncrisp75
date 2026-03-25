@@ -641,7 +641,7 @@ export function HomePageEditor({ open, onOpenChange }: HomePageEditorProps) {
                     <Input
                       value={whatsappNumber}
                       onChange={(e) => setWhatsappNumber(e.target.value)}
-                      placeholder="+919559665556"
+                      placeholder="+919997268880"
                       className="text-sm sm:text-base h-10 sm:h-11"
                     />
                   </div>

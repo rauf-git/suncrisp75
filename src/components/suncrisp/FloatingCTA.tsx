@@ -23,7 +23,7 @@ const FloatingCTA = ({ isVisible = true }: FloatingCTAProps) => {
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
-  const [whatsappNumber, setWhatsappNumber] = useState('+919559665556');
+  const [whatsappNumber, setWhatsappNumber] = useState('+919997268880');
 
   useEffect(() => {
     const fetchWhatsapp = async () => {
