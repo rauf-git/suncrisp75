@@ -1,48 +1,24 @@
 
 
-## Plan: Add URL Routes for Individual Detail Pages
+## Plan: Update Phone Numbers to 9997268880 / 0891-2726888
 
-Currently, clicking a project/rental/construction item shows a detail view via component state (`selectedItem`). This plan adds proper URL routes so each item gets a shareable URL like `/portfolio/out-of-the-blue`.
-
-### Approach
-
-Generate URL slugs from item titles (e.g., "Out of the Blue" → `out-of-the-blue`). Use route params to load items by slug, fetching from the database by ID after matching.
+Replace the old number `9559665556` with both new numbers across 4 files.
 
 ### Changes
 
-**1. Add a `slugify` utility**
-- File: `src/lib/utils.ts`
-- Add a simple `slugify(title: string)` function that converts titles to URL-safe slugs
+**1. `src/pages/Index.tsx` (line 32)**
+- `phone: "+91 9997268880 / 0891-2726888"`
 
-**2. Create a new `ItemDetailPage.tsx` page component**
-- File: `src/pages/ItemDetailPage.tsx`
-- Accepts route params: `section` (portfolio/construction/rentals/hospitality) and `slug`
-- On mount, fetches all items for that section, finds the one matching the slug
-- Renders `PropertyDetail` with the found item
-- Shows a loading state while fetching, and a 404 if not found
+**2. `src/components/suncrisp/Footer.tsx` (lines 80-86)**
+- Show two separate phone links, one for each number:
+  - `+91 9997268880` (href: `tel:+919997268880`)
+  - `0891-2726888` (href: `tel:+910891272688`)
 
-**3. Add routes in `App.tsx`**
-- Add parameterized routes:
-  - `/portfolio/:slug` → `ItemDetailPage` with section="portfolio"
-  - `/construction/:slug` → `ItemDetailPage` with section="construction"
-  - `/rentals/:slug` → `ItemDetailPage` with section="rentals"
-  - `/hospitality/:slug` → `ItemDetailPage` with section="hospitality"
+**3. `src/components/suncrisp/FloatingCTA.tsx` (line 26)**
+- Default WhatsApp: `'+919997268880'`
 
-**4. Update `Index.tsx` — navigate to detail URL instead of setting state**
-- In `handleItemClick`, instead of `setSelectedItem(item)`, navigate to `/${section}/${slugify(item.title)}`
-- Remove `selectedItem` state and the detail rendering logic from Index
-- Remove `handleBack` and `selectedSection` state
+**4. `src/components/admin/HomePageEditor.tsx` (line 644)**
+- Placeholder: `"+919997268880"`
 
-**5. Update `PropertyDetail.tsx` — use router for back navigation**
-- Change `onBack` to use `navigate(-1)` or navigate to the parent section route
-
-**6. Update link components**
-- In `FeaturedProjects.tsx`, `Properties.tsx`, `RentalsByLocation.tsx` — ensure item clicks navigate to the new URL routes
-
-### Technical Details
-
-- Slug generation: `title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')`
-- Item lookup: fetch all items for the section, then match by comparing `slugify(item.title) === slug`
-- No database migration needed — slugs are derived from titles at runtime
-- The Navbar and Footer remain unchanged
+Both numbers will be visible wherever phone numbers are displayed. WhatsApp and `tel:` links will use the mobile number `9997268880` as the primary clickable action.
 
