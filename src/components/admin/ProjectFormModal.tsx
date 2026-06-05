@@ -190,6 +190,9 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
           category: category.trim() || undefined,
           display_order: displayOrder,
           images: allGalleryImages,
+          inquiry_form_enabled: inquiryEnabled,
+          inquiry_form_title: inquiryTitle.trim() || null,
+          inquiry_form_fields: inquiryFields,
         };
         
         if (imageFile) {
@@ -212,6 +215,9 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
           display_order: displayOrder,
           image_url: imageUrl,
           images: allGalleryImages,
+          inquiry_form_enabled: inquiryEnabled,
+          inquiry_form_title: inquiryTitle.trim() || undefined,
+          inquiry_form_fields: inquiryFields,
         };
 
         const { error } = await projectService.create(newProject);
