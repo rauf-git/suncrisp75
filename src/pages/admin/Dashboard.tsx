@@ -367,7 +367,7 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ContentType)} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
+          <TabsList className="grid w-full grid-cols-5 mb-8">
             <TabsTrigger value="portfolio" className="flex items-center gap-2">
               <Building2 className="w-4 h-4" />
               <span className="hidden sm:inline">Portfolio</span>
@@ -384,6 +384,10 @@ export default function AdminDashboard() {
               <FileText className="w-4 h-4" />
               <span className="hidden sm:inline">Pages</span>
             </TabsTrigger>
+            <TabsTrigger value="inquiries" className="flex items-center gap-2">
+              <Mail className="w-4 h-4" />
+              <span className="hidden sm:inline">Inquiries</span>
+            </TabsTrigger>
           </TabsList>
 
           {/* Actions Bar */}
@@ -396,7 +400,7 @@ export default function AdminDashboard() {
                 {activeTab === "rentals" && rentalsSubTab === "properties" && `${rentals.length} rentals`}
                 {activeTab === "rentals" && rentalsSubTab === "locations" && `${rentalLocations.length} locations`}
               </span>
-              {activeTab !== "pages" && (
+              {activeTab !== "pages" && activeTab !== "inquiries" && (
                 <span className="text-xs text-primary bg-primary/10 px-2 py-1 rounded">
                   Drag to reorder
                 </span>
@@ -407,7 +411,7 @@ export default function AdminDashboard() {
                 <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
                 Refresh
               </Button>
-              {activeTab !== "pages" && (
+              {activeTab !== "pages" && activeTab !== "inquiries" && (
                 <Button onClick={handleAddClick} className="bg-primary hover:bg-primary/90">
                   <Plus className="w-4 h-4 mr-2" />
                   Add {activeTab === "portfolio" ? "Project" : activeTab === "construction" ? "Construction" : activeTab === "rentals" ? (rentalsSubTab === "properties" ? "Rental" : "Location") : ""}
