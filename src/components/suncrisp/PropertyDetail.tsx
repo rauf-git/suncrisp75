@@ -285,6 +285,18 @@ const PropertyDetail = ({
           </div>
         </div>}
 
+      {/* Inquiry Form */}
+      {inquiryEnabled && inquiryFields.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
+          <InquiryForm
+            projectId={resolvedItem.id}
+            projectTitle={resolvedItem.title}
+            title={inquiryTitle}
+            fields={inquiryFields}
+          />
+        </div>
+      )}
+
       <EmailModal isOpen={isEmailModalOpen} onClose={() => setIsEmailModalOpen(false)} />
       
       {/* Image Lightbox */}
