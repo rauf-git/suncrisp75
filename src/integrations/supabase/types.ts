@@ -128,6 +128,47 @@ export type Database = {
         }
         Relationships: []
       }
+      inquiry_submissions: {
+        Row: {
+          created_at: string
+          data: Json
+          email_status: string
+          id: string
+          project_id: string | null
+          project_title: string | null
+          submitter_email: string | null
+          submitter_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          email_status?: string
+          id?: string
+          project_id?: string | null
+          project_title?: string | null
+          submitter_email?: string | null
+          submitter_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          email_status?: string
+          id?: string
+          project_id?: string | null
+          project_title?: string | null
+          submitter_email?: string | null
+          submitter_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inquiry_submissions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       page_blocks: {
         Row: {
           block_key: string
@@ -209,6 +250,9 @@ export type Database = {
           id: string
           image_url: string
           images: string[] | null
+          inquiry_form_enabled: boolean
+          inquiry_form_fields: Json
+          inquiry_form_title: string | null
           is_featured: boolean | null
           location: string | null
           long_description: string | null
@@ -228,6 +272,9 @@ export type Database = {
           id?: string
           image_url: string
           images?: string[] | null
+          inquiry_form_enabled?: boolean
+          inquiry_form_fields?: Json
+          inquiry_form_title?: string | null
           is_featured?: boolean | null
           location?: string | null
           long_description?: string | null
@@ -247,6 +294,9 @@ export type Database = {
           id?: string
           image_url?: string
           images?: string[] | null
+          inquiry_form_enabled?: boolean
+          inquiry_form_fields?: Json
+          inquiry_form_title?: string | null
           is_featured?: boolean | null
           location?: string | null
           long_description?: string | null
