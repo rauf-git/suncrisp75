@@ -13,6 +13,7 @@ import { DraggableList } from "@/components/admin/DraggableList";
 import { ViewDetailModal } from "@/components/admin/ViewDetailModal";
 import { HomePageEditor } from "@/components/admin/HomePageEditor";
 import { PageContentEditor } from "@/components/admin/PageContentEditor";
+import { InquirySubmissionsList } from "@/components/admin/InquirySubmissionsList";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
@@ -32,11 +33,12 @@ import {
   MapPin,
   Eye,
   BookOpen,
-  Info
+  Info,
+  Mail
 } from "lucide-react";
 import { format } from "date-fns";
 
-type ContentType = "portfolio" | "construction" | "rentals" | "pages";
+type ContentType = "portfolio" | "construction" | "rentals" | "pages" | "inquiries";
 type DeleteTarget = { type: "project"; item: Project } | { type: "construction"; item: ConstructionProject } | { type: "rental"; item: Rental } | { type: "location"; item: RentalLocation };
 type ViewTarget = { type: "project"; item: Project } | { type: "construction"; item: ConstructionProject } | { type: "rental"; item: Rental };
 type RentalsSubTab = "properties" | "locations";
@@ -365,7 +367,7 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ContentType)} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
+          <TabsList className="grid w-full grid-cols-5 mb-8">
             <TabsTrigger value="portfolio" className="flex items-center gap-2">
               <Building2 className="w-4 h-4" />
               <span className="hidden sm:inline">Portfolio</span>
@@ -382,6 +384,10 @@ export default function AdminDashboard() {
               <FileText className="w-4 h-4" />
               <span className="hidden sm:inline">Pages</span>
             </TabsTrigger>
+            <TabsTrigger value="inquiries" className="flex items-center gap-2">
+              <Mail className="w-4 h-4" />
+              <span className="hidden sm:inline">Inquiries</span>
+            </TabsTrigger>
           </TabsList>
 
           {/* Actions Bar */}
@@ -394,7 +400,7 @@ export default function AdminDashboard() {
                 {activeTab === "rentals" && rentalsSubTab === "properties" && `${rentals.length} rentals`}
                 {activeTab === "rentals" && rentalsSubTab === "locations" && `${rentalLocations.length} locations`}
               </span>
-              {activeTab !== "pages" && (
+              {activeTab !== "pages" && activeTab !== "inquiries" && (
                 <span className="text-xs text-primary bg-primary/10 px-2 py-1 rounded">
                   Drag to reorder
                 </span>
@@ -405,7 +411,7 @@ export default function AdminDashboard() {
                 <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
                 Refresh
               </Button>
-              {activeTab !== "pages" && (
+              {activeTab !== "pages" && activeTab !== "inquiries" && (
                 <Button onClick={handleAddClick} className="bg-primary hover:bg-primary/90">
                   <Plus className="w-4 h-4 mr-2" />
                   Add {activeTab === "portfolio" ? "Project" : activeTab === "construction" ? "Construction" : activeTab === "rentals" ? (rentalsSubTab === "properties" ? "Rental" : "Location") : ""}
@@ -617,6 +623,11 @@ export default function AdminDashboard() {
                 </p>
               </div>
             </div>
+          </TabsContent>
+
+          {/* Inquiries Tab */}
+          <TabsContent value="inquiries">
+            <InquirySubmissionsList />
           </TabsContent>
         </Tabs>
       </main>

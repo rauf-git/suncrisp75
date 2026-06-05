@@ -12,9 +12,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { projectService, Project, CreateProjectInput, UpdateProjectInput } from "@/services/projectService";
 import { Upload, X, Image as ImageIcon, Plus, Trash2 } from "lucide-react";
+import { InquiryFieldBuilder } from "./InquiryFieldBuilder";
+import { InquiryField } from "@/services/inquiryService";
 
 interface ProjectFormModalProps {
   open: boolean;
@@ -33,6 +36,9 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
   const [imagePreview, setImagePreview] = useState<string | null>(project?.image_url || null);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [newGalleryFiles, setNewGalleryFiles] = useState<File[]>([]);
+  const [inquiryEnabled, setInquiryEnabled] = useState<boolean>(false);
+  const [inquiryTitle, setInquiryTitle] = useState<string>("");
+  const [inquiryFields, setInquiryFields] = useState<InquiryField[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ title?: string; image?: string }>({});
   
@@ -52,6 +58,9 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
     setImagePreview(null);
     setGalleryImages([]);
     setNewGalleryFiles([]);
+    setInquiryEnabled(false);
+    setInquiryTitle("");
+    setInquiryFields([]);
     setErrors({});
   };
 
@@ -181,6 +190,9 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
           category: category.trim() || undefined,
           display_order: displayOrder,
           images: allGalleryImages,
+          inquiry_form_enabled: inquiryEnabled,
+          inquiry_form_title: inquiryTitle.trim() || null,
+          inquiry_form_fields: inquiryFields,
         };
         
         if (imageFile) {
@@ -203,6 +215,9 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
           display_order: displayOrder,
           image_url: imageUrl,
           images: allGalleryImages,
+          inquiry_form_enabled: inquiryEnabled,
+          inquiry_form_title: inquiryTitle.trim() || undefined,
+          inquiry_form_fields: inquiryFields,
         };
 
         const { error } = await projectService.create(newProject);
@@ -240,6 +255,10 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
       setGalleryImages(project.images || []);
       setImageFile(null);
       setNewGalleryFiles([]);
+      setInquiryEnabled(Boolean(project.inquiry_form_enabled));
+      setInquiryTitle(project.inquiry_form_title || "");
+      const rawFields = project.inquiry_form_fields;
+      setInquiryFields(Array.isArray(rawFields) ? (rawFields as InquiryField[]) : []);
       setErrors({});
     } else if (open && !project) {
       resetForm();
@@ -454,6 +473,45 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
                   multiple
                   disabled={isLoading}
                 />
+              </div>
+
+              {/* Inquiry Form Builder */}
+              <div className="space-y-3 border-t border-border pt-5">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <Label className="text-sm font-semibold">Inquiry Form</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Show a customizable inquiry form on this project's page.
+                    </p>
+                  </div>
+                  <Switch
+                    checked={inquiryEnabled}
+                    onCheckedChange={setInquiryEnabled}
+                    disabled={isLoading}
+                  />
+                </div>
+                {inquiryEnabled && (
+                  <div className="space-y-3 pl-1">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="inquiryTitle" className="text-xs">
+                        Form title
+                      </Label>
+                      <Input
+                        id="inquiryTitle"
+                        value={inquiryTitle}
+                        onChange={(e) => setInquiryTitle(e.target.value)}
+                        placeholder="Enquire about this property"
+                        disabled={isLoading}
+                        className="h-9 text-sm"
+                      />
+                    </div>
+                    <InquiryFieldBuilder
+                      fields={inquiryFields}
+                      onChange={setInquiryFields}
+                      disabled={isLoading}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </ScrollArea>
