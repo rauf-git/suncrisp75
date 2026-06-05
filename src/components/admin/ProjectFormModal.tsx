@@ -474,6 +474,45 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
                   disabled={isLoading}
                 />
               </div>
+
+              {/* Inquiry Form Builder */}
+              <div className="space-y-3 border-t border-border pt-5">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <Label className="text-sm font-semibold">Inquiry Form</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Show a customizable inquiry form on this project's page.
+                    </p>
+                  </div>
+                  <Switch
+                    checked={inquiryEnabled}
+                    onCheckedChange={setInquiryEnabled}
+                    disabled={isLoading}
+                  />
+                </div>
+                {inquiryEnabled && (
+                  <div className="space-y-3 pl-1">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="inquiryTitle" className="text-xs">
+                        Form title
+                      </Label>
+                      <Input
+                        id="inquiryTitle"
+                        value={inquiryTitle}
+                        onChange={(e) => setInquiryTitle(e.target.value)}
+                        placeholder="Enquire about this property"
+                        disabled={isLoading}
+                        className="h-9 text-sm"
+                      />
+                    </div>
+                    <InquiryFieldBuilder
+                      fields={inquiryFields}
+                      onChange={setInquiryFields}
+                      disabled={isLoading}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </ScrollArea>
 
