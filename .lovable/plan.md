@@ -1,43 +1,77 @@
-## Plan: Keep-Alive Endpoint for Lovable Cloud
+## Plan: Customizable Inquiry Form for Portfolio Projects
 
-Lovable Cloud (Supabase) pauses after ~1 week of inactivity. To prevent this, we'll add a tiny public edge function that runs a lightweight DB query on every hit. You then point any free external cron service at its URL (e.g. cron-job.org, UptimeRobot, GitHub Actions) on a weekly schedule.
+Add an admin-configurable inquiry form to each Portfolio project's detail page. Submissions are saved to the database AND emailed to `suncrisphospitality@gmail.com`. The SunCrisp logo is displayed at the top of the form.
 
-### What I'll build
+### 1. Database changes (migration)
 
-**New edge function: `keep-alive`**
-- Path: `supabase/functions/keep-alive/index.ts`
-- Public (no JWT required) — so a cron pinger can call it without auth
-- Runs a minimal `SELECT` (e.g. `count` from `page_blocks` with `head: true`) — this is enough activity to reset the inactivity timer
-- Returns `{ ok: true, timestamp }` as JSON
-- Includes CORS headers + basic error handling
+**Extend `projects` table:**
+- `inquiry_form_enabled` (boolean, default false)
+- `inquiry_form_title` (text, nullable — e.g. "Enquire about this property")
+- `inquiry_form_fields` (jsonb, default `[]`) — array of field definitions
 
-**Config update**
-- Add `[functions.keep-alive]` block with `verify_jwt = false` in `supabase/config.toml`
-
-### The URL you'll use for the cron job
-
-```
-https://oxoaoyvvgddqksvdmrkd.supabase.co/functions/v1/keep-alive
+Each field object:
+```json
+{ "id": "uuid", "label": "Check-in date", "type": "text|email|tel|number|date|textarea|select", "required": true, "placeholder": "", "options": ["..."] }
 ```
 
-Method: `GET` (or `POST`, both will work)
-No auth header needed.
+**New `inquiry_submissions` table:**
+- `project_id` (uuid, references projects)
+- `project_title` (text snapshot)
+- `data` (jsonb — submitted field values)
+- `submitter_name`, `submitter_email` (text, nullable — extracted for convenience)
+- `email_status` (text: pending/sent/failed)
+- `created_at`
 
-### How to set up the cron (external, free options)
+RLS: admins can read/delete; anyone (anon + authenticated) can INSERT. GRANTs included.
 
-1. **cron-job.org** (recommended, free, simple)
-   - Sign up → Create cronjob → paste the URL above → schedule: every 3 days or weekly
-2. **UptimeRobot** (also keeps an uptime log)
-   - Add monitor → HTTP(s) → paste URL → interval 5 min or any
-3. **GitHub Actions** (if you have a repo)
-   - Scheduled workflow that `curl`s the URL
+### 2. Admin UI (`ProjectFormModal.tsx`)
 
-I recommend pinging at least **once every 5 days** to stay safely under the 1-week pause window.
+New "Inquiry Form" section in the project edit modal:
+- Toggle: Enable inquiry form
+- Title input (defaults to "Enquire about this property")
+- Field builder (orderable list):
+  - Add field → choose type, label, required, placeholder, options (for select)
+  - Edit / remove each field
+- One-click "Load defaults" button: inserts preset fields (Name, Contact details, Check-in date, Check-out date, No. of guests, Message)
 
-### Why not Supabase's own pg_cron?
+New admin tab "Inquiries" on the dashboard:
+- List submissions, filter by project, view details, delete
 
-`pg_cron` runs inside the database, but if the project is already paused, the cron stops too — so it can't wake itself. The keep-alive must be triggered **externally**.
+### 3. Public form (`InquiryForm.tsx` on `PropertyDetail.tsx`)
 
-### Files changed
-- `supabase/functions/keep-alive/index.ts` (new)
-- `supabase/config.toml` (add function config block)
+When `inquiry_form_enabled` is true, render a styled card below the content:
+- **SunCrisp logo at the top of the form** (centered)
+- Configured form title
+- Fields rendered dynamically based on admin config
+- Submit button styled with brand primary
+
+On submit:
+1. Validate (zod, required fields, email/tel/date formats, length caps)
+2. Insert into `inquiry_submissions`
+3. Invoke edge function to email
+4. Toast success / reset
+
+### 4. Edge function `send-inquiry-email`
+
+New function (verify_jwt=false, CORS, IP rate-limit mirroring `send-contact-email`). Receives `{ projectTitle, projectId, fields: [{label, value}] }`, renders HTML email with SunCrisp logo header + project title + label/value pairs, sends via existing Resend setup to `suncrisphospitality@gmail.com`. Updates `email_status` on the row.
+
+### 5. Files touched
+
+- `supabase/migrations/<new>.sql` (new)
+- `supabase/functions/send-inquiry-email/index.ts` (new)
+- `supabase/config.toml` (add `[functions.send-inquiry-email] verify_jwt = false`)
+- `src/components/admin/ProjectFormModal.tsx` (add form builder section)
+- `src/components/admin/InquiryFieldBuilder.tsx` (new)
+- `src/components/admin/InquirySubmissionsList.tsx` (new)
+- `src/pages/admin/Dashboard.tsx` (new "Inquiries" tab)
+- `src/components/suncrisp/InquiryForm.tsx` (new, public form with logo header)
+- `src/components/suncrisp/PropertyDetail.tsx` (render form when enabled)
+- `src/services/projectService.ts` (include new columns)
+- `src/services/inquiryService.ts` (new)
+- `src/types/index.ts` (types for fields + submission)
+
+### Notes
+- Scope is **Portfolio (projects table)**. Hospitality items also live in `projects` (category="Hospitality") so they get this feature too via the same mechanism.
+- Email uses the existing Resend setup from `send-contact-email`.
+- Field types supported: text, email, tel, number, date, textarea, select.
+- Logo source: existing SunCrisp logo asset already used in the navbar.
