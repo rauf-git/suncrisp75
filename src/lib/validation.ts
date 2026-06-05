@@ -55,6 +55,9 @@ export const createProjectSchema = z.object({
   // Dynamic content blocks
   content_sections: z.array(contentSectionSchema).optional(),
   display_order: z.number().int().min(0).max(9999).optional(),
+  inquiry_form_enabled: z.boolean().optional(),
+  inquiry_form_title: z.string().trim().max(MAX_TITLE_LENGTH).optional(),
+  inquiry_form_fields: z.array(z.any()).optional(),
 });
 
 export const updateProjectSchema = z.object({
