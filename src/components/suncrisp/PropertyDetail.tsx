@@ -7,6 +7,8 @@ import { constructionService } from '@/services/constructionService';
 import { rentalService } from '@/services/rentalService';
 import EmailModal from './EmailModal';
 import ImageLightbox from './ImageLightbox';
+import InquiryForm from './InquiryForm';
+import { InquiryField } from '@/services/inquiryService';
 
 interface PropertyDetailProps {
   item: Property;
@@ -24,6 +26,9 @@ const PropertyDetail = ({
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [inquiryEnabled, setInquiryEnabled] = useState(false);
+  const [inquiryTitle, setInquiryTitle] = useState<string | null>(null);
+  const [inquiryFields, setInquiryFields] = useState<InquiryField[]>([]);
 
   // Scroll to top on mount
   useEffect(() => {
@@ -55,6 +60,10 @@ const PropertyDetail = ({
           }[] | null || []
         });
         setVisitUrl(data.visit_url || null);
+        setInquiryEnabled(Boolean((data as unknown as { inquiry_form_enabled?: boolean }).inquiry_form_enabled));
+        setInquiryTitle((data as unknown as { inquiry_form_title?: string | null }).inquiry_form_title || null);
+        const rawFields = (data as unknown as { inquiry_form_fields?: unknown }).inquiry_form_fields;
+        setInquiryFields(Array.isArray(rawFields) ? (rawFields as InquiryField[]) : []);
         return;
       }
       if (section === 'construction') {
