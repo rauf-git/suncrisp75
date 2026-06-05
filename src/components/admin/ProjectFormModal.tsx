@@ -12,9 +12,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { projectService, Project, CreateProjectInput, UpdateProjectInput } from "@/services/projectService";
 import { Upload, X, Image as ImageIcon, Plus, Trash2 } from "lucide-react";
+import { InquiryFieldBuilder } from "./InquiryFieldBuilder";
+import { InquiryField } from "@/services/inquiryService";
 
 interface ProjectFormModalProps {
   open: boolean;
@@ -33,6 +36,9 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
   const [imagePreview, setImagePreview] = useState<string | null>(project?.image_url || null);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [newGalleryFiles, setNewGalleryFiles] = useState<File[]>([]);
+  const [inquiryEnabled, setInquiryEnabled] = useState<boolean>(false);
+  const [inquiryTitle, setInquiryTitle] = useState<string>("");
+  const [inquiryFields, setInquiryFields] = useState<InquiryField[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ title?: string; image?: string }>({});
   
@@ -52,6 +58,9 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
     setImagePreview(null);
     setGalleryImages([]);
     setNewGalleryFiles([]);
+    setInquiryEnabled(false);
+    setInquiryTitle("");
+    setInquiryFields([]);
     setErrors({});
   };
 
