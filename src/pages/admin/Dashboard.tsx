@@ -624,6 +624,11 @@ export default function AdminDashboard() {
               </div>
             </div>
           </TabsContent>
+
+          {/* Inquiries Tab */}
+          <TabsContent value="inquiries">
+            <InquirySubmissionsList />
+          </TabsContent>
         </Tabs>
       </main>
 
