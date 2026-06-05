@@ -255,6 +255,10 @@ export function ProjectFormModal({ open, onOpenChange, project, onSuccess }: Pro
       setGalleryImages(project.images || []);
       setImageFile(null);
       setNewGalleryFiles([]);
+      setInquiryEnabled(Boolean(project.inquiry_form_enabled));
+      setInquiryTitle(project.inquiry_form_title || "");
+      const rawFields = project.inquiry_form_fields;
+      setInquiryFields(Array.isArray(rawFields) ? (rawFields as InquiryField[]) : []);
       setErrors({});
     } else if (open && !project) {
       resetForm();
