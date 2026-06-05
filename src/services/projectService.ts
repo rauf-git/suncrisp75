@@ -26,6 +26,9 @@ export interface Project {
   visit_url: string | null;
   heading: string | null;
   content_heading: string | null;
+  inquiry_form_enabled?: boolean | null;
+  inquiry_form_title?: string | null;
+  inquiry_form_fields?: unknown | null;
   created_at: string;
   updated_at: string;
 }

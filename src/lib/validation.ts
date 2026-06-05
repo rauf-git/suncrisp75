@@ -96,6 +96,9 @@ export const updateProjectSchema = z.object({
   visit_url: z.string().trim().url().max(MAX_URL_LENGTH).nullish(),
   heading: z.string().trim().max(MAX_TITLE_LENGTH).nullish(),
   content_heading: z.string().trim().max(MAX_TITLE_LENGTH).nullish(),
+  inquiry_form_enabled: z.boolean().nullish(),
+  inquiry_form_title: z.string().trim().max(MAX_TITLE_LENGTH).nullish(),
+  inquiry_form_fields: z.array(z.any()).nullish(),
 });
 
 // Construction project validation schemas
