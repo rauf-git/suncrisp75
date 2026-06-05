@@ -13,6 +13,7 @@ import { DraggableList } from "@/components/admin/DraggableList";
 import { ViewDetailModal } from "@/components/admin/ViewDetailModal";
 import { HomePageEditor } from "@/components/admin/HomePageEditor";
 import { PageContentEditor } from "@/components/admin/PageContentEditor";
+import { InquirySubmissionsList } from "@/components/admin/InquirySubmissionsList";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
@@ -32,11 +33,12 @@ import {
   MapPin,
   Eye,
   BookOpen,
-  Info
+  Info,
+  Mail
 } from "lucide-react";
 import { format } from "date-fns";
 
-type ContentType = "portfolio" | "construction" | "rentals" | "pages";
+type ContentType = "portfolio" | "construction" | "rentals" | "pages" | "inquiries";
 type DeleteTarget = { type: "project"; item: Project } | { type: "construction"; item: ConstructionProject } | { type: "rental"; item: Rental } | { type: "location"; item: RentalLocation };
 type ViewTarget = { type: "project"; item: Project } | { type: "construction"; item: ConstructionProject } | { type: "rental"; item: Rental };
 type RentalsSubTab = "properties" | "locations";
