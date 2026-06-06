@@ -59,14 +59,13 @@ const InquiryForm = ({ projectId, projectTitle, title, fields }: Props) => {
       const nameKey = guessNameKey(fields);
       const emailKey = guessEmailKey(fields);
 
-      const { data: submission, error: subErr } =
-        await inquiryService.createSubmission({
-          project_id: projectId,
-          project_title: projectTitle,
-          submitter_name: nameKey ? values[nameKey] || null : null,
-          submitter_email: emailKey ? values[emailKey] || null : null,
-          data: values,
-        });
+      const { error: subErr } = await inquiryService.createSubmission({
+        project_id: projectId,
+        project_title: projectTitle,
+        submitter_name: nameKey ? values[nameKey] || null : null,
+        submitter_email: emailKey ? values[emailKey] || null : null,
+        data: values,
+      });
 
       if (subErr) throw subErr;
 
@@ -76,7 +75,6 @@ const InquiryForm = ({ projectId, projectTitle, title, fields }: Props) => {
       }));
 
       await inquiryService.sendEmail({
-        submissionId: submission?.id,
         projectId,
         projectTitle,
         fields: labeledFields,
