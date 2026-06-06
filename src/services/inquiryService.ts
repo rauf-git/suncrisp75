@@ -46,7 +46,7 @@ export const inquiryService = {
     submitter_email?: string | null;
     data: Record<string, string>;
   }) {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("inquiry_submissions")
       .insert({
         project_id: input.project_id,
@@ -55,10 +55,8 @@ export const inquiryService = {
         submitter_email: input.submitter_email?.slice(0, 255) ?? null,
         data: input.data,
         email_status: "pending",
-      })
-      .select()
-      .single();
-    return { data, error };
+      });
+    return { error };
   },
 
   async sendEmail(payload: {
