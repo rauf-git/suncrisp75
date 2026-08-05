@@ -30,7 +30,7 @@ const getCorsHeaders = (origin: string | null) => {
 };
 
 const LOGO_URL =
-  "https://oxoaoyvvgddqksvdmrkd.supabase.co/storage/v1/object/public/project-images/brand%2Fsuncrisp-logo-orange.png";
+  "https://wpxhailrakxuswzleobh.supabase.co/storage/v1/object/public/project-images/brand%2Fsuncrisp-logo-orange.png";
 
 interface InquiryFieldValue {
   label: string;
