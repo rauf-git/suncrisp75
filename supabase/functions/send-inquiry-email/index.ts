@@ -5,7 +5,6 @@ const RATE_LIMIT_WINDOW_MS = 60000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
 
 const ALLOWED_ORIGINS = [
-  "https://oxoaoyvvgddqksvdmrkd.lovableproject.com",
   "https://suncrisphospitality.com",
   "https://www.suncrisphospitality.com",
 ];

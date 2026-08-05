@@ -7,7 +7,6 @@ const RATE_LIMIT_MAX_REQUESTS = 5; // Max 5 requests per minute per IP
 
 // Allowed origins for CORS (restrict in production)
 const ALLOWED_ORIGINS = [
-  "https://oxoaoyvvgddqksvdmrkd.lovableproject.com",
   "https://suncrisphospitality.com",
   "https://www.suncrisphospitality.com",
 ];
