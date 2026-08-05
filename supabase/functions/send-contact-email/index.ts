@@ -7,7 +7,6 @@ const RATE_LIMIT_MAX_REQUESTS = 5; // Max 5 requests per minute per IP
 
 // Allowed origins for CORS (restrict in production)
 const ALLOWED_ORIGINS = [
-  "https://oxoaoyvvgddqksvdmrkd.lovableproject.com",
   "https://suncrisphospitality.com",
   "https://www.suncrisphospitality.com",
 ];
@@ -17,6 +16,7 @@ const getCorsHeaders = (origin: string | null) => {
   const allowedOrigin = origin && ALLOWED_ORIGINS.some(allowed => 
     origin === allowed || 
     origin.endsWith('.lovableproject.com') ||
+    origin.endsWith('.lovable.app') ||
     origin.endsWith('.vercel.app')
   ) ? origin : ALLOWED_ORIGINS[0];
   

@@ -5,7 +5,6 @@ const RATE_LIMIT_WINDOW_MS = 60000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
 
 const ALLOWED_ORIGINS = [
-  "https://oxoaoyvvgddqksvdmrkd.lovableproject.com",
   "https://suncrisphospitality.com",
   "https://www.suncrisphospitality.com",
 ];
@@ -31,7 +30,7 @@ const getCorsHeaders = (origin: string | null) => {
 };
 
 const LOGO_URL =
-  "https://oxoaoyvvgddqksvdmrkd.supabase.co/storage/v1/object/public/project-images/brand%2Fsuncrisp-logo-orange.png";
+  "https://wpxhailrakxuswzleobh.supabase.co/storage/v1/object/public/project-images/brand%2Fsuncrisp-logo-orange.png";
 
 interface InquiryFieldValue {
   label: string;
