@@ -13,7 +13,7 @@ Add a small serverless endpoint on Vercel that pings the backend keep-alive func
 
 ```text
 rewrites: /((?!api/).*)  ->  /index.html
-crons:    /api/keep-alive  every 6 hours  ("0 */6 * * *")
+crons:    /api/keep-alive  every 2 days  ("0 0 */2 * *")
 ```
 
 ## Schedule: every ~1.5 days
