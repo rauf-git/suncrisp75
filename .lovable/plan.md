@@ -16,14 +16,14 @@ rewrites: /((?!api/).*)  ->  /index.html
 crons:    /api/keep-alive  every 6 hours  ("0 */6 * * *")
 ```
 
-## Important limitation
+## Schedule: every ~1.5 days
 
-Vercel Cron on the **Hobby** plan allows only **one run per day** (schedules are coerced to daily). Every-6-hours requires the **Pro** plan. Given a daily external cron job is already running, options:
+Cron has no way to express "every 36 hours" — intervals must divide evenly into days. The closest practical option is **every 2 days at midnight**: `0 0 */2 * *`. That's well inside the 7-day inactivity window.
 
-- Ship `0 */6 * * *` as asked — it runs 4x/day on Pro, 1x/day on Hobby (still enough to prevent the 7-day pause).
-- Or set `0 0 * * *` to match Hobby exactly.
+Note: on the Vercel **Hobby** plan, cron schedules are limited to once per day, so `0 0 */2 * *` may be coerced to a daily run. Either way the backend stays awake.
 
-The plan ships `0 */6 * * *`.
+The plan ships `0 0 */2 * *`.
+
 
 ## Environment variables (Vercel project settings)
 
