@@ -1,10 +1,20 @@
-# Storage migration to the new client backend
+# Storage migration + keep-alive URL for the new backend
 
-## Blockers — I need these before anything can run
+Destination confirmed: `fguhfdfgyaoxtxrcforc` (`https://fguhfdfgyaoxtxrcforc.supabase.co`), publishable key `sb_publishable_nqgDvpngSlkrm7yD84N6Sw_JZ0uTnRv`. The earlier `wpxhailrakxuswzleobh` references in the repo are stale and get replaced.
 
-1. **The destination service role key is missing.** In your message the "Service Role Key" field contains the project URL (`https://fguhfdfgyaoxtxrcforc.supabase.co`), not a key. Copying files into the new project's Storage requires the real service role key of `fguhfdfgyaoxtxrcforc`.
-   - Do **not** paste it in chat. I will open a secure secret form for it (`MIGRATION_DEST_SERVICE_ROLE_KEY`) once you confirm.
-2. **Which project is the final destination?** The repo was previously repointed to `wpxhailrakxuswzleobh`. This request names `fguhfdfgyaoxtxrcforc`. I need one confirmed destination before updating any config.
+## Keep-alive cron URL (new project)
+
+Two options, both pointing at the new project:
+
+- Direct edge function (use this in cron-job.org): `https://fguhfdfgyaoxtxrcforc.supabase.co/functions/v1/keep-alive` — POST, headers `apikey` and `Authorization: Bearer <publishable key>`. Requires the `keep-alive` function to be deployed in the new project first.
+- Via Vercel: `https://<your-domain>/api/keep-alive` — already wired with the `0 0 */2 * *` cron. It just needs `SUPABASE_URL` and `SUPABASE_ANON_KEY` set to the new project in Vercel (you've done this) and the hardcoded fallback in `api/keep-alive.ts` updated to the new project.
+
+Config edits for this: `api/keep-alive.ts` fallback URL → new project; `src/integrations/supabase/safeClient.ts` fallback URL + key → new project; `supabase/functions/send-inquiry-email/index.ts` logo host → new project.
+
+## Blocker for the Storage copy
+
+The destination **service role key** is still missing — the earlier message pasted the project URL in that field, and a publishable key cannot write into Storage. I'll open a secure secret form for it (`MIGRATION_DEST_SERVICE_ROLE_KEY`) rather than have you paste it in chat. Everything below step "Copy all objects" waits on that.
+
 
 ## What is in the source today (verified)
 
