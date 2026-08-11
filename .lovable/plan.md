@@ -46,10 +46,10 @@ Policies on `storage.objects` do not transfer with files. I'll reproduce the sou
 Because the host changes, every stored `https://<old-ref>.supabase.co/storage/v1/object/public/...` URL must become the new host. I'll produce a single idempotent SQL `UPDATE` script (using `replace()` on the affected columns/JSON in the 7 tables above) for you to run against the **destination** database after its data import.
 
 **6. Repoint the app config**
-- `src/integrations/supabase/safeClient.ts` — fallback URL and anon key set to the confirmed destination.
+- `src/integrations/supabase/safeClient.ts` — fallback URL and key set to `fguhfdfgyaoxtxrcforc`.
+- `api/keep-alive.ts` — fallback URL set to `fguhfdfgyaoxtxrcforc`.
 - `supabase/functions/send-inquiry-email/index.ts` — logo URL to the new storage host.
-- `api/keep-alive.ts` / Vercel env — `SUPABASE_URL`, `SUPABASE_ANON_KEY` to the new project.
-- You set `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID` in Vercel and redeploy.
+- Vercel env (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`) — you've already switched these; redeploy to apply.
 
 Note: this Lovable preview stays wired to the Lovable Cloud backend — Lovable cannot point its own preview at an external project. The repointing above affects the GitHub repo and the Vercel deployment, which is what the live site uses.
 
