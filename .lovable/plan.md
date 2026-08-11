@@ -58,7 +58,8 @@ After the Vercel redeploy, check homepage, portfolio, a project detail page, and
 
 ## What you must do manually
 
+- Deploy the three edge functions (`keep-alive`, `send-contact-email`, `send-inquiry-email`) to `fguhfdfgyaoxtxrcforc` and add `RESEND_API_KEY` there — otherwise the cron URL 404s and emails fail.
 - Provide the destination service role key via the secure form.
 - Run the storage-policy SQL and the URL-rewrite SQL in the new project (I supply both, ready to paste).
-- Add the Vercel env vars and redeploy.
-- Rotate the service role key after migration, since keys previously appeared in chat.
+- Redeploy on Vercel after the config commit.
+- Rotate any service role key that has appeared in chat.
