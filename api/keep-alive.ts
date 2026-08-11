@@ -3,12 +3,12 @@ export const config = { runtime: "nodejs" };
 const SUPABASE_URL =
   process.env.SUPABASE_URL ||
   process.env.VITE_SUPABASE_URL ||
-  "https://wpxhailrakxuswzleobh.supabase.co";
+  "https://fguhfdfgyaoxtxrcforc.supabase.co";
 
 const SUPABASE_ANON_KEY =
   process.env.SUPABASE_ANON_KEY ||
   process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-  "";
+  "sb_publishable_nqgDvpngSlkrm7yD84N6Sw_JZ0uTnRv";
 
 export default async function handler(req: any, res: any) {
   const cronSecret = process.env.CRON_SECRET;
@@ -21,14 +21,18 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const upstream = await fetch(`${SUPABASE_URL}/functions/v1/keep-alive`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+    // Plain Data API read — counts as database activity, requires no edge
+    // function to be deployed in the backend project.
+    const upstream = await fetch(
+      `${SUPABASE_URL}/rest/v1/page_blocks?select=id&limit=1`,
+      {
+        method: "GET",
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        },
       },
-    });
+    );
 
     const text = await upstream.text();
     let payload: unknown;

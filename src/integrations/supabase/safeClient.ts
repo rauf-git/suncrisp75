@@ -5,9 +5,9 @@ import type { Database } from "./types";
 // environment temporarily fails to inject Vite env vars.
 // Values below are publishable (anon) and safe to bundle.
 
-const FALLBACK_SUPABASE_URL = "https://wpxhailrakxuswzleobh.supabase.co";
+const FALLBACK_SUPABASE_URL = "https://fguhfdfgyaoxtxrcforc.supabase.co";
 const FALLBACK_SUPABASE_PUBLISHABLE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndweGhhaWxyYWt4dXN3emxlb2JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzOTI4MjIsImV4cCI6MjA4MTk2ODgyMn0._vpvxdV-TTaDawmw9T3HHEVYkRBXnhH2C6J7xNouLjs";
+  "sb_publishable_nqgDvpngSlkrm7yD84N6Sw_JZ0uTnRv";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || FALLBACK_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY =
